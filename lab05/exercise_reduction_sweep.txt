@@ -1,0 +1,450 @@
+BLOCK_SIZE=64 RUN=1
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 64
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0303       -74993790
+1. Tree (Shared Memory)                   0.0221       -74993790
+2. Tree + Warp Shuffle                    0.0186       -74993790
+3. Multi-Element + Tree + Shuffle         0.0337       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.37x
+  Warp Shuffle:  1.63x
+  Multi-Element: 0.90x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=64 RUN=2
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 64
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0307       -74993790
+1. Tree (Shared Memory)                   0.0221       -74993790
+2. Tree + Warp Shuffle                    0.0183       -74993790
+3. Multi-Element + Tree + Shuffle         0.0331       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.39x
+  Warp Shuffle:  1.67x
+  Multi-Element: 0.93x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=64 RUN=3
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 64
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0302       -74993790
+1. Tree (Shared Memory)                   0.0224       -74993790
+2. Tree + Warp Shuffle                    0.0185       -74993790
+3. Multi-Element + Tree + Shuffle         0.0337       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.35x
+  Warp Shuffle:  1.64x
+  Multi-Element: 0.90x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=64 RUN=4
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 64
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0305       -74993790
+1. Tree (Shared Memory)                   0.0226       -74993790
+2. Tree + Warp Shuffle                    0.0188       -74993790
+3. Multi-Element + Tree + Shuffle         0.0351       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.35x
+  Warp Shuffle:  1.62x
+  Multi-Element: 0.87x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=64 RUN=5
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 64
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0305       -74993790
+1. Tree (Shared Memory)                   0.0225       -74993790
+2. Tree + Warp Shuffle                    0.0184       -74993790
+3. Multi-Element + Tree + Shuffle         0.0338       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.35x
+  Warp Shuffle:  1.66x
+  Multi-Element: 0.90x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=128 RUN=1
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 128
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.1356       -74993790
+1. Tree (Shared Memory)                   0.0236       -74993790
+2. Tree + Warp Shuffle                    0.0197       -74993790
+3. Multi-Element + Tree + Shuffle         0.0197       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          5.74x
+  Warp Shuffle:  6.88x
+  Multi-Element: 6.89x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=128 RUN=2
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 128
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0304       -74993790
+1. Tree (Shared Memory)                   0.0235       -74993790
+2. Tree + Warp Shuffle                    0.0196       -74993790
+3. Multi-Element + Tree + Shuffle         0.0193       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.29x
+  Warp Shuffle:  1.55x
+  Multi-Element: 1.57x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=128 RUN=3
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 128
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0364       -74993790
+1. Tree (Shared Memory)                   0.0234       -74993790
+2. Tree + Warp Shuffle                    0.0197       -74993790
+3. Multi-Element + Tree + Shuffle         0.0194       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.55x
+  Warp Shuffle:  1.85x
+  Multi-Element: 1.88x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=128 RUN=4
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 128
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0309       -74993790
+1. Tree (Shared Memory)                   0.0239       -74993790
+2. Tree + Warp Shuffle                    0.0200       -74993790
+3. Multi-Element + Tree + Shuffle         0.0202       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.29x
+  Warp Shuffle:  1.55x
+  Multi-Element: 1.53x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=128 RUN=5
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 128
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0306       -74993790
+1. Tree (Shared Memory)                   0.0239       -74993790
+2. Tree + Warp Shuffle                    0.0200       -74993790
+3. Multi-Element + Tree + Shuffle         0.0202       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.28x
+  Warp Shuffle:  1.53x
+  Multi-Element: 1.51x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=256 RUN=1
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 256
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.1316       -74993790
+1. Tree (Shared Memory)                   0.0247       -74993790
+2. Tree + Warp Shuffle                    0.0199       -74993790
+3. Multi-Element + Tree + Shuffle         0.0124       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          5.32x
+  Warp Shuffle:  6.61x
+  Multi-Element: 10.60x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=256 RUN=2
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 256
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0311       -74993790
+1. Tree (Shared Memory)                   0.0250       -74993790
+2. Tree + Warp Shuffle                    0.0205       -74993790
+3. Multi-Element + Tree + Shuffle         0.0129       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.24x
+  Warp Shuffle:  1.52x
+  Multi-Element: 2.41x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=256 RUN=3
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 256
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0311       -74993790
+1. Tree (Shared Memory)                   0.0248       -74993790
+2. Tree + Warp Shuffle                    0.0201       -74993790
+3. Multi-Element + Tree + Shuffle         0.0126       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.26x
+  Warp Shuffle:  1.55x
+  Multi-Element: 2.47x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=256 RUN=4
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 256
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0312       -74993790
+1. Tree (Shared Memory)                   0.0250       -74993790
+2. Tree + Warp Shuffle                    0.0203       -74993790
+3. Multi-Element + Tree + Shuffle         0.0129       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.25x
+  Warp Shuffle:  1.53x
+  Multi-Element: 2.42x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=256 RUN=5
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 256
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0312       -74993790
+1. Tree (Shared Memory)                   0.0247       -74993790
+2. Tree + Warp Shuffle                    0.0199       -74993790
+3. Multi-Element + Tree + Shuffle         0.0124       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.26x
+  Warp Shuffle:  1.57x
+  Multi-Element: 2.52x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=512 RUN=1
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 512
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0317       -74993790
+1. Tree (Shared Memory)                   0.0270       -74993790
+2. Tree + Warp Shuffle                    0.0223       -74993790
+3. Multi-Element + Tree + Shuffle         0.0108       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.18x
+  Warp Shuffle:  1.42x
+  Multi-Element: 2.94x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=512 RUN=2
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 512
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0317       -74993790
+1. Tree (Shared Memory)                   0.0265       -74993790
+2. Tree + Warp Shuffle                    0.0217       -74993790
+3. Multi-Element + Tree + Shuffle         0.0101       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.20x
+  Warp Shuffle:  1.46x
+  Multi-Element: 3.12x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=512 RUN=3
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 512
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0315       -74993790
+1. Tree (Shared Memory)                   0.0265       -74993790
+2. Tree + Warp Shuffle                    0.0217       -74993790
+3. Multi-Element + Tree + Shuffle         0.0101       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.19x
+  Warp Shuffle:  1.45x
+  Multi-Element: 3.10x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=512 RUN=4
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 512
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0317       -74993790
+1. Tree (Shared Memory)                   0.0266       -74993790
+2. Tree + Warp Shuffle                    0.0218       -74993790
+3. Multi-Element + Tree + Shuffle         0.0103       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.19x
+  Warp Shuffle:  1.45x
+  Multi-Element: 3.06x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=512 RUN=5
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 512
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0901       -74993790
+1. Tree (Shared Memory)                   0.0266       -74993790
+2. Tree + Warp Shuffle                    0.0217       -74993790
+3. Multi-Element + Tree + Shuffle         0.0102       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          3.39x
+  Warp Shuffle:  4.16x
+  Multi-Element: 8.85x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=1024 RUN=1
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 1024
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0343       -74993790
+1. Tree (Shared Memory)                   0.0290       -74993790
+2. Tree + Warp Shuffle                    0.0251       -74993790
+3. Multi-Element + Tree + Shuffle         0.0114       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.18x
+  Warp Shuffle:  1.37x
+  Multi-Element: 3.01x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=1024 RUN=2
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 1024
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0332       -74993790
+1. Tree (Shared Memory)                   0.0289       -74993790
+2. Tree + Warp Shuffle                    0.0252       -74993790
+3. Multi-Element + Tree + Shuffle         0.0114       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.15x
+  Warp Shuffle:  1.32x
+  Multi-Element: 2.91x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=1024 RUN=3
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 1024
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0332       -74993790
+1. Tree (Shared Memory)                   0.0293       -74993790
+2. Tree + Warp Shuffle                    0.0256       -74993790
+3. Multi-Element + Tree + Shuffle         0.0123       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.13x
+  Warp Shuffle:  1.30x
+  Multi-Element: 2.70x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=1024 RUN=4
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 1024
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0333       -74993790
+1. Tree (Shared Memory)                   0.0292       -74993790
+2. Tree + Warp Shuffle                    0.0255       -74993790
+3. Multi-Element + Tree + Shuffle         0.0123       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.14x
+  Warp Shuffle:  1.30x
+  Multi-Element: 2.71x
+
+Verification: ALL PASSED (all strategies produce same result)
+BLOCK_SIZE=1024 RUN=5
+=== Reduction Benchmark ===
+Device: Radeon 8060S Graphics
+N = 1000000, Block size = 1024
+
+Strategy                               Time (ms)          Result
+----------------------------------- ------------ ---------------
+0. Naive Atomic                           0.0344       -74993790
+1. Tree (Shared Memory)                   0.0292       -74993790
+2. Tree + Warp Shuffle                    0.0255       -74993790
+3. Multi-Element + Tree + Shuffle         0.0123       -74993790
+
+=== Speedup vs Naive ===
+  Tree:          1.18x
+  Warp Shuffle:  1.35x
+  Multi-Element: 2.80x
+
+Verification: ALL PASSED (all strategies produce same result)

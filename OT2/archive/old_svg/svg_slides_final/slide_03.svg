@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="并发模型一步步降低等待成本">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .chartcard { fill: rgba(248,250,252,0.97); stroke: rgba(255,255,255,0.12); stroke-width: 1.1; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 850; letter-spacing: 1.7px; }
+      .title { fill: #F8FAFC; font-size: 35px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 540; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 620; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+      .node { fill: rgba(15,23,42,0.75); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1126" cy="-88" r="282" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-86" cy="650" r="310" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+    <text x="50" y="52" class="kicker" text-anchor="start">EVOLUTION</text>
+    <text x="50" y="96" class="title" text-anchor="start">并发模型一步步降低等待成本</text>
+    <text x="50" y="128" class="body" text-anchor="start">从进程到线程，再到事件循环与协程，本质是在重新平衡隔离、可读性和资源效率。</text>
+
+    <rect x="48" y="166" width="1184" height="126" rx="22" class="card2"/><rect x="48" y="166" width="6" height="126" rx="3" fill="#2563EB" opacity="0.95"/>
+    <text x="82" y="214" class="h2">协程不是凭空出现，而是事件驱动高吞吐与顺序代码可读性的折中</text>
+    <text x="82" y="252" class="body">旧模型并未失效，关键是根据瓶颈选择抽象。</text>
+    <rect x="48" y="326" width="216" height="232" rx="22" class="card"/><rect x="48" y="326" width="6" height="232" rx="3" fill="#64748B" opacity="0.95"/>
+    <text x="78" y="374" class="h3">进程</text><text x="78" y="414" class="body">隔离强</text><text x="78" y="446" class="small">创建、切换、内存成本高</text>
+    <rect x="284" y="326" width="216" height="232" rx="22" class="card"/><rect x="284" y="326" width="6" height="232" rx="3" fill="#DC2626" opacity="0.95"/>
+    <text x="314" y="374" class="h3">线程</text><text x="314" y="414" class="body">代码直观</text><text x="314" y="446" class="small">高并发下线程仍昂贵</text>
+    <rect x="520" y="326" width="216" height="232" rx="22" class="card"/><rect x="520" y="326" width="6" height="232" rx="3" fill="#059669" opacity="0.95"/>
+    <text x="550" y="374" class="h3">事件循环</text><text x="550" y="414" class="body">少线程高吞吐</text><text x="550" y="446" class="small">回调复杂，状态分散</text>
+    <rect x="756" y="326" width="216" height="232" rx="22" class="card2"/><rect x="756" y="326" width="6" height="232" rx="3" fill="#2563EB" opacity="0.95"/>
+    <text x="786" y="374" class="h3">协程</text><text x="786" y="414" class="body">顺序代码表达等待</text><text x="786" y="446" class="small">依赖运行时和非阻塞生态</text>
+    <rect x="992" y="326" width="240" height="232" rx="22" class="card"/><rect x="992" y="326" width="6" height="232" rx="3" fill="#7C3AED" opacity="0.95"/>
+    <text x="1022" y="374" class="h3">虚拟线程</text><text x="1022" y="414" class="body">接近线程心智</text><text x="1022" y="446" class="small">仍需关注 pinning 与下游容量</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · 15-min presentation</text>
+  <text x="1232" y="692" text-anchor="end" class="small">03/18</text>
+</svg>

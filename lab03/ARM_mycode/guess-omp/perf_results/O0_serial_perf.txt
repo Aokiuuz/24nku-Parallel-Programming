@@ -1,0 +1,12 @@
+
+ Performance counter stats for './main_O0' (3 runs):
+
+   345,715,901,406      cycles:u                                                      ( +-  3.38% )
+   355,997,876,129      instructions:u            #    1.03  insn per cycle           ( +-  0.00% )
+   <not supported>      branches:u                                                  
+     1,021,983,583      branch-misses:u                                               ( +-  0.13% )
+   164,783,524,120      cache-references:u                                            ( +-  0.02% )
+     1,004,339,619      cache-misses:u            #    0.609 % of all cache refs      ( +-  0.37% )
+
+            135.16 +- 4.43 seconds time elapsed  ( +-  3.28% )
+

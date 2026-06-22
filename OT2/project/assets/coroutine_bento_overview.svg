@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-labelledby="title desc">
+  <title id="title">协程技术调研总览</title>
+  <desc id="desc">用 Bento Grid 总结协程的核心价值、底层机制、语言路线、实验结论和工程边界。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.35"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.075); stroke: rgba(255,255,255,0.13); stroke-width: 1.2; }
+      .card-strong { fill: rgba(255,255,255,0.105); stroke: rgba(255,255,255,0.18); stroke-width: 1.2; }
+      .kicker { fill: #93C5FD; font-size: 13px; font-weight: 700; letter-spacing: 1.6px; }
+      .h1 { fill: #F8FAFC; font-size: 46px; font-weight: 800; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 800; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 500; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 13px; font-weight: 500; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 38px; font-weight: 800; letter-spacing: 0; }
+      .metric-label { fill: #CBD5E1; font-size: 14px; font-weight: 600; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.20); stroke-width: 1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .node { fill: #0F172A; stroke: rgba(255,255,255,0.22); stroke-width: 1.2; }
+    </style>
+  </defs>
+
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1095" cy="-60" r="260" fill="#2563EB" opacity="0.14"/>
+  <circle cx="-80" cy="620" r="280" fill="#059669" opacity="0.12"/>
+
+  <g class="page" filter="url(#shadow)">
+    <!-- Header -->
+    <text x="48" y="52" class="kicker">COROUTINE RESEARCH / 15-MIN TALK</text>
+    <text x="48" y="99" class="h1">协程：把“等待”变便宜的并发抽象</text>
+    <text x="48" y="130" class="body">从线程瓶颈、运行时机制到实验边界：协程适合组织 I/O 等待，不负责创造 CPU 算力。</text>
+
+    <!-- Hero card -->
+    <rect x="48" y="166" width="538" height="318" rx="18" class="card-strong"/>
+    <text x="78" y="206" class="kicker">CORE THESIS</text>
+    <text x="78" y="246" class="h2">高并发服务的主要矛盾不是一直在算</text>
+    <text x="78" y="278" class="h2">而是大量任务同时在等</text>
+    <text x="78" y="322" class="body">线程模型：等待 I/O 时仍占用 OS 线程</text>
+    <text x="78" y="350" class="body">协程模型：挂起任务，把线程还给运行时</text>
+    <text x="78" y="378" class="body">结果：少量线程承载大量并发连接</text>
+
+    <g transform="translate(78 412)">
+      <rect x="0" y="0" width="120" height="28" rx="14" fill="url(#red)" opacity="0.95"/>
+      <text x="60" y="19" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">OS THREAD</text>
+      <rect x="148" y="0" width="120" height="28" rx="14" fill="url(#blue)" opacity="0.95"/>
+      <text x="208" y="19" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">COROUTINE</text>
+      <rect x="296" y="0" width="120" height="28" rx="14" fill="url(#green)" opacity="0.95"/>
+      <text x="356" y="19" text-anchor="middle" fill="#fff" font-size="13" font-weight="800">RUNTIME</text>
+    </g>
+
+    <!-- Mechanism card -->
+    <rect x="606" y="166" width="302" height="318" rx="18" class="card"/>
+    <text x="632" y="206" class="kicker">MECHANISM</text>
+    <text x="632" y="238" class="h2">状态机 + 调度恢复</text>
+    <g transform="translate(636 270)">
+      <rect x="0" y="0" width="226" height="42" rx="12" class="node"/>
+      <text x="113" y="27" text-anchor="middle" class="body">async 源码</text>
+      <path d="M113 44 L113 68" class="line" stroke="#64748B"/>
+      <rect x="0" y="70" width="226" height="42" rx="12" class="node"/>
+      <text x="113" y="97" text-anchor="middle" class="body">协程帧 / 状态机</text>
+      <path d="M113 114 L113 138" class="line" stroke="#64748B"/>
+      <rect x="0" y="140" width="226" height="42" rx="12" class="node"/>
+      <text x="113" y="167" text-anchor="middle" class="body">await 挂起</text>
+      <path d="M113 184 L113 208" class="line" stroke="#64748B"/>
+      <rect x="0" y="210" width="226" height="42" rx="12" class="node"/>
+      <text x="113" y="237" text-anchor="middle" class="body">I/O 完成后恢复</text>
+    </g>
+
+    <!-- Language card -->
+    <rect x="928" y="166" width="304" height="318" rx="18" class="card"/>
+    <text x="954" y="206" class="kicker">LANGUAGE ROUTES</text>
+    <text x="954" y="238" class="h2">同名协程，抽象层级不同</text>
+    <g transform="translate(954 268)">
+      <text x="0" y="0" class="body">C++20</text>
+      <text x="112" y="0" class="small">底层 coroutine 机制</text>
+      <line x1="0" y1="18" x2="250" y2="18" class="axis"/>
+      <text x="0" y="50" class="body">Go</text>
+      <text x="112" y="50" class="small">goroutine + runtime</text>
+      <line x1="0" y1="68" x2="250" y2="68" class="axis"/>
+      <text x="0" y="100" class="body">Python</text>
+      <text x="112" y="100" class="small">asyncio event loop</text>
+      <line x1="0" y1="118" x2="250" y2="118" class="axis"/>
+      <text x="0" y="150" class="body">C#</text>
+      <text x="112" y="150" class="small">Task async/await</text>
+      <line x1="0" y1="168" x2="250" y2="168" class="axis"/>
+      <text x="0" y="200" class="body">Java 21</text>
+      <text x="112" y="200" class="small">Virtual Threads</text>
+    </g>
+
+    <!-- Experiment card -->
+    <rect x="48" y="504" width="408" height="154" rx="18" class="card"/>
+    <text x="74" y="542" class="kicker">EXPERIMENT</text>
+    <text x="74" y="578" class="metric">1 vs 201</text>
+    <text x="226" y="570" class="body">10000 个 I/O 等待任务中</text>
+    <text x="226" y="596" class="body">asyncio 仅 1 个主要线程</text>
+    <text x="74" y="628" class="small">threads-200 平均耗时 2.157s；asyncio 平均耗时 1.864s</text>
+
+    <!-- Boundary card -->
+    <rect x="476" y="504" width="354" height="154" rx="18" class="card"/>
+    <text x="502" y="542" class="kicker">BOUNDARY</text>
+    <text x="502" y="576" class="h2">CPU 密集场景优势消失</text>
+    <text x="502" y="610" class="body">200 个纯 Python 计算任务：</text>
+    <text x="502" y="637" class="small">asyncio 6.811s；threads-50 6.696s；threads-200 7.093s</text>
+
+    <!-- Decision card -->
+    <rect x="850" y="504" width="382" height="154" rx="18" class="card"/>
+    <text x="876" y="542" class="kicker">ENGINEERING RULE</text>
+    <text x="876" y="576" class="h2">先判断瓶颈，再选择模型</text>
+    <g transform="translate(876 604)">
+      <circle cx="7" cy="7" r="5" fill="#60A5FA"/>
+      <text x="22" y="12" class="small">I/O 等待多：协程 / 异步 I/O / 虚拟线程</text>
+      <circle cx="7" cy="37" r="5" fill="#F87171"/>
+      <text x="22" y="42" class="small">CPU 计算多：进程池 / 原生扩展 / 并行计算</text>
+    </g>
+  </g>
+
+  <text x="48" y="695" class="small">Sources: OpenJDK JEP 444 · Python asyncio · Go Effective Go · Microsoft async/await · C++ coroutines · 本地实验数据</text>
+</svg>

@@ -1,0 +1,30 @@
+[bench] batch=20000 cpu_ms=0.2288 h2d_ms=4.1080 kernel_ms=0.4137 d2h_ms=0.1003 gpu_total_ms=4.6220 speedup=0.0495 correctness=PASS
+[multi-bench] pts=2 guesses=20000 cpu_ms=0.5270 h2d_ms=4.2566 kernel_ms=0.4815 d2h_ms=0.1899 gpu_total_ms=4.9281 cpu_overlap_ms=0.0000 speedup=0.1069 correctness=PASS
+[bench] batch=40000 cpu_ms=0.4707 h2d_ms=3.7300 kernel_ms=0.3839 d2h_ms=0.1807 gpu_total_ms=4.2946 speedup=0.1096 correctness=PASS
+[multi-bench] pts=4 guesses=40000 cpu_ms=1.3459 h2d_ms=4.5757 kernel_ms=0.5542 d2h_ms=0.2932 gpu_total_ms=5.4230 cpu_overlap_ms=0.0000 speedup=0.2482 correctness=PASS
+[bench] batch=80000 cpu_ms=0.9577 h2d_ms=3.8661 kernel_ms=0.6032 d2h_ms=0.2872 gpu_total_ms=4.7565 speedup=0.2013 correctness=PASS
+[multi-bench] pts=8 guesses=80000 cpu_ms=1.9307 h2d_ms=4.1259 kernel_ms=0.7033 d2h_ms=0.2915 gpu_total_ms=5.1207 cpu_overlap_ms=0.0000 speedup=0.3770 correctness=PASS
+[bench] batch=20000 cpu_ms=0.2301 h2d_ms=3.7303 kernel_ms=0.4649 d2h_ms=0.1025 gpu_total_ms=4.2977 speedup=0.0535 correctness=PASS
+[multi-bench] pts=2 guesses=20000 cpu_ms=0.7260 h2d_ms=3.7688 kernel_ms=0.4737 d2h_ms=0.2322 gpu_total_ms=4.4747 cpu_overlap_ms=0.0000 speedup=0.1622 correctness=PASS
+[bench] batch=40000 cpu_ms=0.4778 h2d_ms=3.6176 kernel_ms=0.5217 d2h_ms=0.1450 gpu_total_ms=4.2843 speedup=0.1115 correctness=PASS
+[multi-bench] pts=4 guesses=40000 cpu_ms=0.9510 h2d_ms=3.8917 kernel_ms=0.5811 d2h_ms=0.3000 gpu_total_ms=4.7728 cpu_overlap_ms=0.0000 speedup=0.1993 correctness=PASS
+[bench] batch=80000 cpu_ms=0.9183 h2d_ms=3.9383 kernel_ms=0.5059 d2h_ms=0.3689 gpu_total_ms=4.8131 speedup=0.1908 correctness=PASS
+[multi-bench] pts=8 guesses=80000 cpu_ms=1.9092 h2d_ms=3.8847 kernel_ms=0.6347 d2h_ms=0.2891 gpu_total_ms=4.8085 cpu_overlap_ms=0.0000 speedup=0.3970 correctness=PASS
+[bench] batch=20000 cpu_ms=0.2261 h2d_ms=3.8355 kernel_ms=0.4749 d2h_ms=0.0934 gpu_total_ms=4.4038 speedup=0.0513 correctness=PASS
+[multi-bench] pts=2 guesses=20000 cpu_ms=0.5372 h2d_ms=3.8029 kernel_ms=0.5064 d2h_ms=0.1076 gpu_total_ms=4.4169 cpu_overlap_ms=0.0000 speedup=0.1216 correctness=PASS
+[bench] batch=40000 cpu_ms=0.6770 h2d_ms=3.6880 kernel_ms=0.5764 d2h_ms=0.3022 gpu_total_ms=4.5666 speedup=0.1482 correctness=PASS
+[multi-bench] pts=4 guesses=40000 cpu_ms=0.9549 h2d_ms=3.7385 kernel_ms=0.6135 d2h_ms=0.2253 gpu_total_ms=4.5774 cpu_overlap_ms=0.0000 speedup=0.2086 correctness=PASS
+[bench] batch=80000 cpu_ms=0.9262 h2d_ms=3.9629 kernel_ms=0.6354 d2h_ms=0.4063 gpu_total_ms=5.0046 speedup=0.1851 correctness=PASS
+[multi-bench] pts=8 guesses=80000 cpu_ms=2.1409 h2d_ms=3.9277 kernel_ms=0.7067 d2h_ms=0.2959 gpu_total_ms=4.9302 cpu_overlap_ms=0.0000 speedup=0.4342 correctness=PASS
+[bench] batch=20000 cpu_ms=0.3212 h2d_ms=4.0179 kernel_ms=0.4700 d2h_ms=0.1711 gpu_total_ms=4.6590 speedup=0.0689 correctness=PASS
+[multi-bench] pts=2 guesses=20000 cpu_ms=0.5173 h2d_ms=3.8925 kernel_ms=0.3416 d2h_ms=0.0964 gpu_total_ms=4.3305 cpu_overlap_ms=0.0000 speedup=0.1195 correctness=PASS
+[bench] batch=40000 cpu_ms=0.4781 h2d_ms=3.7884 kernel_ms=0.3989 d2h_ms=0.1574 gpu_total_ms=4.3447 speedup=0.1101 correctness=PASS
+[multi-bench] pts=4 guesses=40000 cpu_ms=1.0415 h2d_ms=3.9835 kernel_ms=0.4495 d2h_ms=0.1799 gpu_total_ms=4.6130 cpu_overlap_ms=0.0000 speedup=0.2258 correctness=PASS
+[bench] batch=80000 cpu_ms=0.9422 h2d_ms=4.0758 kernel_ms=0.5904 d2h_ms=0.2899 gpu_total_ms=4.9562 speedup=0.1901 correctness=PASS
+[multi-bench] pts=8 guesses=80000 cpu_ms=1.9519 h2d_ms=3.9420 kernel_ms=0.6701 d2h_ms=0.4228 gpu_total_ms=5.0349 cpu_overlap_ms=0.0000 speedup=0.3877 correctness=PASS
+[bench] batch=20000 cpu_ms=0.2267 h2d_ms=3.8566 kernel_ms=0.3307 d2h_ms=0.0940 gpu_total_ms=4.2813 speedup=0.0530 correctness=PASS
+[multi-bench] pts=2 guesses=20000 cpu_ms=0.5964 h2d_ms=3.8601 kernel_ms=0.3460 d2h_ms=0.0983 gpu_total_ms=4.3044 cpu_overlap_ms=0.0000 speedup=0.1386 correctness=PASS
+[bench] batch=40000 cpu_ms=0.6793 h2d_ms=3.6382 kernel_ms=0.5352 d2h_ms=0.3071 gpu_total_ms=4.4805 speedup=0.1516 correctness=PASS
+[multi-bench] pts=4 guesses=40000 cpu_ms=0.9493 h2d_ms=4.0638 kernel_ms=0.5364 d2h_ms=0.1487 gpu_total_ms=4.7490 cpu_overlap_ms=0.0000 speedup=0.1999 correctness=PASS
+[bench] batch=80000 cpu_ms=0.9462 h2d_ms=4.0410 kernel_ms=0.4808 d2h_ms=0.3056 gpu_total_ms=4.8274 speedup=0.1960 correctness=PASS
+[multi-bench] pts=8 guesses=80000 cpu_ms=1.9560 h2d_ms=4.0810 kernel_ms=0.5109 d2h_ms=0.3619 gpu_total_ms=4.9538 cpu_overlap_ms=0.0000 speedup=0.3948 correctness=PASS

@@ -1,0 +1,22 @@
+\contentsline {section}{\numberline {1}实验要求}{3}{section.1}%
+\contentsline {section}{\numberline {2}实验环境}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}硬件与运行方式}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}代码组织}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}指标与可视化规划}{4}{subsection.2.3}%
+\contentsline {section}{\numberline {3}基础要求}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}算法设计}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}串行老版本关键代码}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Pthread 代码实现}{6}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}OpenMP 代码实现}{7}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}正确性验证}{8}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}性能测试}{8}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}基础结果分析}{11}{subsection.3.7}%
+\contentsline {section}{\numberline {4}进阶要求}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}OpenMP 与 Pthread 性能差异}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}编译优化对结果的影响}{12}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Guess 阶段细粒度 profile}{12}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}队首删除优化}{13}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}训练阶段并行化}{15}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}训练并行化数据检查}{17}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}对于并行化粒度的思考}{18}{subsection.4.7}%
+\contentsline {section}{\numberline {5}结论}{18}{section.5}%

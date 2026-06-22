@@ -1,0 +1,906 @@
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.6cm,bottom=2.6cm}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue}
+\setlength{\emergencystretch}{3em}
+\pgfplotsset{compat=1.18}
+
+\definecolor{ReportBlue}{HTML}{2F5597}
+\definecolor{ReportOrange}{HTML}{C55A11}
+\definecolor{ReportGreen}{HTML}{548235}
+\definecolor{ReportPurple}{HTML}{6F4E7C}
+\definecolor{ReportGray}{HTML}{6B7280}
+\definecolor{ReportLightGray}{HTML}{E5E7EB}
+\definecolor{ReportDark}{HTML}{1F2937}
+
+\pgfplotsset{
+  report axis/.style={
+    width=0.86\textwidth,
+    height=0.42\textwidth,
+    grid=major,
+    grid style={draw=ReportLightGray, line width=0.3pt},
+    axis line style={draw=ReportGray},
+    tick style={draw=ReportGray},
+    tick label style={font=\small, text=ReportDark},
+    label style={font=\small, text=ReportDark},
+    legend style={draw=none, fill=none, font=\small},
+    every axis plot/.append style={line width=1.2pt}
+  }
+}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false
+}
+
+\title{并行程序设计 Lab3：Pthread 与 OpenMP 多线程口令猜测}
+\author{姓名：刘蔚霖 \quad 学号：2412727}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+本文围绕 PCFG+MD5 
+口令猜测程序完成基础并行化与两项进阶优化。
+基础部分将 \texttt{PriorityQueue::Generate} 
+中最后一个 segment 的 value 枚举改为 Pthread 和 
+OpenMP 并行，并通过预分配结果数组避免并发 
+\texttt{push\_back}。
+正确性验证中，Serial、Pthread 和 OpenMP 
+的最终生成数量均为 10106852，
+\texttt{Cracked} 均为 358217，说明修改并没有破坏正确性。
+性能方面，\texttt{-O2} 下 OpenMP 8 线程的 Guess 阶段加速比达到 1.904，Pthread 4 线程达到 1.524。进阶部分先用细粒度 profile 定位队列维护开销，再将 \texttt{vector} 队首物理删除改为逻辑队首下标，使队首删除时间从 0.104363s 降至约 0.000018s。训练阶段并行化采用局部统计、合并、按首次出现顺序重建模型的方案；最新 \texttt{pthread\_train\_ordered} 数据保持 \texttt{Guesses generated=10106852}、\texttt{PopNext count=516} 和 \texttt{NewPT count=493} 一致，稳定运行的平均 \texttt{Train time} 从 27.3747s 降至 11.5142s。
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{实验要求}
+
+本实验围绕 PCFG 口令猜测程序展开。程序从训练集统计口令结构和 segment value 的概率分布，根据 PCFG 模型产生候选口令，再对候选口令计算 MD5 哈希。
+
+基础部分实现 Pthread 和 OpenMP 加速，
+进阶部分继续根据 profile 数据处理剩余瓶颈。
+基础要求是对 PCFG 猜测生成阶段进行多线程并行化。
+在代码中，
+程序在 \texttt{PriorityQueue::Generate(PT pt)}
+ 中从优先队列取出一个 pre-terminal 后，
+ 会固定除最后一个 segment 外的所有部分，
+ 再枚举最后一个 segment 的全部 possible value。
+ 不同 value 对应的候选口令互不依赖，
+ 因此这一层枚举循环是最直接、风险最低的并行目标。
+进阶要求是在基础并行化之后继续分析瓶颈并做进一步优化。
+本文完成了两个方向：
+
+\begin{itemize}
+  \item 对 Guess 阶段加入细粒度 profile，定位 \texttt{Generate}、\texttt{NewPTs}、\texttt{CalProb} 和队列维护的时间占比，并优化队首删除；
+  \item 对训练阶段进行并行化，采用“线程内局部统计，主线程合并并重建模型”的思路，并用最新数据检查生成路径是否保持一致。
+\end{itemize}
+
+正确性方面，
+基础版本要求最终生成数量和破解结果与串行版本一致。
+进阶优化会改变 PCFG 生成顺序，
+这意味着我们
+必须检查 \texttt{Guesses generated}、
+\texttt{PopNext count} 和 \texttt{Cracked} 
+等指标是否仍与基准一致。
+
+\section{实验环境}
+
+\subsection{硬件与运行方式}
+
+实验在 ARM 服务器节点上通过作业系统运行。计算节点的 \texttt{lscpu} 关键信息如下：
+
+\begin{lstlisting}
+Architecture:            aarch64
+CPU(s):                  8
+On-line CPU(s) list:     0-7
+Model name:              Kunpeng-920
+Thread(s) per core:      1
+Core(s) per cluster:     8
+NUMA node(s):            1
+\end{lstlisting}
+
+服务器每个作业节点提供 8 个物理核心，
+因此本文重点统计 1、2、4、8 线程。
+Pthread 早期实验过程中由于我还不知道节点的设置，提交过16线程的request，
+但代码会将线程数上限限制为 8，所以整理数据时将其按实际 8 线程处理，不作为 16 线程结果解释。
+
+\subsection{代码组织}
+
+本实验主要代码目录如下：
+
+\begin{itemize}
+  \item \texttt{ARM\_mycode/guess-serial}：串行 baseline；
+  \item \texttt{ARM\_mycode/guess-pthread}：基础 Pthread 并行版本；
+  \item \texttt{ARM\_mycode/guess-omp}：基础 OpenMP 并行版本；
+  \item \texttt{ARM\_mycode/guess-pthread-advanced}：进阶 profile、队首删除优化和训练阶段并行化实验版本。
+\end{itemize}
+
+性能测试使用 \texttt{main.cpp} 编译，正确性测试使用 \texttt{correctness\_guess.cpp} 编译。
+
+\begin{lstlisting}[language=bash]
+# serial
+g++ main.cpp train.cpp guessing.cpp md5.cpp -O2 -o main
+
+# Pthread
+g++ main.cpp train.cpp guessing.cpp md5.cpp -O2 -pthread -o main
+
+# OpenMP
+g++ main.cpp train.cpp guessing.cpp md5.cpp -O2 -fopenmp -o main
+\end{lstlisting}
+
+\subsection{指标与可视化规划}
+
+本文将实验指标分成三类。第一类是正确性指标，包括 \texttt{Guesses generated}、\texttt{Cracked}、\texttt{PopNext count} 和 \texttt{NewPT count}。这些指标必须精确一致，因此主要使用表格展示。第二类是性能指标，包括 \texttt{Guess time}、\texttt{Hash time}、\texttt{Train time} 和 \texttt{Total time}，其中基础要求的加速比只针对 \texttt{Guess time} 计算：
+
+\[
+S_{\mathrm{guess}}(p)=\frac{T_{\mathrm{serial,guess}}}{T_{\mathrm{parallel,guess}}(p)}
+\]
+
+第三类是瓶颈构成指标，即 profile 中各阶段占 subtotal 的比例。该类数据用于观察时间分布，因此使用组成条展示比例结构。
+
+为了让图表与结论直接对应，本文采用以下可视化规划：
+
+\begin{itemize}
+  \item 线程扩展性使用折线图展示，横轴为线程数，纵轴分别为 \texttt{Guess time} 和加速比，便于观察随线程数变化的趋势；
+  \item Guess 阶段 profile 使用 100\% 组成条展示，突出 \texttt{Generate} 与队列维护的占比关系；
+  \item 队列优化使用优化前后对照图展示，重点强调 \texttt{queue\_pop} 从显著开销降为近似 0，而 \texttt{queue\_push} 基本不变；
+  \item 进阶结果增加总览图，用归一化后的剩余耗时展示队列优化和训练并行化各自带来的收益；
+  \item 正确性与原始均值保留表格，避免图形压缩造成精确数字不可读。
+\end{itemize}
+
+\section{基础要求}
+
+\subsection{算法设计}
+
+PCFG 生成阶段维护一个按概率排序的 PT 队列。每次 \texttt{PopNext()} 取出当前概率最高的 PT，先通过 \texttt{Generate()} 输出该 PT 对应的一批候选口令，再通过 \texttt{NewPTs()} 产生后续 PT 并插回队列。
+
+设当前 PT 为 \texttt{L8D2}。当 \texttt{L8} 已经由 \texttt{curr\_indices} 确定为某个具体 value 时，最后一个 \texttt{D2} 可以取模型中所有长度为 2 的数字串 value。若 \texttt{D2} 有 $n$ 个候选 value，则这一步会生成 $n$ 个候选口令。它们之间没有读写依赖，也不需要互相通信，所以可以把 \texttt{[0,n)} 按区间划分给多个线程。
+
+基础并行化的主要风险在结果写回。串行版本可以直接 \texttt{push\_back}，多线程版本如果仍然让多个线程同时 \texttt{push\_back}，会导致 \texttt{vector} 内部 size、capacity 和元素构造发生竞争。本文的 Pthread 和 OpenMP 版本都采用同一策略：主线程先一次性 \texttt{resize}，并行区域只按下标写入。
+
+图 \ref{fig:pipeline} 展示了本文优化在整体程序中的位置。基础要求只改动 \texttt{Generate} 内部的 value 枚举；进阶一针对 \texttt{PopNext} 中的队列维护；进阶二则尝试把训练阶段从单线程 \texttt{parse} 改为局部统计后合并。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.50cm,
+    box/.style={draw=ReportLightGray, fill=ReportLightGray!25, rounded corners=1pt,
+      minimum width=1.70cm, minimum height=0.86cm, align=center, font=\scriptsize, text=ReportDark},
+    hot/.style={draw=ReportBlue, fill=ReportBlue!10, rounded corners=1pt,
+      minimum width=1.85cm, minimum height=0.86cm, align=center, font=\scriptsize\bfseries, text=ReportDark},
+    adv/.style={draw=ReportOrange, fill=ReportOrange!10, rounded corners=1pt,
+      minimum width=1.85cm, minimum height=0.86cm, align=center, font=\scriptsize\bfseries, text=ReportDark},
+    arrow/.style={-Latex, line width=0.6pt, draw=ReportGray}
+  ]
+    \node[box] (trainset) {训练集\\Rockyou};
+    \node[adv, right=of trainset] (train) {Train\\训练并行};
+    \node[box, right=of train] (model) {PCFG\\概率模型};
+    \node[adv, right=of model] (queue) {PopNext\\队首优化};
+    \node[hot, right=of queue] (generate) {Generate\\并行枚举};
+    \node[box, right=of generate] (hash) {MD5\\哈希验证};
+
+    \draw[arrow] (trainset) -- (train);
+    \draw[arrow] (train) -- (model);
+    \draw[arrow] (model) -- (queue);
+    \draw[arrow] (queue) -- (generate);
+    \draw[arrow] (generate) -- (hash);
+  \end{tikzpicture}
+  \par\vspace{0.35em}
+  {\footnotesize
+  \textcolor{ReportBlue}{\rule{1.1em}{0.6em}} 基础要求：Pthread/OpenMP 枚举并行\quad
+  \textcolor{ReportOrange}{\rule{1.1em}{0.6em}} 进阶要求：训练并行与队首优化}
+  \caption{PCFG+MD5 程序流程与本文优化位置}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{串行老版本关键代码}
+
+串行 baseline 的主要逻辑是顺序遍历最后一个 segment 的所有 value。若 PT 只有一个 segment，则直接输出该 segment 的全部 value；若 PT 有多个 segment，则先拼出前缀，再追加最后一个 segment 的 value。简化后的关键代码如下：
+
+\begin{lstlisting}[language=C++]
+for (int i = 0; i < value_count; i += 1)
+{
+    guesses.emplace_back(prefix + values[i]);
+    total_guesses += 1;
+}
+\end{lstlisting}
+
+串行版本的优点是逻辑直接，生成顺序完全由循环顺序决定；缺点是最后一个 segment 的枚举无法利用多核，并且每次 \texttt{emplace\_back} 都在单线程中完成。
+
+\subsection{Pthread 代码实现}
+
+Pthread 版本定义线程任务结构体，记录线程负责的区间、输出数组起点、前缀和 value 列表：
+
+\begin{lstlisting}[language=C++]
+struct GenerateTask
+{
+    int begin;
+    int end;
+    size_t base;
+    const string *prefix;
+    const vector<string> *values;
+    vector<string> *output;
+};
+\end{lstlisting}
+
+与串行版本相比，Pthread 版本最关键的变化是预分配输出空间：
+
+\begin{lstlisting}[language=C++]
+const size_t base = output.size();
+output.resize(base + value_count);
+\end{lstlisting}
+
+然后主线程按照线程数划分区间并创建线程：
+
+\begin{lstlisting}[language=C++]
+int block = (value_count + thread_count - 1) / thread_count;
+for (int tid = 0; tid < thread_count; tid += 1)
+{
+    int begin = tid * block;
+    int end = begin + block;
+    if (end > value_count)
+    {
+        end = value_count;
+    }
+
+    tasks[tid] = GenerateTask{begin, end, base, &prefix, &values, &output};
+    pthread_create(&threads[tid], nullptr, GenerateWorker, &tasks[tid]);
+}
+
+for (int tid = 0; tid < thread_count; tid += 1)
+{
+    pthread_join(threads[tid], nullptr);
+}
+\end{lstlisting}
+
+线程函数只写入自己的下标范围：
+
+\begin{lstlisting}[language=C++]
+void *GenerateWorker(void *arg)
+{
+    GenerateTask *task = static_cast<GenerateTask *>(arg);
+    const string &prefix = *(task->prefix);
+    const vector<string> &values = *(task->values);
+    vector<string> &output = *(task->output);
+
+    for (int i = task->begin; i < task->end; i += 1)
+    {
+        output[task->base + i] = prefix + values[i];
+    }
+    return nullptr;
+}
+\end{lstlisting}
+
+这种实现不需要对每次写入加锁，因为不同线程写入的是不同元素。计数器 \texttt{total\_guesses} 也不在 worker 内部更新，而是在并行循环结束后由主线程统一执行：
+
+\begin{lstlisting}[language=C++]
+total_guesses += value_count;
+\end{lstlisting}
+
+此外，代码通过 \texttt{PCFG\_THREADS} 控制线程数，并将线程数限制在 8 以内。对于 value 数量很少的情况，直接走串行 worker，避免反复创建线程的开销大于实际计算量。
+
+\subsection{OpenMP 代码实现}
+
+OpenMP 版本与 Pthread 版本采用相同的数据安全策略，即预分配后按下标写入。不同之处在于 OpenMP 不需要显式创建线程、维护 \texttt{pthread\_t} 数组和任务结构体。核心代码如下：
+
+\begin{lstlisting}[language=C++]
+const size_t base = output.size();
+output.resize(base + value_count);
+
+#pragma omp parallel for schedule(dynamic, kOpenMpChunk) \
+    if (value_count > kOpenMpChunk)
+for (int i = 0; i < value_count; i += 1)
+{
+    output[base + i] = prefix + values[i];
+}
+\end{lstlisting}
+
+这里使用 \texttt{schedule(dynamic, 256)}。原因是不同 value 的字符串长度、拷贝和拼接开销可能不同，动态调度可以让线程在完成当前块后继续领取新块，提高负载均衡。对于小规模循环，\texttt{if (value\_count > kOpenMpChunk)} 会使其保持串行执行，避免并行调度开销。
+
+\subsection{正确性验证}
+
+正确性测试使用 \texttt{correctness\_guess.cpp}。串行、Pthread 和 OpenMP 基础版本最终生成数量和破解数量一致，如表 \ref{tab:correctness} 所示。
+
+\begin{table}[htbp]
+  \centering
+  \caption{基础版本正确性测试结果}
+  \label{tab:correctness}
+  \begin{tabular}{lcc}
+    \toprule
+    版本 & Guesses generated & Cracked \\
+    \midrule
+    Serial & 10106852 & 358217 \\
+    Pthread & 10106852 & 358217 \\
+    OpenMP & 10106852 & 358217 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\texttt{Guesses generated=10106852} 表示在当前 \texttt{main.cpp} 的生成上限逻辑下，程序超过 1000 万阈值时实际累计生成的候选口令数量。由于程序按批次生成并在超过阈值后停止，所以最终值会略大于 1000 万。三个版本该值一致，并且 \texttt{Cracked} 一致，说明基础并行化没有破坏候选集合。
+
+\subsection{性能测试}
+
+每个有效配置运行 5 次并取平均。本文统计 \texttt{Guess time}、\texttt{Hash time} 和 \texttt{Total time=Guess time+Hash time}。基础加速比使用同一优化等级下的串行 \texttt{Guess time} 作为基准。
+
+\begin{table}[htbp]
+  \centering
+  \caption{串行 baseline 平均性能}
+  \label{tab:serial}
+  \begin{tabular}{lccccc}
+    \toprule
+    优化等级 & 线程数 & 运行次数 & Guess(s) & Hash(s) & Total(s) \\
+    \midrule
+    O0 & 1 & 5 & 7.950330 & 10.393220 & 18.343550 \\
+    O1 & 1 & 5 & 0.603787 & 1.125268 & 1.729055 \\
+    O2 & 1 & 5 & 0.672727 & 1.211160 & 1.883887 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pthread 平均性能与 Guess 阶段加速比}
+  \label{tab:pthread}
+  \small
+  \begin{tabular}{lcccccc}
+    \toprule
+    优化等级 & 线程数 & 运行次数 & Guess(s) & Hash(s) & Total(s) & Speedup \\
+    \midrule
+    O0 & 1 & 5 & 7.880964 & 10.427300 & 18.308264 & 1.009 \\
+    O0 & 2 & 5 & 7.908356 & 10.399320 & 18.307676 & 1.005 \\
+    O0 & 4 & 5 & 7.660298 & 10.364140 & 18.024438 & 1.038 \\
+    O0 & 8 & 10 & 7.589797 & 10.271660 & 17.861457 & 1.048 \\
+    O1 & 1 & 5 & 0.601631 & 1.211304 & 1.812935 & 1.004 \\
+    O1 & 2 & 5 & 0.543497 & 1.201696 & 1.745193 & 1.111 \\
+    O1 & 4 & 5 & 0.514514 & 1.274350 & 1.788864 & 1.174 \\
+    O1 & 8 & 10 & 0.596731 & 1.205748 & 1.802479 & 1.012 \\
+    O2 & 1 & 5 & 0.517455 & 1.060358 & 1.577813 & 1.300 \\
+    O2 & 2 & 5 & 0.514156 & 1.110664 & 1.624820 & 1.308 \\
+    O2 & 4 & 5 & 0.441562 & 1.094812 & 1.536374 & 1.524 \\
+    O2 & 8 & 10 & 0.461894 & 1.086821 & 1.548715 & 1.456 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+  \centering
+  \caption{OpenMP 平均性能与 Guess 阶段加速比}
+  \label{tab:omp}
+  \small
+  \begin{tabular}{lcccccc}
+    \toprule
+    优化等级 & 线程数 & 运行次数 & Guess(s) & Hash(s) & Total(s) & Speedup \\
+    \midrule
+    O0 & 1 & 5 & 7.739280 & 10.382520 & 18.121800 & 1.027 \\
+    O0 & 2 & 5 & 7.614320 & 10.480480 & 18.094800 & 1.044 \\
+    O0 & 4 & 5 & 7.471366 & 10.358300 & 17.829666 & 1.064 \\
+    O0 & 8 & 5 & 7.439676 & 10.379800 & 17.819476 & 1.069 \\
+    O1 & 1 & 5 & 0.564957 & 1.106756 & 1.671713 & 1.069 \\
+    O1 & 2 & 5 & 0.478263 & 1.171466 & 1.649729 & 1.262 \\
+    O1 & 4 & 5 & 0.433422 & 1.195314 & 1.628736 & 1.393 \\
+    O1 & 8 & 5 & 0.389093 & 1.156178 & 1.545271 & 1.552 \\
+    O2 & 1 & 5 & 0.557181 & 1.111946 & 1.669127 & 1.207 \\
+    O2 & 2 & 5 & 0.461398 & 1.109958 & 1.571356 & 1.458 \\
+    O2 & 4 & 5 & 0.388122 & 1.074916 & 1.463038 & 1.733 \\
+    O2 & 8 & 5 & 0.353344 & 1.062746 & 1.416090 & 1.904 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+表 \ref{tab:o2-compare} 进一步抽取 \texttt{-O2} 下的关键结果。基础版本最终比较主要看这一组数据，因为 \texttt{-O2} 是实际提交和后续进阶优化使用的主要编译等级。
+
+\begin{table}[htbp]
+  \centering
+  \caption{O2 优化等级下基础版本核心对比}
+  \label{tab:o2-compare}
+  \begin{tabular}{lccccc}
+    \toprule
+    版本 & 线程数 & Guess(s) & Hash(s) & Total(s) & Speedup \\
+    \midrule
+    Serial & 1 & 0.672727 & 1.211160 & 1.883887 & 1.000 \\
+    Pthread & 1 & 0.517455 & 1.060358 & 1.577813 & 1.300 \\
+    Pthread & 2 & 0.514156 & 1.110664 & 1.624820 & 1.308 \\
+    Pthread & 4 & 0.441562 & 1.094812 & 1.536374 & 1.524 \\
+    Pthread & 8 & 0.461894 & 1.086821 & 1.548715 & 1.456 \\
+    OpenMP & 1 & 0.557181 & 1.111946 & 1.669127 & 1.207 \\
+    OpenMP & 2 & 0.461398 & 1.109958 & 1.571356 & 1.458 \\
+    OpenMP & 4 & 0.388122 & 1.074916 & 1.463038 & 1.733 \\
+    OpenMP & 8 & 0.353344 & 1.062746 & 1.416090 & 1.904 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+为了更直观比较 \texttt{-O2} 下线程数对 Guess 阶段的影响，图 \ref{fig:o2-guess-time} 给出了 Pthread 与 OpenMP 的 \texttt{Guess time} 变化趋势。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      report axis,
+      xlabel={线程数},
+      ylabel={Guess time(s)},
+      symbolic x coords={1,2,4,8},
+      xtick=data,
+      ymin=0.30,
+      ymax=0.70,
+      legend pos=north east,
+      legend cell align={left}
+    ]
+      \addplot+[mark=square*, color=ReportBlue] coordinates {(1,0.517455) (2,0.514156) (4,0.441562) (8,0.461894)};
+      \addlegendentry{Pthread}
+      \addplot+[mark=*, color=ReportOrange] coordinates {(1,0.557181) (2,0.461398) (4,0.388122) (8,0.353344)};
+      \addlegendentry{OpenMP}
+      \addplot+[mark=none, dashed, color=ReportGray] coordinates {(1,0.672727) (2,0.672727) (4,0.672727) (8,0.672727)};
+      \addlegendentry{Serial baseline}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{O2 下 Guess time 随线程数变化}
+  \label{fig:o2-guess-time}
+\end{figure}
+
+图 \ref{fig:o2-speedup} 展示了同一组数据换算后的 Guess 阶段加速比。OpenMP 的曲线随线程数增加更加稳定，而 Pthread 在 8 线程时相对 4 线程有轻微回落。
+这个回落也许是因为服务器波动，也有可能的原因是基础版本只并行了最后一个 segment 的枚举循环，线程创建与同步、静态划分带来的等待、字符串生成的内存开销以及串行队列维护共同限制了继续扩展。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      report axis,
+      xlabel={线程数},
+      ylabel={Guess speedup},
+      symbolic x coords={1,2,4,8},
+      xtick=data,
+      ymin=1.0,
+      ymax=2.1,
+      legend pos=north west,
+      legend cell align={left}
+    ]
+      \addplot+[mark=square*, color=ReportBlue] coordinates {(1,1.300) (2,1.308) (4,1.524) (8,1.456)};
+      \addlegendentry{Pthread}
+      \addplot+[mark=*, color=ReportOrange] coordinates {(1,1.207) (2,1.458) (4,1.733) (8,1.904)};
+      \addlegendentry{OpenMP}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{O2 下 Guess 阶段加速比}
+  \label{fig:o2-speedup}
+\end{figure}
+
+\subsection{基础结果分析}
+
+从表格和图形可以看到，OpenMP 在 \texttt{-O2}/8 线程下效果最好，\texttt{Guess time} 从串行 0.672727s 降到 0.353344s，加速比为 1.904。Pthread 在 \texttt{-O2}/4 线程下达到 1.524 倍，8 线程时略低于 4 线程。
+
+这个结果与代码结构相符。基础并行化只覆盖最后一个 segment 的枚举循环，训练阶段、队列维护和哈希阶段仍保持原来的执行方式；Pthread 版本在较大枚举任务上显式创建线程，再通过 \texttt{pthread\_join} 汇合，线程创建和同步会带来固定成本；候选口令生成还包含大量字符串拼接和内存写入，线程数增加后，内存带宽和分配开销也会压缩收益。
+
+OpenMP 版本代码更短，调度策略由运行时负责；在本实验的循环并行场景中，\texttt{schedule(dynamic, 256)} 的效果更稳定。Pthread 版本控制更细，但需要手动处理任务划分和线程生命周期，工程复杂度更高。
+
+\section{进阶要求}
+
+\subsection{OpenMP 与 Pthread 性能差异}
+
+Pthread 和 OpenMP 选择了同一处并行区域，即最后一个 segment 的 value 枚举，但运行结果并不完全相同。Pthread 在 \texttt{-O2} 下 4 线程最好，OpenMP 则在 8 线程下继续提升。这个差异主要来自调度方式和线程管理方式。
+
+Pthread 版本采用静态块划分：
+
+\begin{lstlisting}[language=C++]
+int block = (value_count + thread_count - 1) / thread_count;
+int begin = tid * block;
+int end = min(begin + block, value_count);
+\end{lstlisting}
+
+这种划分实现简单，但默认假设每个 value 的处理成本接近。实际生成时，字符串长度、前缀长度、拷贝成本和缓存行为都会造成细微差异。OpenMP 使用动态调度：
+
+\begin{lstlisting}[language=C++]
+#pragma omp parallel for schedule(dynamic, kOpenMpChunk)
+\end{lstlisting}
+
+线程完成一个 chunk 后可以继续领取新 chunk，因此负载均衡更好。另外，OpenMP 运行时通常会维护线程池，避免频繁创建和销毁线程；而当前 Pthread 实现为了保持代码简单，每次并行填充都显式 \texttt{pthread\_create} 和 \texttt{pthread\_join}，固定开销更明显。
+
+\subsection{编译优化对结果的影响}
+
+串行基线中 \texttt{-O0} 的 \texttt{Guess time} 为 7.950330s，而 \texttt{-O1} 和 \texttt{-O2} 分别降至 0.603787s 和 0.672727s，说明编译器优化对该程序影响很大。主要原因是 PCFG 生成阶段包含大量小函数调用、循环、字符串对象构造和容器访问，编译器优化可以减少冗余临时对象、改进循环代码并内联部分函数。
+
+本次数据中 \texttt{-O1} 的串行 \texttt{Guess time} 略快于 \texttt{-O2}。对于包含 STL 容器、字符串和较复杂控制流的程序，\texttt{-O2} 可能改变代码布局或内联策略，使某些局部路径不如 \texttt{-O1}。因此本文所有加速比都只在同一优化等级内部计算，不跨优化等级混合比较。
+
+\subsection{Guess 阶段细粒度 profile}
+
+基础并行化之后，程序仍然要维护 PT 优先队列。为了定位剩余瓶颈，本文在 \texttt{guess-pthread-advanced} 中对 \texttt{PriorityQueue::PopNext()} 加入细粒度计时。计时项包括 \texttt{Generate}、\texttt{NewPTs}、\texttt{CalProb}、队列插入和队首删除。
+
+\begin{lstlisting}[language=C++]
+auto generate_begin = steady_clock::now();
+Generate(current);
+auto generate_end = steady_clock::now();
+profile_generate_time += SecondsSince(generate_begin, generate_end);
+
+auto newpt_begin = steady_clock::now();
+vector<PT> new_pts = current.NewPTs();
+auto newpt_end = steady_clock::now();
+profile_newpt_time += SecondsSince(newpt_begin, newpt_end);
+\end{lstlisting}
+
+队列维护部分也单独计时：
+
+\begin{lstlisting}[language=C++]
+auto insert_begin = steady_clock::now();
+/* linear scan and insert new PT */
+auto insert_end = steady_clock::now();
+profile_queue_push_time += SecondsSince(insert_begin, insert_end);
+
+auto erase_begin = steady_clock::now();
+priority.erase(priority.begin());
+auto erase_end = steady_clock::now();
+profile_queue_pop_time += SecondsSince(erase_begin, erase_end);
+\end{lstlisting}
+
+在 \texttt{-O2}、Pthread 8 线程下，稳定 3 次运行的平均结果如表 \ref{tab:profile} 所示。
+
+\begin{table}[htbp]
+  \centering
+  \caption{Pthread 8 线程下 Guess 阶段细粒度计时（O2，3 次平均）}
+  \label{tab:profile}
+  \begin{tabular}{lcc}
+    \toprule
+    计时项 & 平均时间(s) & 占 profile subtotal 比例 \\
+    \midrule
+    \texttt{Generate} 函数 & 0.239560 & 53.78\% \\
+    \texttt{NewPTs} & 0.000402 & 0.09\% \\
+    \texttt{CalProb} & 0.000391 & 0.09\% \\
+    队列插入 & 0.100722 & 22.61\% \\
+    队首删除 \texttt{erase(begin)} & 0.104363 & 23.43\% \\
+    \midrule
+    profile subtotal & 0.445438 & 100.00\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+图 \ref{fig:profile-breakdown} 展示了 profile subtotal 的组成。基础并行化后的 \texttt{Generate} 仍然是最大部分，队列插入和队首删除合计达到 46.04\%，已经接近总时间的一半。后续优化如果仍只关注最后一个 segment 的枚举，收益会受到队列维护开销限制。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.90\textwidth,
+      height=0.22\textwidth,
+      xbar stacked,
+      xmin=0,
+      xmax=100,
+      ytick={1},
+      yticklabels={profile subtotal},
+      xlabel={占比(\%)},
+      xtick={0,25,50,75,100},
+      bar width=16pt,
+      enlarge y limits=0.85,
+      axis line style={draw=ReportGray},
+      tick style={draw=ReportGray},
+      tick label style={font=\small, text=ReportDark},
+      label style={font=\small, text=ReportDark},
+      legend style={
+        draw=none,
+        fill=none,
+        font=\footnotesize,
+        legend columns=2,
+        at={(0.5,-0.55)},
+        anchor=north
+      },
+      area legend
+    ]
+      \addplot+[draw=none, fill=ReportBlue] coordinates {(53.78,1)};
+      \addlegendentry{Generate 53.78\%}
+      \addplot+[draw=none, fill=ReportOrange] coordinates {(22.61,1)};
+      \addlegendentry{队列插入 22.61\%}
+      \addplot+[draw=none, fill=ReportPurple] coordinates {(23.43,1)};
+      \addlegendentry{队首删除 23.43\%}
+      \addplot+[draw=none, fill=ReportGray] coordinates {(0.18,1)};
+      \addlegendentry{NewPTs/CalProb 0.18\%}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Guess 阶段 profile subtotal 组成}
+  \label{fig:profile-breakdown}
+\end{figure}
+
+\subsection{队首删除优化}
+
+原始版本使用 \texttt{vector<PT>} 保存按概率排序的队列。插入新 PT 时线性扫描位置，队首删除时执行：
+
+\begin{lstlisting}[language=C++]
+priority.erase(priority.begin());
+\end{lstlisting}
+
+\texttt{erase(begin)} 会搬移后续所有元素，时间复杂度为 $O(n)$。直接替换为 \texttt{std::priority\_queue} 虽然可以降低插入和删除复杂度，但它会改变相同概率 PT 的处理顺序，从而可能影响前 1000 万候选口令的生成路径。为了保持可比性，本文采用更保守的逻辑队首优化：保留原来的 \texttt{vector} 和插入规则，只用下标跳过已经出队的前缀。
+
+\begin{lstlisting}[language=C++]
+vector<PT> priority;
+size_t priority_head = 0;
+
+bool PriorityQueue::Empty() const
+{
+    return priority_head >= priority.size();
+}
+\end{lstlisting}
+
+\texttt{PopNext()} 中取队首、插入和出队分别改为：
+
+\begin{lstlisting}[language=C++]
+PT current = priority[priority_head];
+
+auto begin = priority.begin() + priority_head;
+for (auto iter = begin; iter != priority.end(); iter++)
+{
+    /* keep original linear-scan insertion rule */
+}
+
+priority_head += 1;
+\end{lstlisting}
+
+优化前后计时对比如表 \ref{tab:queue-head} 所示。
+
+\begin{table}[htbp]
+  \centering
+  \caption{队首删除优化前后细粒度计时对比（O2，Pthread 8 线程）}
+  \label{tab:queue-head}
+  \begin{tabular}{lccc}
+    \toprule
+    指标 & 优化前(s) & 优化后(s) & 变化 \\
+    \midrule
+    \texttt{Guess time} & 0.483707 & 0.436995 & 加速 1.107 倍 \\
+    \texttt{Generate} 函数 & 0.239560 & 0.282430 & 受运行波动影响 \\
+    \texttt{NewPTs} & 0.000402 & 0.000446 & 基本不变 \\
+    \texttt{CalProb} & 0.000391 & 0.000423 & 基本不变 \\
+    队列插入/扫描 & 0.100722 & 0.103012 & 基本不变 \\
+    队首删除 & 0.104363 & 0.000018 & 基本消除 \\
+    \texttt{profile subtotal} & 0.445438 & 0.386330 & 加速 1.153 倍 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+图 \ref{fig:queue-opt} 将队列插入和队首删除两个项目单独画出。优化后队列插入基本不变，这是预期内的结果，因为本文没有改变线性扫描插入；队首删除几乎降为 0，说明 \texttt{erase(begin)} 的搬移成本被有效消除。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.88\textwidth,
+      height=0.34\textwidth,
+      xbar,
+      xmode=log,
+      xmin=0.00001,
+      xmax=0.2,
+      symbolic y coords={队首删除,队列插入},
+      ytick=data,
+      xlabel={时间(s，对数刻度)},
+      xtick={0.00001,0.0001,0.001,0.01,0.1},
+      xticklabels={0.00001,0.0001,0.001,0.01,0.1},
+      bar width=8pt,
+      enlarge y limits=0.55,
+      grid=major,
+      grid style={draw=ReportLightGray, line width=0.3pt},
+      axis line style={draw=ReportGray},
+      tick style={draw=ReportGray},
+      tick label style={font=\small, text=ReportDark},
+      label style={font=\small, text=ReportDark},
+      legend style={draw=none, fill=none, font=\small, at={(0.5,-0.30)}, anchor=north, legend columns=2},
+      nodes near coords,
+      nodes near coords style={
+        font=\small\bfseries,
+        anchor=west,
+        fill=white,
+        rounded corners=1pt,
+        inner xsep=3pt,
+        inner ysep=1.5pt
+      },
+      point meta=explicit symbolic
+    ]
+      \addplot+[
+        draw=none,
+        fill=ReportBlue,
+        nodes near coords style={
+          font=\small\bfseries,
+          text=ReportBlue,
+          draw=ReportBlue,
+          fill=white,
+          anchor=west,
+          yshift=-9pt,
+          rounded corners=1pt,
+          inner xsep=3pt,
+          inner ysep=1.5pt
+        }
+      ] coordinates
+        {(0.104363,队首删除) [0.104363s] (0.100722,队列插入) [0.100722s]};
+      \addlegendentry{优化前}
+      \addplot+[
+        draw=none,
+        fill=ReportGreen,
+        nodes near coords style={
+          font=\small\bfseries,
+          text=ReportGreen,
+          draw=ReportGreen,
+          fill=white,
+          anchor=west,
+          yshift=9pt,
+          rounded corners=1pt,
+          inner xsep=3pt,
+          inner ysep=1.5pt
+        }
+      ] coordinates
+        {(0.000018,队首删除) [0.000018s] (0.103012,队列插入) [0.103012s]};
+      \addlegendentry{优化后}
+    \end{axis}
+  \end{tikzpicture}
+  \par\vspace{0.35em}
+  {\footnotesize\textbf{读图说明：}横轴使用对数刻度，用来同时展示 $10^{-5}$s 与 $10^{-1}$s 两个量级的数据，因此条形长度不应按线性比例直接比较，结论以图中标注数值为准。队列插入优化前后分别为 0.100722s 和 0.103012s，基本保持不变；队首删除从 0.104363s 降到约 0.000018s，说明逻辑队首下标消除了 \texttt{erase(begin)} 的搬移开销。}
+  \caption{队列维护优化前后对比}
+  \label{fig:queue-opt}
+\end{figure}
+
+优化后 5 次运行的最终生成数量均为 \texttt{10106852}，\texttt{PopNext count} 均为 516，\texttt{NewPT count} 和 \texttt{queue push count} 均为 493，与优化前一致。因此该优化没有改变可观测生成路径。
+
+\subsection{训练阶段并行化}
+
+训练阶段的串行代码一边读取训练集，一边调用 \texttt{parse(pw)} 更新模型。核心结构如下：
+
+\begin{lstlisting}[language=C++]
+while (train_set >> pw)
+{
+    lines += 1;
+    if (lines % 10000 == 0 && lines > 3000000)
+    {
+        break;
+    }
+    parse(pw);
+}
+\end{lstlisting}
+
+直接把 \texttt{parse(pw)} 放入多个线程并对共享模型加锁并不合适。原因是 \texttt{parse} 内部会频繁更新 \texttt{preterminals}、\texttt{letters}、\texttt{digits}、\texttt{symbols} 以及对应的频数字典。如果每次更新都加锁，锁竞争会非常严重；如果只加一个大锁，整个训练过程又会退化为串行。
+
+因此训练阶段采用局部统计思路。每个线程处理一段口令，维护自己的 \texttt{TrainStats}：
+
+\begin{lstlisting}[language=C++]
+struct TrainStats
+{
+    int total_preterm = 0;
+    unordered_map<SegmentKey, SegmentStat, SegmentKeyHash> segments;
+    unordered_map<string, PTStat> preterminals;
+};
+\end{lstlisting}
+
+worker 只写线程私有统计结构：
+
+\begin{lstlisting}[language=C++]
+void *TrainWorker(void *arg)
+{
+    TrainTask *task = static_cast<TrainTask *>(arg);
+    const vector<string> &passwords = *(task->passwords);
+    TrainStats &stats = *(task->stats);
+
+    for (size_t i = task->begin; i < task->end; i += 1)
+    {
+        ParsePasswordToStats(stats, passwords[i], i);
+    }
+    return nullptr;
+}
+\end{lstlisting}
+
+所有线程结束后，主线程将局部统计量合并：
+
+\begin{lstlisting}[language=C++]
+TrainStats merged_stats;
+for (int tid = 0; tid < thread_count; tid += 1)
+{
+    MergeStats(merged_stats, local_stats[tid]);
+}
+BuildModelFromStats(*this, merged_stats);
+\end{lstlisting}
+
+训练阶段还有一个生成阶段没有遇到的问题：频数可加不代表生成路径等价。早期无序合并版本虽然降低了训练耗时，但会改变相同概率项的相对顺序，最终生成数量和 PT 迭代次数都偏离基准。为解决这个问题，\texttt{pthread\_train\_ordered} 不只记录 count，还记录 PT、segment 和 value 在原始输入流中的首次出现位置 \texttt{first\_order}，合并后按该顺序重建模型：
+
+\begin{lstlisting}[language=C++]
+sort(ordered_segments.begin(), ordered_segments.end(),
+     [](const SegmentStat *a, const SegmentStat *b)
+     {
+         return a->first_order < b->first_order;
+     });
+
+sort(ordered_pts.begin(), ordered_pts.end(),
+     [](const PTStat *a, const PTStat *b)
+     {
+         return a->first_order < b->first_order;
+     });
+\end{lstlisting}
+
+\subsection{训练并行化数据检查}
+
+最新 \texttt{pthread\_train\_ordered} 数据已经包含一批 \texttt{-O2}/8 线程运行。正文采用其中 4 次稳定运行计算均值；第 5 次运行仍保持正确性，但 \texttt{Guess time} 跳升到 1.846320s，属于服务器负载波动样本，不纳入性能均值。数据目录中还保留一次较早的单次预跑和误跑的 \texttt{-O0} 批次，它们只用于检查脚本输出，不参与本文结论。
+
+\begin{table}[htbp]
+  \centering
+  \caption{训练阶段并行化数据检查（O2，Pthread 8 线程）}
+  \label{tab:train-ordered}
+  \small
+  \begin{tabular}{lcccccc}
+    \toprule
+    版本 & 运行次数 & Guesses & PopNext & NewPT & Guess(s) & Train(s) \\
+    \midrule
+    队首删除优化 \texttt{pthread\_head} & 5 & 10106852 & 516 & 493 & 0.436995 & 27.3747 \\
+    训练并行 \texttt{train\_ordered} 稳定数据 & 4 & 10106852 & 516 & 493 & 0.475252 & 11.5142 \\
+    训练并行 \texttt{train\_ordered} run5 & 1 & 10106852 & 516 & 493 & 1.846320 & 13.0750 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+表 \ref{tab:train-ordered} 中，\texttt{train\_ordered} 稳定数据的 \texttt{Guesses generated}、\texttt{PopNext count} 和 \texttt{NewPT count} 均与队首删除优化版本一致，说明训练并行化没有改变可观测生成路径。训练阶段耗时从 27.3747s 降到 11.5142s，加速约 2.38 倍，耗时下降约 57.94\%。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.86\textwidth,
+      height=0.34\textwidth,
+      xbar,
+      xmin=0,
+      xmax=105,
+      symbolic y coords={train,guess,subtotal},
+      ytick=data,
+      yticklabels={Train time,Guess time,Profile subtotal},
+      xlabel={优化后剩余耗时比例(\%)},
+      xtick={0,25,50,75,100},
+      bar width=10pt,
+      enlarge y limits=0.45,
+      grid=major,
+      grid style={draw=ReportLightGray, line width=0.3pt},
+      axis line style={draw=ReportGray},
+      tick style={draw=ReportGray},
+      tick label style={font=\small, text=ReportDark},
+      label style={font=\small, text=ReportDark},
+      nodes near coords,
+      nodes near coords style={font=\scriptsize, text=ReportDark, anchor=west},
+      point meta=explicit symbolic
+    ]
+      \addplot+[draw=none, fill=ReportBlue] coordinates
+        {(86.7,subtotal) [86.7\%]
+         (90.3,guess) [90.3\%]
+         (42.1,train) [42.1\%]};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{进阶优化效果总览}
+  \label{fig:advanced-overview}
+\end{figure}
+
+图 \ref{fig:advanced-overview} 采用各自优化前的耗时作为 100\%。队首删除优化后，\texttt{profile subtotal} 保留 86.7\%，整体 \texttt{Guess time} 保留 90.3\%；训练并行化后，\texttt{Train time} 保留 42.1\%。
+这张图比较每项优化对应的下降幅度。
+
+\subsection{对于并行化粒度的思考}
+
+本实验中最稳定的基础优化来自最后一个 segment 枚举，因为该循环的迭代之间完全独立，且结果集合容易保持一致。队首删除优化属于串行数据结构调整，但它来自 profile 指出的真实瓶颈，且不改变程序语义，因此收益可靠。
+
+训练阶段并行化对正确性提出了更高要求。PCFG 猜测会持续从概率队列中取出 PT，并只生成前若干批候选口令；相同概率下的相对顺序一旦变化，前 1000 万个 guess 就可能不同。
+因此，训练并行化必须恢复模型构造时依赖的首次出现顺序。
+
+\section{结论}
+
+本文完成了 PCFG 口令猜测程序的基础并行化和两项进阶优化。基础部分中，Pthread 和 OpenMP 都对 \texttt{PriorityQueue::Generate} 中最后一个 segment 的 value 枚举进行并行化，并通过预分配结果数组、按下标写入的方式避免并发 \texttt{push\_back}。正确性测试显示，Serial、Pthread 和 OpenMP 的最终生成数量均为 10106852，\texttt{Cracked} 均为 358217。
+
+性能方面，在 \texttt{-O2} 下，OpenMP 8 线程的 \texttt{Guess time} 加速比达到 1.904，Pthread 4 线程达到 1.524。OpenMP 在本实验中扩展性更好，主要得益于更低的代码层管理成本和动态调度策略；Pthread 版本控制更直接，但线程创建、同步和静态划分带来额外开销。
+
+进阶部分中，细粒度 profile 表明队列插入和队首删除合计约占 profile subtotal 的 46.04\%。将 \texttt{vector} 队首物理删除改为逻辑队首下标后，队首删除时间从 0.104363s 降至约 0.000018s，profile subtotal 从 0.445438s 降至 0.386330s，且生成数量和 PT 迭代次数保持一致。
+
+训练阶段并行化实现为“局部统计、合并、按首次出现顺序重建”的版本。最新 \texttt{pthread\_train\_ordered} 稳定数据中，最终生成数量仍为 10106852，\texttt{PopNext count} 为 516，\texttt{NewPT count} 为 493；\texttt{Train time} 从 27.3747s 降到 11.5142s，加速约 2.38 倍。
+
+
+\end{document}

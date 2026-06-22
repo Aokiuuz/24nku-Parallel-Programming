@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="协程底层是状态保存、排队与恢复">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .chartcard { fill: rgba(248,250,252,0.97); stroke: rgba(255,255,255,0.12); stroke-width: 1.1; }
+      .kicker { fill: #93C5FD; font-size: 14.5px; font-weight: 850; letter-spacing: 1.7px; }
+      .title { fill: #F8FAFC; font-size: 39px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 24px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 19.5px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16.8px; font-weight: 540; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 19.2px; font-weight: 620; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 13.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+      .node { fill: rgba(15,23,42,0.75); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1126" cy="-88" r="282" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-86" cy="650" r="310" fill="#059669" opacity="0.10"/>
+  <g class="page">
+    <text x="50" y="52" class="kicker" text-anchor="start">STATE MACHINE</text>
+    <text x="50" y="96" class="title" text-anchor="start">协程底层是状态保存、排队与恢复</text>
+    <text x="50" y="128" class="body" text-anchor="start">await 触发保存现场、注册等待、让出线程，并在事件就绪后恢复执行。</text>
+
+    <rect x="48" y="154" width="1184" height="502" rx="22" class="card2"/><rect x="48" y="154" width="6" height="502" rx="3" fill="#2563EB" opacity="0.95"/>
+    <text x="82" y="196" class="kicker">COROUTINE LOWERING</text>
+
+    <rect x="82" y="224" width="318" height="220" rx="18" fill="rgba(15,23,42,0.82)" stroke="rgba(255,255,255,0.18)"/>
+    <text x="110" y="260" class="small">async def fetch():</text>
+    <text x="110" y="292" class="small">    conn = await open()</text>
+    <text x="110" y="324" class="small">    data = await read(conn)</text>
+    <text x="110" y="356" class="small">    return parse(data)</text>
+    <line x1="110" y1="378" x2="370" y2="378" stroke="rgba(255,255,255,0.16)"/>
+    <text x="110" y="406" class="small">await 是可暂停点；普通函数调用</text>
+    <text x="110" y="430" class="small">会继续占用当前调用栈。</text>
+
+    <path d="M420 328 L464 328" class="line" stroke="#64748B"/>
+    <polygon points="464,328 446,317 446,339" fill="#64748B"/>
+
+    <rect x="484" y="206" width="380" height="264" rx="22" fill="rgba(37,99,235,0.20)" stroke="rgba(96,165,250,0.42)" stroke-width="1.4"/>
+    <text x="520" y="244" class="kicker">COROUTINE FRAME</text>
+    <text x="520" y="274" class="small">挂起时保存到堆上的运行时对象</text>
+    <rect x="520" y="296" width="308" height="32" rx="10" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="540" y="318" class="small">locals：conn / data / 临时变量</text>
+    <rect x="520" y="338" width="308" height="32" rx="10" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="540" y="360" class="small">state：下一条待执行指令</text>
+    <rect x="520" y="380" width="308" height="32" rx="10" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="540" y="402" class="small">slot：返回值 / 异常传播</text>
+    <rect x="520" y="422" width="308" height="32" rx="10" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="540" y="444" class="small">continuation：恢复入口</text>
+
+    <path d="M884 328 L928 328" class="line" stroke="#64748B"/>
+    <polygon points="928,328 910,317 910,339" fill="#64748B"/>
+
+    <rect x="948" y="214" width="246" height="246" rx="22" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.18)"/>
+    <text x="978" y="252" class="kicker">RUNTIME QUEUES</text>
+    <text x="978" y="292" class="body">1. awaiter 注册等待</text>
+    <text x="978" y="326" class="body">2. 任务让出线程</text>
+    <text x="978" y="360" class="body">3. 就绪后进队列</text>
+    <text x="978" y="394" class="body">4. event loop 恢复</text>
+    <text x="978" y="430" class="small">线程继续处理其他可运行任务。</text>
+
+    <rect x="82" y="500" width="360" height="108" rx="18" fill="rgba(5,150,105,0.18)" stroke="rgba(52,211,153,0.34)"/>
+    <text x="110" y="536" class="h3">控制权发生了什么？</text>
+    <text x="110" y="570" class="body">保存现场 → 返回事件循环</text>
+    <text x="110" y="594" class="small">调度其他可运行任务。</text>
+    <rect x="472" y="500" width="360" height="108" rx="18" fill="rgba(124,58,237,0.18)" stroke="rgba(196,181,253,0.34)"/>
+    <text x="500" y="536" class="h3">数据结构发生了什么？</text>
+    <text x="500" y="570" class="body">协程帧记录 locals / state</text>
+    <text x="500" y="594" class="small">同时保存 slot 与 continuation。</text>
+    <rect x="862" y="500" width="328" height="108" rx="18" fill="rgba(37,99,235,0.20)" stroke="rgba(96,165,250,0.36)"/>
+    <text x="890" y="536" class="h3">一句话结论</text>
+    <text x="890" y="570" class="body">await = 保存现场 + 让出线程</text>
+    <text x="890" y="594" class="small">事件就绪后从恢复入口继续执行。</text>
+
+  </g>
+  <text x="1232" y="692" text-anchor="end" class="small">08/20</text>
+</svg>

@@ -1,0 +1,2 @@
+mkdir -p bin
+hipcc -O2 -std=c++17 src/gpu/pcfg_gpu_test.cpp src/gpu/pcfg_gpu_generate.hip -o bin/pcfg_gpu_test

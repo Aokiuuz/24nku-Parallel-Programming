@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="协程定义">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="56%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .lightcard { fill: rgba(248,250,252,0.95); stroke: rgba(15,23,42,0.08); stroke-width: 1.0; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 800; letter-spacing: 1.8px; }
+      .title { fill: #F8FAFC; font-size: 36px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 520; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .dark { fill: #111827; font-size: 16px; font-weight: 620; letter-spacing: 0; }
+      .darksmall { fill: #475569; font-size: 12.5px; font-weight: 560; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .metric2 { fill: #111827; font-size: 40px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.20); stroke-width: 1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .dot { fill: #60A5FA; }
+      .node { fill: rgba(15,23,42,0.74); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .chip { fill: rgba(255,255,255,0.10); stroke: rgba(255,255,255,0.16); stroke-width: 1; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1128" cy="-86" r="280" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-70" cy="652" r="300" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+<text x="50" y="52" class="kicker" text-anchor="start">DEFINITION</text>
+<text x="50" y="96" class="title" text-anchor="start">协程是可暂停、可恢复的函数</text>
+<text x="50" y="128" class="body" text-anchor="start">核心不是并行，而是执行过程可以在挂起点被切开。</text>
+    <rect x="48" y="166" width="720" height="392" rx="22" class="card2"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#2563EB" opacity="0.9"/>
+    <text x="82" y="210" class="kicker">EXECUTION TRACKS</text>
+    <text x="82" y="248" class="h2">普通函数连续执行；协程在 await 点保存现场</text>
+    <g transform="translate(94 312)">
+      <text x="0" y="0" class="body">普通函数</text>
+      <path d="M120 -6 L600 -6" stroke="#94A3B8" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="120" cy="-6" r="10" fill="#CBD5E1"/><circle cx="600" cy="-6" r="10" fill="#CBD5E1"/>
+      <text x="0" y="84" class="body">协程函数</text>
+      <path d="M120 78 L260 78" stroke="#60A5FA" stroke-width="8" stroke-linecap="round"/>
+      <path d="M350 78 L490 78" stroke="#60A5FA" stroke-width="8" stroke-linecap="round"/>
+      <path d="M560 78 L600 78" stroke="#60A5FA" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="260" cy="78" r="12" fill="#2563EB"/><text x="242" y="118" class="small">await I/O</text>
+      <circle cx="490" cy="78" r="12" fill="#2563EB"/><text x="466" y="118" class="small">恢复</text>
+    </g>
+    <rect x="792" y="166" width="440" height="178" rx="22" class="card"/><rect x="792" y="166" width="6" height="178" rx="3" fill="#059669" opacity="0.9"/>
+    <text x="824" y="208" class="kicker">STATE SAVED</text>
+    <circle cx="824" cy="241" r="4.5" class="dot"/>
+<text x="842" y="246" class="body" text-anchor="start">局部变量</text>
+<circle cx="824" cy="270" r="4.5" class="dot"/>
+<text x="842" y="275" class="body" text-anchor="start">下一步执行位置</text>
+<circle cx="824" cy="299" r="4.5" class="dot"/>
+<text x="842" y="304" class="body" text-anchor="start">返回值与异常</text>
+<circle cx="824" cy="328" r="4.5" class="dot"/>
+<text x="842" y="333" class="body" text-anchor="start">恢复句柄 / continuation</text>
+    <rect x="792" y="364" width="440" height="194" rx="22" class="card"/><rect x="792" y="364" width="6" height="194" rx="3" fill="#DC2626" opacity="0.9"/>
+    <text x="824" y="406" class="kicker">MISCONCEPTION</text>
+    <text x="824" y="446" class="h2">协程不是自动并行</text>
+    <text x="824" y="482" class="body">它只是让任务在等待时把执行线程交还给调度器。</text>
+    <text x="824" y="524" class="small">CPU 密集任务仍需要真正的并行计算资源。</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · SVG Final Slides</text>
+  <text x="1232" y="692" text-anchor="end" class="small">05/14</text>
+</svg>

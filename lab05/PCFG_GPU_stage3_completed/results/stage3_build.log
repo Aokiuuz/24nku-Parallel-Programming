@@ -1,0 +1,4 @@
+make: Warning: File 'src/gpu/pcfg_gpu_test.cpp' has modification time 6227 s in the future
+mkdir -p bin
+hipcc -O2 -std=c++17 src/gpu/pcfg_gpu_test.cpp src/gpu/pcfg_gpu_generate.hip -o bin/pcfg_gpu_test
+make: warning:  Clock skew detected.  Your build may be incomplete.

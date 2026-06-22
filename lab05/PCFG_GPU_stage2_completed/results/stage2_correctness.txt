@@ -1,0 +1,1 @@
+[multi-check] pts=4 batch_per_pt=4096 matched=16384/16384 PASS

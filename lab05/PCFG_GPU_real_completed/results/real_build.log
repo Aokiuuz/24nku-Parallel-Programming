@@ -1,0 +1,6 @@
+make: Warning: File 'Makefile' has modification time 26431 s in the future
+mkdir -p bin
+hipcc -O2 -std=c++17 src/gpu/pcfg_gpu_test.cpp src/gpu/pcfg_gpu_generate.hip -o bin/pcfg_gpu_test
+mkdir -p bin
+hipcc -O2 -std=c++17 -Isrc/gpu -Ipcfg_gpu/guess_mpi_advanced src/gpu/pcfg_real_end_to_end.cpp src/gpu/pcfg_gpu_generate.hip pcfg_gpu/guess_mpi_advanced/train.cpp pcfg_gpu/guess_mpi_advanced/guessing.cpp -o bin/pcfg_real_gpu_test
+make: warning:  Clock skew detected.  Your build may be incomplete.

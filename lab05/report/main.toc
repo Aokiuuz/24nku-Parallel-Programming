@@ -1,0 +1,28 @@
+\contentsline {section}{\numberline {1}技术摘要与主要结论}{2}{section.1}%
+\contentsline {section}{\numberline {2}实验要求、平台、数据来源与计时口径}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}实验目标与验收方法}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}硬件、软件与训练数据}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}计时口径与统计量}{3}{subsection.2.3}%
+\contentsline {section}{\numberline {3}六项 HIP 基础实验}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Vector Add：线程组织与有效带宽}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Matrix Transpose：连续访问与规模效应}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Histogram：全局原子与 LDS 私有化}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Reduction：同步范围与 wavefront shuffle}{6}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Monte Carlo 与 K-Means：规模和工作负载}{6}{subsection.3.5}%
+\contentsline {section}{\numberline {4}PCFG 数据结构、kernel 与 CPU/GPU 数据流}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}真实任务到 GPU 批次的映射}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}kernel 索引与批处理布局}{7}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}批处理、overlap 与调度策略}{8}{subsection.4.3}%
+\contentsline {section}{\numberline {5}四阶段模块级实验}{8}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Stage 1：单 PT 与传输分解}{8}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Stage 2--3：多 PT 合并与 stream overlap}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Stage 4：调度与数量守恒}{9}{subsection.5.3}%
+\contentsline {section}{\numberline {6}真实 PCFG 端到端实验}{9}{section.6}%
+\contentsline {subsection}{\numberline {6.1}训练模型、共享任务集与 WorkUnit 分布}{9}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}六种模式的墙钟时间与配对 speedup}{10}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}CPU/GPU 分流与端到端开销解释}{11}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}冷启动与稳态敏感性}{12}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}正确性与复现性检查}{12}{subsection.6.5}%
+\contentsline {section}{\numberline {7}局限性、适用边界与结论}{13}{section.7}%
+\contentsline {subsection}{\numberline {7.1}实验边界}{13}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}结论}{13}{subsection.7.2}%

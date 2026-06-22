@@ -1,0 +1,1 @@
+[schedule] cpu_pts=3 gpu_chunks=2 cpu_guesses=1168 gpu_guesses=66096 matched=67264/67264 PASS

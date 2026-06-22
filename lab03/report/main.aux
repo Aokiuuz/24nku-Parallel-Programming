@@ -1,0 +1,55 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand*\HyPL@Entry[1]{}
+\HyPL@Entry{0<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}实验要求}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}实验环境}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}硬件与运行方式}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}代码组织}{4}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}指标与可视化规划}{4}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}基础要求}{5}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}算法设计}{5}{subsection.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces PCFG+MD5 程序流程与本文优化位置}}{5}{figure.1}\protected@file@percent }
+\newlabel{fig:pipeline}{{1}{5}{PCFG+MD5 程序流程与本文优化位置}{figure.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}串行老版本关键代码}{5}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Pthread 代码实现}{6}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}OpenMP 代码实现}{7}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}正确性验证}{8}{subsection.3.5}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 基础版本正确性测试结果}}{8}{table.1}\protected@file@percent }
+\newlabel{tab:correctness}{{1}{8}{基础版本正确性测试结果}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}性能测试}{8}{subsection.3.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 串行 baseline 平均性能}}{8}{table.2}\protected@file@percent }
+\newlabel{tab:serial}{{2}{8}{串行 baseline 平均性能}{table.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Pthread 平均性能与 Guess 阶段加速比}}{9}{table.3}\protected@file@percent }
+\newlabel{tab:pthread}{{3}{9}{Pthread 平均性能与 Guess 阶段加速比}{table.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces OpenMP 平均性能与 Guess 阶段加速比}}{9}{table.4}\protected@file@percent }
+\newlabel{tab:omp}{{4}{9}{OpenMP 平均性能与 Guess 阶段加速比}{table.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces O2 优化等级下基础版本核心对比}}{10}{table.5}\protected@file@percent }
+\newlabel{tab:o2-compare}{{5}{10}{O2 优化等级下基础版本核心对比}{table.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces O2 下 Guess time 随线程数变化}}{10}{figure.2}\protected@file@percent }
+\newlabel{fig:o2-guess-time}{{2}{10}{O2 下 Guess time 随线程数变化}{figure.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces O2 下 Guess 阶段加速比}}{11}{figure.3}\protected@file@percent }
+\newlabel{fig:o2-speedup}{{3}{11}{O2 下 Guess 阶段加速比}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7}基础结果分析}{11}{subsection.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}进阶要求}{11}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}OpenMP 与 Pthread 性能差异}{11}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}编译优化对结果的影响}{12}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Guess 阶段细粒度 profile}{12}{subsection.4.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Pthread 8 线程下 Guess 阶段细粒度计时（O2，3 次平均）}}{13}{table.6}\protected@file@percent }
+\newlabel{tab:profile}{{6}{13}{Pthread 8 线程下 Guess 阶段细粒度计时（O2，3 次平均）}{table.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Guess 阶段 profile subtotal 组成}}{13}{figure.4}\protected@file@percent }
+\newlabel{fig:profile-breakdown}{{4}{13}{Guess 阶段 profile subtotal 组成}{figure.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}队首删除优化}{13}{subsection.4.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces 队首删除优化前后细粒度计时对比（O2，Pthread 8 线程）}}{14}{table.7}\protected@file@percent }
+\newlabel{tab:queue-head}{{7}{14}{队首删除优化前后细粒度计时对比（O2，Pthread 8 线程）}{table.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 队列维护优化前后对比}}{15}{figure.5}\protected@file@percent }
+\newlabel{fig:queue-opt}{{5}{15}{队列维护优化前后对比}{figure.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}训练阶段并行化}{15}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}训练并行化数据检查}{17}{subsection.4.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces 训练阶段并行化数据检查（O2，Pthread 8 线程）}}{17}{table.8}\protected@file@percent }
+\newlabel{tab:train-ordered}{{8}{17}{训练阶段并行化数据检查（O2，Pthread 8 线程）}{table.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 进阶优化效果总览}}{17}{figure.6}\protected@file@percent }
+\newlabel{fig:advanced-overview}{{6}{17}{进阶优化效果总览}{figure.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}对于并行化粒度的思考}{18}{subsection.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}结论}{18}{section.5}\protected@file@percent }
+\gdef \@abspage@last{18}

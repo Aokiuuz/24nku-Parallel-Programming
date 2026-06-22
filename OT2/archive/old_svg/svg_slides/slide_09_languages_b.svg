@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="语言对比二">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="56%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .lightcard { fill: rgba(248,250,252,0.95); stroke: rgba(15,23,42,0.08); stroke-width: 1.0; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 800; letter-spacing: 1.8px; }
+      .title { fill: #F8FAFC; font-size: 36px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 520; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .dark { fill: #111827; font-size: 16px; font-weight: 620; letter-spacing: 0; }
+      .darksmall { fill: #475569; font-size: 12.5px; font-weight: 560; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .metric2 { fill: #111827; font-size: 40px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.20); stroke-width: 1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .dot { fill: #60A5FA; }
+      .node { fill: rgba(15,23,42,0.74); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .chip { fill: rgba(255,255,255,0.10); stroke: rgba(255,255,255,0.16); stroke-width: 1; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1128" cy="-86" r="280" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-70" cy="652" r="300" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+<text x="50" y="52" class="kicker" text-anchor="start">LANGUAGES II</text>
+<text x="50" y="96" class="title" text-anchor="start">现代语言形成两条降低异步复杂度的路线</text>
+<text x="50" y="128" class="body" text-anchor="start">显式 async/await 与轻量线程化并存。</text>
+    <rect x="48" y="166" width="520" height="392" rx="22" class="card2"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#2563EB" opacity="0.9"/>
+    <text x="82" y="210" class="kicker">ROUTE A</text>
+    <text x="82" y="252" class="h2">显式 async / await</text>
+    <text x="82" y="294" class="body">代表：Python、C#、C++ coroutine 生态</text>
+    <circle cx="82" cy="337" r="4.5" class="dot"/>
+<text x="100" y="342" class="body" text-anchor="start">调用链显式异步</text>
+<circle cx="82" cy="369" r="4.5" class="dot"/>
+<text x="100" y="374" class="body" text-anchor="start">编译器/解释器生成状态机</text>
+<circle cx="82" cy="401" r="4.5" class="dot"/>
+<text x="100" y="406" class="body" text-anchor="start">适合 I/O API 已异步化的生态</text>
+<circle cx="82" cy="433" r="4.5" class="dot"/>
+<text x="100" y="438" class="body" text-anchor="start">风险：阻塞调用破坏调度</text>
+    <rect x="608" y="166" width="624" height="392" rx="22" class="card"/><rect x="608" y="166" width="6" height="392" rx="3" fill="#7C3AED" opacity="0.9"/>
+    <text x="642" y="210" class="kicker">ROUTE B</text>
+    <text x="642" y="252" class="h2">轻量线程化抽象</text>
+    <text x="642" y="294" class="body">代表：Go goroutine、Java 21 Virtual Threads</text>
+    <circle cx="642" cy="337" r="4.5" class="dot"/>
+<text x="660" y="342" class="body" text-anchor="start">更接近“一任务一执行单元”的心智</text>
+<circle cx="642" cy="369" r="4.5" class="dot"/>
+<text x="660" y="374" class="body" text-anchor="start">运行时把轻量任务映射到 OS 线程</text>
+<circle cx="642" cy="401" r="4.5" class="dot"/>
+<text x="660" y="406" class="body" text-anchor="start">传统同步代码迁移成本更低</text>
+<circle cx="642" cy="433" r="4.5" class="dot"/>
+<text x="660" y="438" class="body" text-anchor="start">边界：CPU密集、pinning、下游容量</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · SVG Final Slides</text>
+  <text x="1232" y="692" text-anchor="end" class="small">09/14</text>
+</svg>

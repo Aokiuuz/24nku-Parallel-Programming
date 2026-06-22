@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="主流语言走向两条降低异步复杂度的路线">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#002FA7"/>
+      <stop offset="100%" stop-color="#002FA7"/>
+    </linearGradient>
+    <style>
+      .page { font-family: "Inter", "Helvetica Neue", "Helvetica", "Noto Sans SC", "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.78); stroke: #D4D4D2; stroke-width: 1.15; }
+      .card2 { fill: rgba(255,255,255,0.88); stroke: #0A0A0A; stroke-width: 1.15; }
+      .chartcard { fill: #FFFFFF; stroke: #0A0A0A; stroke-width: 1.15; }
+      .kicker { fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px; }
+      .title { fill: #0A0A0A; font-size: 39px; font-weight: 560; letter-spacing: 0; }
+      .h1 { fill: #0A0A0A; font-size: 52px; font-weight: 360; letter-spacing: 0; }
+      .h2 { fill: #0A0A0A; font-size: 24px; font-weight: 560; letter-spacing: 0; }
+      .h3 { fill: #0A0A0A; font-size: 19.5px; font-weight: 620; letter-spacing: 0; }
+      .body { fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0; }
+      .body2 { fill: #0A0A0A; font-size: 19.2px; font-weight: 560; letter-spacing: 0; }
+      .small { fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #002FA7; font-size: 44px; font-weight: 520; letter-spacing: 0; }
+      .axis { stroke: #D4D4D2; stroke-width: 1; }
+      .node { fill: rgba(255,255,255,0.82); stroke: #D4D4D2; stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="#FAFAF8"/>
+  <g class="swiss-grid">
+  <line x1="80" y1="0" x2="80" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="150" y1="0" x2="150" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="220" y1="0" x2="220" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="290" y1="0" x2="290" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="360" y1="0" x2="360" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="430" y1="0" x2="430" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="500" y1="0" x2="500" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="570" y1="0" x2="570" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="640" y1="0" x2="640" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="710" y1="0" x2="710" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="780" y1="0" x2="780" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="850" y1="0" x2="850" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="920" y1="0" x2="920" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="990" y1="0" x2="990" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1060" y1="0" x2="1060" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1130" y1="0" x2="1130" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1200" y1="0" x2="1200" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1270" y1="0" x2="1270" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="0" y1="80" x2="1280" y2="80" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="150" x2="1280" y2="150" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="220" x2="1280" y2="220" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="290" x2="1280" y2="290" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="360" x2="1280" y2="360" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="430" x2="1280" y2="430" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="500" x2="1280" y2="500" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="570" x2="1280" y2="570" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="640" x2="1280" y2="640" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="710" x2="1280" y2="710" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+
+  </g>
+  <g class="page">
+    <text x="50" y="52" class="kicker" text-anchor="start">LANGUAGE ROUTES</text>
+    <text x="50" y="96" class="title" text-anchor="start">主流语言走向两条降低异步复杂度的路线</text>
+    <text x="50" y="128" class="body" text-anchor="start">显式 async/await 与轻量线程化并存，目标都是降低等待成本。</text>
+
+    <rect x="48" y="166" width="548" height="392" rx="0" class="card2"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#002FA7" opacity="0.95"/>
+    <text x="82" y="210" class="kicker">ROUTE A</text><text x="82" y="252" class="h2">显式 async / await</text>
+    <text x="82" y="294" class="body">代表：Python、C#、C++ coroutine 生态</text>
+    <circle cx="82" cy="337" r="4.5" fill="#002FA7"/>
+<text x="100" y="342" class="body" text-anchor="start">调用链显式异步</text>
+<circle cx="82" cy="369" r="4.5" fill="#002FA7"/>
+<text x="100" y="374" class="body" text-anchor="start">编译器/解释器生成状态机</text>
+<circle cx="82" cy="401" r="4.5" fill="#002FA7"/>
+<text x="100" y="406" class="body" text-anchor="start">适合 I/O API 已异步化的生态</text>
+<circle cx="82" cy="433" r="4.5" fill="#002FA7"/>
+<text x="100" y="438" class="body" text-anchor="start">风险：阻塞调用破坏调度</text>
+    <rect x="636" y="166" width="596" height="392" rx="0" class="card"/><rect x="636" y="166" width="6" height="392" rx="3" fill="#002FA7" opacity="0.95"/>
+    <text x="670" y="210" class="kicker">ROUTE B</text><text x="670" y="252" class="h2">轻量线程化抽象</text>
+    <text x="670" y="294" class="body">代表：Go goroutine、Java 21 Virtual Threads</text>
+    <circle cx="670" cy="337" r="4.5" fill="#002FA7"/>
+<text x="688" y="342" class="body" text-anchor="start">更接近“一任务一执行单元”的心智</text>
+<circle cx="670" cy="369" r="4.5" fill="#002FA7"/>
+<text x="688" y="374" class="body" text-anchor="start">运行时把轻量任务映射到 OS 线程</text>
+<circle cx="670" cy="401" r="4.5" fill="#002FA7"/>
+<text x="688" y="406" class="body" text-anchor="start">传统同步代码迁移成本更低</text>
+<circle cx="670" cy="433" r="4.5" fill="#002FA7"/>
+<text x="688" y="438" class="body" text-anchor="start">边界：CPU密集、pinning、下游容量</text>
+
+  </g>
+  <text x="1232" y="692" text-anchor="end" class="small">10/20</text>
+</svg>

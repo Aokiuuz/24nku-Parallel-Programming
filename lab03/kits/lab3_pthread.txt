@@ -1,0 +1,1328 @@
+pthread
+
+
+     2021       4
+
+     2022       4
+
+     2023       4
+
+     2024       4
+
+     2025       5
+
+     2026       5
+
+
+
+
+            1
+                                    pthread
+
+
+
+
+1                                                                                       4
+    1.1                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      4
+    1.2                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      4
+          1.2.1                  . . . . . . . . . . . . . . . . . . . . . . . . .      4
+          1.2.2      ANN    NTT                    . . . . . . . . . . . . . . . . .    5
+          1.2.3      SVD         . . . . . . . . . . . . . . . . . . . . . . . . .      5
+    1.3                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .      5
+    1.4   Pthread                . . . . . . . . . . . . . . . . . . . . . . . . .      5
+    1.5                               . . . . . . . . . . . . . . . . . . . . . . .     7
+    1.6                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+    1.7                    . . . . . . . . . . . . . . . . . . . . . . . . . . . . 16
+
+2 ANN                                                                                  17
+    2.1      SIMD                                              . . . . . . . . . . . 17
+          2.1.1      Flat-SIMD +                     2         . . . . . . . . . . . 17
+          2.1.2      PQ-SIMD +                      2        . . . . . . . . . . . . 17
+    2.2   IVF       Inverted File     . . . . . . . . . . . . . . . . . . . . . . . 18
+          2.2.1      IVF-SIMD baseline        2                           4        . 19
+          2.2.2      IVF-PQ-SIMD baseline(3             )                     5        20
+    2.3   HNSW Hierarchical Navigable Small World graphs
+                2      . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 20
+
+3                                                                                      22
+    3.1                                 . . . . . . . . . . . . . . . . . . . . . . 22
+    3.2                                 . . . . . . . . . . . . . . . . . . . . . . 23
+    3.3                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+    3.4                  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 25
+
+4 NTT                                                                                  26
+    4.1                        . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+    4.2                        . . . . . . . . . . . . . . . . . . . . . . . . . . 26
+    4.3   CRT                    . . . . . . . . . . . . . . . . . . . . . . . . . 27
+
+
+
+                                         2 of 32
+                          pthread
+
+
+5         SVD                                                                27
+    5.1               . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+    5.2                       . . . . . . . . . . . . . . . . . . . . . . . . 29
+          5.2.1               . . . . . . . . . . . . . . . . . . . . . . . . 29
+          5.2.2                      . . . . . . . . . . . . . . . . . . . . 29
+    5.3                . . . . . . . . . . . . . . . . . . . . . . . . . . 29
+
+6 VTune           (       )                                                  30
+
+
+
+
+                                   3 of 32
+                                    pthread
+
+
+
+1
+1.1
+                                 ANN     NTT           svd
+
+
+1.2
+
+
+
+
+1.2.1
+
+                                                       80%
+          16                           x86     ARM
+         Pthread                OpenMP
+
+    1.
+
+    2.                              SIMD                     ARM
+                       Neon
+
+    3.     ARM
+
+
+    4.
+
+
+    5.         Pthread             OpenMP
+
+
+    6.
+
+
+
+
+    7.         profiling
+               cache
+
+                                                             SIMD
+                           25
+
+                                             4 of 32
+                                         pthread                                         1.3
+
+
+    1.2.2 ANN            NTT
+
+          ANN       NTT                                                                        90%
+                                      18
+                             Pthread         OpenMP
+
+
+                                      ANN NTT
+
+
+
+
+    1.2.3 SVD
+
+          SVD                                                           100%
+                 20
+
+
+
+                                     SVD
+
+
+
+
+    1.3
+
+
+
+    1.4     Pthread
+          Pthread                     OpenMP
+
+
+
+          Pthread                                   <pthread.h>
+          GCC                     -lpthread                        -pthread
+                       API
+1   int pthread_create(pthread_t ∗, const pthread_attr_t ∗,void ∗ (∗)(void ∗),void ∗);
+2   //
+3   //                  id
+4   //
+5   //
+
+
+
+                                                 5 of 32
+                                           pthread          1.4 Pthread
+
+
+6    //
+7    int pthread_join(pthread_t ∗, void ∗∗value_ptr)
+8    //
+9    //                             id
+10   //
+11   void pthread_exit(void ∗value_ptr);
+12   //       value_ptr
+13   int pthread_cancel(pthread_t thread);
+14   //           thread
+
+
+              Pthread
+
+          •
+
+
+
+
+          •
+
+
+
+
+                                                               pthread_create
+
+
+
+                           pthread_join
+
+
+
+
+                                                  6 of 32
+                                          pthread               1.5
+
+
+
+
+                            pthread
+                             barrier                      PPT                       API
+                                        PPT
+
+
+    1.5
+           1.
+                                                                                    inf   nan
+                                                                  inf         nan
+
+
+
+
+                                                            inf         nan
+           2.
+                                 void
+                            id
+
+
+                                          my_first+my_n         my_last                    id
+       n                         my_last
+
+
+           3.
+
+
+1   procedure LU (A)
+2   begin
+3    for k := 1 to n do (           )
+4         //
+5      for j := k+1 to n do
+
+
+
+                                               7 of 32
+                                              pthread                 1.5
+
+
+6           A[k, j ] := A[k, j]/A[k, k ];
+7       endfor;
+8       A[k, k] := 1.0;
+9
+10      //
+11      for i := k + 1 to n do
+12          for j := k + 1 to n do
+13            A[i , j ] := A[i, j ] − A[i, k] × A[k, j ];
+14            endfor;
+15            A[i , k] := 0;
+16          endfor;
+17     endfor;
+18   end LU
+
+
+                                                                  n
+        k                      k                                            k+1      n
+                        k
+
+
+
+                                              barrier
+
+
+
+
+                                                        barrier             openmp
+
+
+
+
+            4.
+                                                                  5-8
+                 11-17
+     (n − k + 1) × (n − k)
+
+
+
+
+                                                       8 of 32
+                    pthread              1.5
+
+
+
+
+                                                      cache
+
+
+             SIMD      SIMD
+
+
+      SIMD
+5.
+
+
+
+
+                                   bug
+
+
+6.
+
+
+
+
+       pthread                             pthread_mutex_t
+
+
+
+pthread
+
+
+       PPT
+*7.
+
+
+
+
+                                         100
+
+
+
+                         9 of 32
+                                                 pthread                   1.6
+
+
+                          5
+
+
+                                                                           20
+
+
+
+
+                    pthread
+
+
+
+
+     1.6
+            1
+
+
+1    typedef struct {
+2        int k; //
+3        int t_id; //         id
+4    }threadParam_t;
+5
+6    void ∗threadFunc(void ∗param) {
+7        threadParam_t ∗p = (threadParam_t∗)param;
+8        int k = p −> k; //
+9        int t_id = p −> t_id; //
+10       int i = k + t_id + 1; //
+11
+12       For ( int j = k + 1; j < n; ++j) do
+13           A[i ][ j ] = A[i][ j ] − A[i][k] ∗ A[k][ j ];
+14       end For
+15       A[i ][ k] = 0;
+16       pthread_exit(NULL);
+17   }
+
+
+                                                                        Pthread
+
+
+1    int main() {
+2        For ( int k = 0; k < n; ++k) do
+
+
+
+                                                             10 of 32
+                                                 pthread             1.6
+
+
+3            //
+4            For ( int j = k+1; j < n; j++) do
+5                   A[k][ j ] = A[k][j] / A[k][k ];
+6            end For
+7            A[k][k] = 1.0;
+8
+9            //
+10            int worker_count = n−1−k; //
+11           pthread_t∗ handles = Malloc();//               Handle
+12           threadParam_t∗ param = Malloc();//
+13           //
+14           For(int t_id = 0; t_id < worker_count; t_id++)
+15                  param[t_id].k = k;
+16                  param[t_id].t_id = t_id;
+17           end For
+18           //
+19           For(int t_id = 0; t_id < worker_count; t_id++)
+20                  pthread_create();
+21           end For
+22           //
+23           For(int t_id = 0; t_id < worker_count; t_id++)
+24                  pthread_join();
+25           end For
+26        end For
+27
+28   }
+
+
+             2                     +
+1    //
+2    typedef struct {
+3         int t_id; //        id
+4    }threadParam_t;
+5
+6    //
+7    sem_t sem_main;
+8    sem_t sem_workerstart[NUM_THREADS]; //
+9    sem_t sem_workerend[NUM_THREADS];
+10
+11   //
+12   void ∗threadFunc(void ∗param) {
+13        threadParam_t ∗p = (threadParam_t∗)param;
+14        int t_id = p −> t_id;
+15
+16        For ( int k = 0; k < n; ++k) do
+17           sem_wait(&sem_workerstart[t_id]); //
+18
+
+
+
+                                                      11 of 32
+                                                  pthread                       1.6
+
+
+19            //
+20            For(int i=k+1+t_id; i < n; i += NUM_THREADS) do
+21                 //
+22                 For ( int j = k + 1; j < n; ++j) do
+23                      A[i ][ j ] = A[i][ j ] −A[i][k] ∗ A[k][ j ];
+24                 end For;
+25                 A[i ][ k]=0.0;
+26            end For;
+27            sem_post(&sem_main); //
+28            sem_wait(&sem_workerend[t_id]); //
+29       end For;
+30       pthread_exit(NULL);
+31   }
+32
+33   int main() {
+34       //
+35       sem_init(&sem_main, 0, 0);
+36       For ( int i = 0; i < NUM_THREADS; ++i) do
+37            sem_init(&sem_workerstart[i], 0, 0);
+38            sem_init(&sem_workderend[i], 0, 0);
+39       end for
+40
+41       //
+42       pthread_t handles[NUM_THREADS];//                             Handle
+43       threadParam_t param[NUM_THREADS];//
+44       For(int t_id = 0; t_id < NUM_THREADS; t_id++)
+45            param[t_id].t_id = t_id;
+46            pthread_create();
+47       end For
+48
+49       For(int k = 0; k < n; ++k) do
+50            //
+51            For ( int j = k+1; j < n; j++) do
+52                 A[k][ j ] = A[k][j] / A[k][k ];
+53            end For
+54            A[k][k] = 1.0;
+55
+56            //
+57            For ( int t_id = 0; t_id < NUM_THREADS; ++t_id) do
+58                 sem_post(&sem_workerstart[t_id]);
+59            end For
+60
+61            //
+62            For ( int t_id = 0; t_id < NUM_THREADS; ++t_id) do
+63                 sem_wait(&sem_main);
+64            end For
+
+
+
+
+                                                           12 of 32
+                                                 pthread                 1.6
+
+
+65
+66             //
+67             For ( int t_id = 0; t_id < NUM_THREADS; ++t_id) do
+68                    sem_post(&sem_workerend[t_id]);
+69             end For
+70
+71        end For
+72
+73        For(int t_id = 0; t_id < NUM_THREADS; t_id++) do
+74             pthread_join();
+75        end For
+76
+77        //
+78        sem_destroy();
+79
+80
+81        return 0;
+82   }
+
+
+               3                      +                              +
+1
+2    //
+3    typedef struct {
+4         int t_id; //           id
+5    }threadParam_t;
+6
+7    //
+8    sem_t sem_leader
+9    sem_t sem_Divsion[NUM_THREADS−1];
+10   sem_t sem_Elimination[NUM_THREADS−1];
+11
+12   //
+13   void ∗threadFunc(void ∗param) {
+14        threadParam_t ∗p = (threadParam_t∗)param;
+15        int t_id = p −> t_id;
+16
+17        For ( int k = 0; k < n; ++k) do
+18             // t_id       0
+19             //
+20             //                                          barrier
+21             if (t_id == 0)
+22                    For ( int j = k+1; j < n; j++) do
+23                       A[k][ j ] = A[k][j] / A[k][k ];
+24                    end For
+25                    A[k][k] = 1.0;
+26             else
+
+
+
+                                                           13 of 32
+                                                    pthread                                1.6
+
+
+27                   sem_wait(&sem_Divsion[t_id−1]); //
+28            end if
+29
+30            // t_id        0
+31            if (t_id == 0)
+32                   For ( int i = 0; i < NUM_THREADS−1; ++i) do
+33                        sem_post(&sem_Divsion[i]);
+34                   end For
+35            end if
+36
+37            //
+38            For(int i=k+1+t_id; i < n; i += NUM_THREADS) do
+39                   //
+40                   For ( int j = k + 1; j < n; ++j) do
+41                        A[i ][ j ] = A[i][ j ] −A[i][k] ∗ A[k][ j ];
+42                   end For;
+43                   A[i ][ k]=0.0;
+44            end For;
+45
+46
+47            if (t_id == 0)
+48                   For ( int i = 0; i < NUM_THREADS−1; ++i) do
+49                        sem_wait(&sem_leader); //                      worker
+50                   end For
+51
+52                   For ( int i = 0; i < NUM_THREADS−1; ++i) do
+53                        sem_post(&sem_Elimination[i]); //                       worker
+54                   end For
+55            else
+56                   sem_post(&sem_leader);//                leader,
+57                   sem_wait(&sem_Elimination[t_id−1]); //
+58            end if
+59       end For;
+60       pthread_exit(NULL);
+61   }
+62
+63   int main() {
+64       //
+65       sem_init(&sem_leader, 0, 0)
+66       For ( int i = 0; i < NUM_THREADS−1; ++i) do
+67            sem_init(&sem_Divsion, 0, 0);
+68            sem_init(&sem_Elimination, 0, 0);
+69       end For
+70
+71       //
+72       pthread_t handles[NUM_THREADS];//                                 Handle
+
+
+
+
+                                                             14 of 32
+                                                 pthread              1.6
+
+
+73        threadParam_t param[NUM_THREADS];//
+74        For(int t_id = 0; t_id < NUM_THREADS; t_id++)
+75             param[t_id].t_id = t_id;
+76             pthread_create();
+77        end For
+78
+79        For(int t_id = 0; t_id < NUM_THREADS; t_id++) do
+80             pthread_join();
+81        end For
+82
+83        //
+84        sem_destroy();
+85
+86
+87        return 0;
+88   }
+
+
+               4                     +barrier
+1
+2    //
+3    typedef struct {
+4         int t_id; //          id
+5    }threadParam_t;
+6
+7    //barrier
+8    pthread_barrier_t barrier_Divsion;
+9    pthread_barrier_t barrier_Elimination;
+10
+11   //
+12   void ∗threadFunc(void ∗param) {
+13        threadParam_t ∗p = (threadParam_t∗)param;
+14        int t_id = p −> t_id;
+15
+16        For ( int k = 0; k < n; ++k) do
+17             // t_id      0
+18             //
+19             if (t_id == 0)
+20                  For ( int j = k+1; j < n; j++) do
+21                       A[k][ j ] = A[k][j] / A[k][k ];
+22                  end For
+23                  A[k][k] = 1.0;
+24             end if
+25
+26             //
+27             pthread_barrier_wait(&barrier_Divsion);
+28
+
+
+
+                                                           15 of 32
+                                                   pthread                       1.7
+
+
+29            //
+30            For(int i=k+1+t_id; i < n; i += NUM_THREADS) do
+31                 //
+32                 For ( int j = k + 1; j < n; ++j) do
+33                       A[i ][ j ] = A[i][ j ] −A[i][k] ∗ A[k][ j ];
+34                 end For;
+35                 A[i ][ k]=0.0;
+36            end For;
+37
+38            //
+39            pthread_barrier_wait(&barrier_Elimination);
+40
+41       end For;
+42       pthread_exit(NULL);
+43   }
+44
+45   int main() {
+46       //          barrier
+47       pthread_barrier_init(&barrier_Divsion, NULL, NUM_THREADS);
+48       pthread_barrier_init(&barrier_Elimination, NULL, NUM_THREADS);
+49
+50       //
+51       pthread_t handles[NUM_THREADS];//                              Handle
+52       threadParam_t param[NUM_THREADS];//
+53       For(int t_id = 0; t_id < NUM_THREADS; t_id++)
+54            param[t_id].t_id = t_id;
+55            pthread_create();
+56       end For
+57
+58       For(int t_id = 0; t_id < NUM_THREADS; t_id++) do
+59            pthread_join();
+60       end For
+61
+62       //                barrier
+63       pthread_barrier_destroy();
+64
+65       return 0;
+66   }
+
+
+
+
+     1.7
+                     SIMD
+                                             1        CPU 8
+                     8                                                           7
+
+
+                                                            16 of 32
+                                     pthread
+
+
+
+
+              8
+
+
+2       ANN
+2.1           SIMD
+2.1.1 Flat-SIMD +                              2
+
+             SIMD             Flat-SIMD                               Pthread/OpenMP
+                                   query                  base
+             topk     reduce                                  top p   p
+recall        latency        trade-off                                    schedule
+
+
+
+2.1.2 PQ-SIMD +                                2
+
+        PQ-SIMD
+                        PQ                          KMeans/KMeans++
+                    SIMD
+
+
+
+                                               ADC
+         1    LUT
+        LUT                                    dense compute
+
+
+
+    •
+
+    •
+
+    •
+
+              SIMD                                 centroid
+             Pthread/OpenMP
+
+
+         2
+
+
+                                           17 of 32
+                                 pthread                   2.2    IVF    Inverted File
+
+
+                                                            +
+compute-bound           memory-bound                 PQ code        LUT
+                    cache miss
+                                 batch query
+query                      query                                        base
+                                                   top-p                   merge
+                               memory bandwidth
+
+
+             SIMD              gather shuffle FastScan                    gather
+
+
+
+2.2     IVF Inverted File
+
+
+
+
+                                     2.1: IVF
+
+       IVF                     2.1                                                  base
+data
+         base data                                  64     4096           IVF
+
+
+cache miss
+                                                                                   PQ
+                                     SIMD
+       IVF                             2.2 2.3
+
+
+         nprobe                nprobe                                    nprobe
+                                                                         nprobe
+              recall-latency                     rerank                    nprobe
+
+
+                                        18 of 32
+                       pthread                   2.2   IVF   Inverted File
+
+
+
+
+                       2.2: IVF             I
+
+
+
+
+                       2.3: IVF             II
+
+
+
+
+2.2.1 IVF-SIMD baseline    2                             4
+
+                       IVF-SIMD           baseline             IVF
+              SIMD
+  Pthread/OpenMP
+     IVF
+
+ •            query                                      nprobe
+
+
+                      reduce                                          query
+
+
+                               19 of 32
+  2.3                        Navigable Small World graphs
+           HNSW Hierarchicalpthread                                                   2
+
+
+
+
+  •                                                                             IVF
+
+
+               query
+
+                                  inverted list
+          schedule
+  topk reduce                                       top p           trade-off
+
+2.2.2 IVF-PQ-SIMD baseline(3                        )                    5
+
+                                        IVF       PQ                              1
+           base data          PQ              IVF               2        IVF
+                             PQ
+             IVF-PQ
+           IVF-PQ                  PQ
+                     compute-bound                memory-bound
+
+
+               latency recall
+
+
+2.3       HNSW Hierarchical Navigable Small World graphs
+                        2
+             HNSW                                                    hnswlib
+              hnswlib
+
+
+                                              2.4                   HNSW
+
+
+                                                                     2.5
+                                                  pq        H            pq
+      H                 ef                                          pq
+      vc                vc
+
+
+             HNSW
+
+
+
+                                          20 of 32
+      2.3                     Navigable Small World graphs
+            HNSW Hierarchicalpthread                                             2
+
+
+
+
+                                  2.4: HNSW
+
+
+
+
+                             2.5: HNSW
+
+                                                                  1
+                HNSW
+            HNSW
+
+
+  1
+             HNSW
+                                                                      Fast Approximate
+Nearest Neighbor Search With The Navigating Spreading-out Graph
+
+
+
+
+                                        21 of 32
+                                     pthread
+
+
+
+
+                                    2
+
+         1                                             Layer 0
+             2           IVF+HNSW                                 HNSW
+                       HNSW
+
+
+
+
+3
+3.1
+         PCFG
+                                  .pdf
+
+
+                 3.6     3.7                                                    PT
+        segment                                         L8 D 2        PT
+                                                                 L8
+                       D2                                                  12   11   23
+                                                                      D2
+
+
+                                                                         pthread/OpenMP
+                                                        main
+                                             main
+                 SIMD
+
+
+
+
+                                                       correctness_guess.cpp
+                       guess                             main
+                                                  ”Cracked”
+
+
+    2
+                               iQAN: Fast and Accurate Vector Search with Eﬀicient Intra-Query
+Parallelism on Multi-Core Architectures,
+
+
+
+
+                                            22 of 32
+                                       pthread         3.2
+
+
+
+
+            3.6:                      guessing.cpp
+
+
+
+
+            3.7:                      guessing.cpp
+
+    3.2
+
+
+                         PCFG
+                           guess/train.cpp
+1   void model::train( string path)
+2   {
+3       string pw;
+4       ifstream train_set(path);
+5       while (train_set >> pw)
+6       {
+7           parse(pw);
+8       }
+9   }
+
+
+                                            23 of 32
+                                           pthread              3.2
+
+
+
+
+                    parse(pw)
+
+        1.
+
+        2.         PT             L6D2S1
+
+        3.                            segment value               6
+
+        4.         preterminals           letters     digits   symbols
+
+                  parse()
+
+
+1   #pragma omp parallel for
+2   for ( int i = 0; i < passwords.size(); i++)
+3   {
+4       #pragma omp critical
+5       {
+6            m.parse(passwords[i]);
+7       }
+8   }
+
+
+
+
+                                                               parallel for   critical
+
+
+
+
+        1.
+
+        2.
+
+        3.
+
+
+
+
+                                                  24 of 32
+                             pthread                           3.3
+
+
+3.3
+                             90%,
+
+  1.         SIMD                                                        pthread
+         OpenMP
+
+
+
+
+  2.       pthread    OpenMP
+                               OpenMP            pthread
+
+
+  3.
+
+
+
+
+                                               https://ieeexplore.ieee.org/
+       document/10849657
+
+
+3.4
+                                                                     pthread
+openmp
+
+  1.            guess time
+
+
+                                    https://drops.dagstuhl.de/storage/
+       00lipics/lipics-vol204-esa2021/LIPIcs.ESA.2021.81/LIPIcs.ESA.
+       2021.81.pdf
+       (+10%)
+
+  2.      3.2
+
+
+                             (+10%)
+
+
+                                    25 of 32
+                                        pthread
+
+
+        3.                                                               https://ieeexplore.ieee.
+             org/document/10849657                                             (
+                                   )
+
+
+
+
+    4        NTT
+                                                  ,                  ,                     CRT   ,
+                              ,                       ,                        CRT           ,
+                      ,                           ,                      CRT
+
+
+             NTT                                                    SIMD           ,
+
+
+
+    4.1
+                                  NTT                     ,                            ,
+                                              ,                                                      ,
+                          ,                                   ,
+1
+2   for( int mid = 1; mid < limit; mid <<= 1) {
+3       for( int j = 0; j < limit; j += (mid << 1)) {
+4            int w = 1;//
+5            for( int k = 0; k < mid; k++, w = w ∗ Wn) {//
+6                //
+7            }
+8       }
+9   }
+
+
+
+
+    4.2
+                      SIMD                                        NTT,
+
+                                                  26 of 32
+                                       pthread                                             4.3   CRT
+
+
+                           NTT,                                            ,
+ n                                  2k+1
+4 (                             2          ),                                                      4,
+                                            ,
+                               4,
+
+
+4.3     CRT
+                                                           ,        SIMD
+       NTT         ,                                      NTT,                                    oiwiki
+     NTT               ,                                       NTT                 ,                              (
+CRT )
+                           NTT                      ,                          NTT                , CRT
+                                     NTT,                                                                     ,
+         CRT
+                                                ,                                      NTT
+pthread        ,                       ,
+                                     NTT(                            )                                     NTT(
+           )           ,                                                       ,
+       CRT             NTT                                                             ,
+           ,       CRT                 NTT                                                  (              64 bit)
+           ,                           (CKKS                   ),                                             ,
+                           ,                                                   32 bit
+
+     • A Full RNS Variant of FV like Somewhat Homomorphic Encryption
+       Schemes
+
+     • A Full RNS Variant of Approximate Homomorphic Encryption
+
+     • Approximate CRT-Based Gadget Decomposition and Application to
+       TFHE Blind Rotation
+
+                               NTT                                   ,
+
+
+5              SVD
+                                                                     SVD                               /
+
+
+
+                                                        27 of 32
+                                                pthread                            5.1
+
+
+     gkh_svd_from_bidiagonal
+
+
+     5.1
+                                         A
+1
+2    for ( int iter = 0; iter < max_iter; ++iter)
+3       {
+4           cleanup_bidiagonal(B, tol); //
+5           handle_diagonal_zeros(U, B, V, tol); //                          0
+6
+7           //
+8           std :: vector<Block> blocks = split_active_blocks(B, n, tol);
+9
+10          //             1x1                                     0
+11          bool all_singletons = true;
+12          for (const auto &blk : blocks)
+13          {
+14               if (blk. r > blk.l)
+15               {
+16                   all_singletons = false;
+17                   break;
+18               }
+19          }
+20
+21           if ( all_singletons )
+22          {
+23               converged = true;
+24               break;
+25          }
+26
+27          //
+28          for ( int i = static_cast<int>(blocks.size()) − 1; i >= 0; −−i)
+29          {
+30               if (blocks[ i ]. r > blocks[i ]. l )
+31               {
+32                   one_block_step(U, B, V, blocks[i].l, blocks[ i ]. r);
+33               }
+34          }
+35      }
+
+
+                                                                                         0
+                                                 0                           split_active_blocks
+
+
+
+
+                                                        28 of 32
+                                                   pthread                     5.2
+
+
+      push              blocks
+                                                    blocks                               1x1
+            gkh                                                      1x1
+    bulge chasing
+                                                       1x1           blocks[i].r>blocks[i].l
+                             0
+                [l,r]                       r==l                             1x1
+
+
+    5.2
+
+
+
+    5.2.1
+
+                                                                         -           -    1x1
+                gkh                                                gkh
+1     //
+2     for ( int i = static_cast<int>(blocks.size()) − 1; i >= 0; −−i)
+3     {
+4           if (blocks[ i ]. r > blocks[i ]. l )
+5           {
+6                one_block_step(U, B, V, blocks[i].l, blocks[ i ]. r);
+7           }
+8     }
+
+
+
+
+                U        V
+
+    5.2.2
+
+                                                                   gkh
+
+
+                                                                             gkh
+
+
+
+
+    5.3
+
+
+
+                                                        29 of 32
+                                pthread
+
+
+
+
+                                  PCFG
+
+
+
+                                one_block_step                   U   V
+                                                U   V
+
+
+
+
+    •     SIMD
+
+    •
+
+
+    •
+
+
+    •
+
+
+
+                                                                     /
+
+
+
+
+6       VTune               (              )
+                 Intel             VTune
+                                       Vtune profiling
+                                     Microarchitecture Exploration
+        thread   Grouping          Function/thread/Logical Core/Call Stack
+
+
+                                     30 of 32
+                     pthread
+
+
+                     id
+
+
+
+
+              id
+
+
+
+
+             68780                                   0
+
+
+
+
+    156764                           1       56424
+2   184100                               3
+                          Sleep_Ex
+
+
+
+                          31 of 32
+                          pthread
+
+
+
+
+             2        3                   0
+                                      1
+                 2        3                   take
+turn
+
+
+       CPI           Cache
+
+
+
+
+                               32 of 32
+

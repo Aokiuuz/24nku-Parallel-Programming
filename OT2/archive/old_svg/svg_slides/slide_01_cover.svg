@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="协程技术调研封面">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="56%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .lightcard { fill: rgba(248,250,252,0.95); stroke: rgba(15,23,42,0.08); stroke-width: 1.0; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 800; letter-spacing: 1.8px; }
+      .title { fill: #F8FAFC; font-size: 36px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 520; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .dark { fill: #111827; font-size: 16px; font-weight: 620; letter-spacing: 0; }
+      .darksmall { fill: #475569; font-size: 12.5px; font-weight: 560; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .metric2 { fill: #111827; font-size: 40px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.20); stroke-width: 1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .dot { fill: #60A5FA; }
+      .node { fill: rgba(15,23,42,0.74); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .chip { fill: rgba(255,255,255,0.10); stroke: rgba(255,255,255,0.16); stroke-width: 1; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1128" cy="-86" r="280" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-70" cy="652" r="300" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+
+    <rect x="48" y="82" width="1184" height="520" rx="30" class="card2"/>
+    <text x="96" y="160" class="kicker">PARALLEL PROGRAMMING · COROUTINE RESEARCH</text>
+    <text x="96" y="238" class="h1">协程：把“等待”</text>
+    <text x="96" y="306" class="h1">变便宜的并发抽象</text>
+    <text x="100" y="362" class="body2">从线程瓶颈、运行时机制到 Python 实验验证</text>
+    <g transform="translate(96 430)">
+      <rect x="0" y="0" width="92" height="30" rx="15" fill="#334155" opacity="0.96"/><text x="46.0" y="20" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="800">进程</text>
+      <path d="M104 15 L154 15" class="thin" stroke="#64748B"/>
+      <rect x="166" y="0" width="92" height="30" rx="15" fill="#DC2626" opacity="0.96"/><text x="212.0" y="20" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="800">线程</text>
+      <path d="M270 15 L320 15" class="thin" stroke="#64748B"/>
+      <rect x="332" y="0" width="118" height="30" rx="15" fill="#059669" opacity="0.96"/><text x="391.0" y="20" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="800">事件循环</text>
+      <path d="M462 15 L512 15" class="thin" stroke="#64748B"/>
+      <rect x="524" y="0" width="92" height="30" rx="15" fill="#2563EB" opacity="0.96"/><text x="570.0" y="20" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="800">协程</text>
+      <path d="M628 15 L678 15" class="thin" stroke="#64748B"/>
+      <rect x="690" y="0" width="118" height="30" rx="15" fill="#7C3AED" opacity="0.96"/><text x="749.0" y="20" text-anchor="middle" fill="#FFFFFF" font-size="13" font-weight="800">虚拟线程</text>
+    </g>
+    <rect x="874" y="154" width="274" height="274" rx="137" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="2"/>
+    <path d="M1011 196 C1068 196 1114 242 1114 299 C1114 356 1068 402 1011 402 C954 402 908 356 908 299 C908 242 954 196 1011 196Z" fill="none" stroke="#60A5FA" stroke-width="5"/>
+    <path d="M960 302 L1000 342 L1072 258" fill="none" stroke="#34D399" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="1011" y="466" text-anchor="middle" class="body">等待不再独占线程</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · SVG Final Slides</text>
+  <text x="1232" y="692" text-anchor="end" class="small">01/14</text>
+</svg>

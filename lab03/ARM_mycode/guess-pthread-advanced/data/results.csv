@@ -1,0 +1,10 @@
+pthread_train_ordered,O0,8,1,4.04011,10.2988,34.7649,14.338910,ok,data/20260527-2050_pthread_train_ordered_O0_T8_run1.o
+pthread_train_ordered,O0,8,2,4.12409,10.2494,37.2671,14.373490,ok,data/20260527-2056_pthread_train_ordered_O0_T8_run2.o
+pthread_train_ordered,O0,8,3,3.86884,10.2764,35.687,14.145240,ok,data/20260527-2102_pthread_train_ordered_O0_T8_run3.o
+pthread_train_ordered,O0,8,4,3.95628,10.2509,35.2255,14.207180,ok,data/20260527-2108_pthread_train_ordered_O0_T8_run4.o
+pthread_train_ordered,O0,8,5,4.11103,10.2208,36.4593,14.331830,ok,data/20260527-2114_pthread_train_ordered_O0_T8_run5.o
+pthread_train_ordered,O2,8,1,0.482419,1.2666,11.7907,1.749019,ok,data/20260527-2124_pthread_train_ordered_O2_T8_run1.o
+pthread_train_ordered,O2,8,2,0.473371,1.17709,11.353,1.650461,ok,data/20260527-2130_pthread_train_ordered_O2_T8_run2.o
+pthread_train_ordered,O2,8,3,0.450985,1.19614,11.5909,1.647125,ok,data/20260527-2135_pthread_train_ordered_O2_T8_run3.o
+pthread_train_ordered,O2,8,4,0.494234,1.22943,11.3221,1.723664,ok,data/20260527-2140_pthread_train_ordered_O2_T8_run4.o
+pthread_train_ordered,O2,8,5,1.84632,1.18992,13.075,3.036240,ok,data/20260527-2146_pthread_train_ordered_O2_T8_run5.o

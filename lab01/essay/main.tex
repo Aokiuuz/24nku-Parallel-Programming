@@ -1,0 +1,841 @@
+\documentclass[a4paper]{article}
+
+\input{style/ch_xelatex.tex}
+\input{style/scala.tex}
+
+%代码段设置
+\lstset{numbers=left,
+basicstyle=\tiny,
+numberstyle=\tiny,
+keywordstyle=\color{blue!70},
+commentstyle=\color{red!50!green!50!blue!50},
+frame=single, rulesepcolor=\color{red!20!green!20!blue!20},
+escapeinside=``
+}
+
+\graphicspath{ {images/} }
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{color,framed}%文本框
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{amssymb}
+\usepackage{enumerate}
+\usepackage{xcolor}
+\usepackage{bm} 
+\usepackage{lastpage}%获得总页数
+\usepackage{fancyhdr}
+\usepackage{tabularx}  
+\usepackage{geometry}
+\usepackage{minted}
+\usepackage{graphics}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage{pdfpages}
+\usepackage{pgfplots}
+\pgfplotsset{width=10cm,compat=1.9}
+\usepackage{multirow}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+%-------------------------全局缩放--------------
+\changefontsizes{8pt}
+\setlength{\tabcolsep}{4.8pt}
+\renewcommand{\arraystretch}{0.8}
+\emergencystretch=2em
+\tikzset{every picture/.style={scale=0.8,transform shape}}
+
+%-----------------------伪代码------------------
+\usepackage{algorithm}  
+\usepackage{algorithmicx}  
+\usepackage{algpseudocode}  
+\floatname{algorithm}{Algorithm}  
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}  
+\renewcommand{\algorithmicensure}{\textbf{Output:}} 
+\usepackage{lipsum}  
+\makeatletter
+\newenvironment{breakablealgorithm}
+  {% \begin{breakablealgorithm}
+  \begin{center}
+     \refstepcounter{algorithm}% New algorithm
+     \hrule height.8pt depth0pt \kern2pt% \@fs@pre for \@fs@ruled
+     \renewcommand{\caption}[2][\relax]{% Make a new \caption
+      {\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}%
+      \ifx\relax##1\relax % #1 is \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}%
+      \else % #1 is not \relax
+         \addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}%
+      \fi
+      \kern2pt\hrule\kern2pt
+     }
+  }{% \end{breakablealgorithm}
+     \kern2pt\hrule\relax% \@fs@post for \@fs@ruled
+  \end{center}
+  }
+\makeatother
+%------------------------代码-------------------
+\usepackage{xcolor} 
+\usepackage{listings} 
+\lstset{ 
+breaklines,%自动换行
+basicstyle=\small,
+escapeinside=``,
+keywordstyle=\color{ blue!70} \bfseries,
+commentstyle=\color{red!50!green!50!blue!50},% 
+stringstyle=\ttfamily,% 
+extendedchars=false,% 
+linewidth=\textwidth,% 
+numbers=left,% 
+numberstyle=\tiny \color{blue!50},% 
+frame=trbl% 
+rulesepcolor= \color{ red!20!green!20!blue!20} 
+}
+
+%-------------------------页面边距--------------
+\geometry{a4paper,left=2.3cm,right=2.3cm,top=2.7cm,bottom=2.7cm}
+%-------------------------页眉页脚--------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\kaishu \leftmark}
+% \chead{}
+\rhead{\kaishu 并行程序设计实验报告}%加粗\bfseries 
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.1pt}  
+\renewcommand{\footrulewidth}{0pt}%去掉横线
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}%标题横线
+\newcommand{\HRulegrossa}{\rule{\linewidth}{1.2mm}}
+\newcommand{\optionalimage}[2]{%
+  \IfFileExists{#1}{%
+    \includegraphics[width=0.8\linewidth]{#1}%
+  }{%
+    \fbox{\parbox[c][4cm][c]{0.72\linewidth}{\centering 缺少截图文件\\\texttt{\detokenize{#1}}\\#2}}%
+  }%
+}
+\setlength{\textfloatsep}{10mm}%设置图片的前后间距
+%--------------------文档内容--------------------
+
+\begin{document}
+\renewcommand{\contentsname}{目\ 录}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+
+%-------------------------封面----------------
+\begin{titlepage}
+    \begin{center}
+    \includegraphics[width=0.64\textwidth]{NKU.png}\\[1cm]
+    \vspace{20mm}
+		\textbf{\huge\textbf{\kaishu{计算机学院}}}\\[0.5cm]
+		\textbf{\huge{\kaishu{并行程序设计实验报告}}}\\[2.3cm]
+		\textbf{\Huge\textbf{\kaishu{Lab01 体系结构相关编程实验}}}
+
+		\vspace{\fill}
+    
+    \centering
+    \textsc{\LARGE \kaishu{姓名\ :\ 刘蔚霖}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{学号\ :\ 2412727}}\\[0.5cm]
+    \textsc{\LARGE \kaishu{专业\ :\ 计算机科学与技术}}\\[0.5cm]
+    
+    \vfill
+    {\Large \today}
+    \end{center}
+\end{titlepage}
+
+\renewcommand {\thefigure}{\thesection{}.\arabic{figure}}%图片按章标号
+\renewcommand{\figurename}{图}
+\renewcommand{\contentsname}{目录}  
+\cfoot{\thepage\ of \pageref{LastPage}}%当前页 of 总页数
+
+
+% 生成目录
+\clearpage
+\small
+\linespread{0.95}\selectfont
+\tableofcontents
+\newpage
+
+\section{实验概述}
+\subsection{实验目的}
+本实验对应 Lab01「体系结构相关编程」，围绕 CPU cache 局部性、指令级并行和编译器优化三个主题，完成两类微基准程序的实现、验证与性能测试：
+\begin{enumerate}
+  \item 矩阵与向量内积：比较逐列访问的平凡算法与按行访问的 cache 优化算法，并进一步尝试循环展开。
+  \item $n$ 个数求和：比较单链式累加与多路链式累加，观察减少数据相关后对超标量执行效率的影响。
+  \item 对比不同编译优化等级（\texttt{-O0}、\texttt{-O2}、\texttt{-O3}）下的运行结果，并结合 VTune 与 Godbolt 对性能来源进行剖析。
+\end{enumerate}
+
+\subsection{研究问题与待验证假设}
+结合 Lab1 文档中的题目分析，本报告重点回答以下三个问题：
+\begin{enumerate}
+  \item 对矩阵题而言，改变访存顺序是否能显著改善 cache 行为，并且这种优势是否会随着工作集增大而继续扩大？
+  \item 对求和题而言，多累加器与循环展开是否能有效降低累加依赖链长度，从而在 \texttt{-O2/-O3} 下提高超标量利用率？
+  \item 编译器优化、算法设计和 profiling 结果之间是否能形成一致的证据链，解释实验中的主要性能差异？
+\end{enumerate}
+
+对应地，本文待验证的假设为：矩阵题的主要瓶颈来源于访存模式不匹配，求和题的主要瓶颈来源于串行依赖链，而编译器高优化等级会进一步放大这两类手工优化的收益。
+
+\subsection{实验完成情况}
+结合 Lab01 要求，当前已经完成的内容如下：
+\begin{itemize}
+  \item 基础要求：矩阵题完成 \texttt{col\_naive}、\texttt{row\_cache}；求和题完成 \texttt{sum\_naive}、\texttt{sum\_dual}。
+  \item 进阶要求：完成循环展开版本 \texttt{row\_cache\_u4} 与 \texttt{sum\_unroll4}。
+  \item 补充算法：实现树形求和 \texttt{sum\_pairwise}，用于对比更多算法设计思路。
+  \item 编译器优化对比：已经在 \texttt{-O0}、\texttt{-O2}、\texttt{-O3} 三种编译优化等级下完成基准测试。
+  \item profiling 分析：已经完成矩阵题的 VTune Hotspots / Memory Access 分析、求和题的 VTune Hotspots / Microarchitecture 分析，以及两组算法的 Godbolt 汇编对比分析。
+  \item 实验源码 GitHub 链接：\url{https://github.com/Aokiuuz/24nk-Parallel-Program-Design.git}
+\end{itemize}
+
+\section{实验环境}
+\subsection{软硬件平台}
+根据课程要求，实验部分需要明确说明软硬件平台参数，尤其是 CPU、cache 和编译选项。本实验的平台信息如表\ref{tab:env} 所示。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{ll}
+  \toprule
+  项目 & 配置 \\
+  \midrule
+  操作系统 & Microsoft Windows 10.0.26200.8037 \\
+  编译器 & g++ 15.2.0 (MinGW-W64 x86\_64-ucrt-posix-seh) \\
+  \LaTeX{} 编译器 & XeLaTeX 2025 \\
+  构建方式 & \texttt{make o0} / \texttt{make o2} / \texttt{make o3} / \texttt{make vtune} \\
+  CPU 型号 & Intel Core Ultra 7 155H \\
+  CPU 基准频率 & 3.80 GHz \\
+  物理核心数 / 逻辑线程数 & 16 / 22 \\
+  L1/L2/L3 Cache & 1.6 MB / 18.0 MB / 24.0 MB \\
+  内存容量 & 31.5 GB \\
+  存储设备 & NVMe SSD \\
+  profiling 工具 & Intel VTune Profiler、Godbolt (Compiler Explorer) \\
+  \bottomrule
+  \end{tabular}
+  \caption{实验平台信息}
+  \label{tab:env}
+\end{table}
+
+\subsection{测试方法}
+本实验采用项目中的微基准程序进行性能测试。测试程序先完成正确性验证，再对目标算法重复执行并统计总耗时。计时使用 \path{std::chrono::high_resolution_clock}，输出字段包括算法名、问题规模、重复次数、总耗时以及相对基础算法的加速比。
+
+对任意算法，其加速比定义为：
+\begin{equation}
+ \text{speedup} = \frac{T_{\text{baseline}}}{T_{\text{current}}}
+\end{equation}
+其中，矩阵题的基准算法为 \texttt{col\_naive}，求和题的基准算法为 \texttt{sum\_naive}。
+
+\subsection{实验流程与数据处理}
+本次报告将实验过程拆分为“程序实现、批量执行、结果整理、图表呈现”四个阶段：
+\begin{enumerate}
+  \item 源程序负责实现算法、完成正确性校验，并输出结构化测试结果；
+  \item 通过 \texttt{Makefile} 分别生成 \texttt{-O0}、\texttt{-O2}、\texttt{-O3} 三组可执行文件；
+  \item 将程序输出整理到 \texttt{RESULTS.md}，再进一步抽取为表格与折线图；
+  \item 在报告中同时保留“原始数值表”和“趋势图”，避免只展示终端截图或孤立数据点。
+\end{enumerate}
+
+这种组织方式既保留了原始数据支撑，也便于后续继续接入 VTune、Godbolt 或 CSV 脚本做更细粒度分析。
+
+\subsection{可复现性说明}
+为了保证结果具有可重复性，当前程序已经具备以下条件：
+\begin{itemize}
+  \item 每种算法在正式计时前都会先进行一次正确性验证；
+  \item 对不同规模使用固定的重复次数，以避免单次运行时间过短导致计时误差过大；
+  \item 同一组实验中的不同算法使用相同输入数据，保证对比公平。
+\end{itemize}
+若后续需要进一步提高实验严谨性，可再补充固定随机种子、CPU 绑核、关闭动态睿频和导出 CSV 原始数据等措施。
+
+\section{实验设计与实现}
+\subsection{矩阵与向量内积}
+设矩阵 $B \in \mathbb{R}^{n \times n}$、向量 $a \in \mathbb{R}^{n}$，计算目标为：
+\begin{equation}
+  \text{sum}[i] = \sum_{j=0}^{n-1} B[j][i] \cdot a[j], \quad 0 \le i < n
+\end{equation}
+由于 C/C++ 中二维数组按行主序存储，若按列访问矩阵，会造成跨 cache line 的非连续读；若按行访问，则更符合空间局部性。
+
+\subsubsection{算法设计}
+\begin{enumerate}
+  \item \texttt{col\_naive}：固定列索引 $i$，内层枚举行索引 $j$，直接按数学定义实现。
+  \item \texttt{row\_cache}：固定行索引 $j$，把当前 $a[j]$ 缓存在寄存器中，并顺序扫描该行全部元素，降低跨行跳跃访问带来的 cache miss。
+  \item \texttt{row\_cache\_u4}：在 \texttt{row\_cache} 基础上对内层循环做四路展开，减少循环控制与索引更新开销。
+\end{enumerate}
+
+\begin{breakablealgorithm}
+  \caption{矩阵列内积的 cache 优化思路}
+  \begin{algorithmic}[1]
+    \Require 行主序存储矩阵 $B$，向量 $a$，输出数组 $\text{sum}$，规模 $n$
+    \Ensure 输出每一列与向量 $a$ 的内积
+    \State 将 $\text{sum}[0 \ldots n-1]$ 置零
+    \For{$j = 0$ to $n-1$}
+      \State $aj \gets a[j]$
+      \State $base \gets j \times n$
+      \For{$i = 0$ to $n-1$}
+        \State $\text{sum}[i] \gets \text{sum}[i] + B[base + i] \times aj$
+      \EndFor
+    \EndFor
+    \State \Return $\text{sum}$
+  \end{algorithmic}
+\end{breakablealgorithm}
+
+\subsubsection{关键实现}
+\begin{lstlisting}[title=矩阵题中按行访问的核心实现,frame=trbl,language={C++}]
+void row_cache(const Matrix& b, const Vector& a, Vector& sum, std::size_t n) {
+    std::fill(sum.begin(), sum.end(), 0.0);
+    for (std::size_t j = 0; j < n; ++j) {
+        const double aj = a[j];
+        const std::size_t base = j * n;
+        for (std::size_t i = 0; i < n; ++i) {
+            sum[i] += b[base + i] * aj;
+        }
+    }
+}
+\end{lstlisting}
+
+\subsubsection{规模设置说明}
+矩阵题选择 $n=128,256,512,1024$ 四个规模，考虑如下：
+\begin{enumerate}
+  \item 这四组规模覆盖了从较小工作集到较大工作集的增长过程，足以观察 cache 局部性对性能的影响是否随规模扩大而增强；
+  \item 随着 $n$ 增大，矩阵数据量按平方增长，更容易放大“按列访问”和“按行访问”的访存差异；
+  \item 重复次数采用分段递减策略，目的是在保证总耗时可接受的同时，让不同规模下的测量仍然具有稳定性。
+\end{enumerate}
+
+\subsubsection{工作集估算}
+为了将问题规模与 cache 行为联系起来，表\ref{tab:matrix-footprint} 给出了矩阵题主要数据结构的大致工作集大小。这里按双精度浮点数 8 Byte 估算，矩阵 $B$ 占用 $8n^2$ Byte，向量 $a$ 与输出数组 \texttt{sum} 共占用 $16n$ Byte。可以看出，测试规模覆盖了从百 KiB 到数 MiB 的区间，这有助于观察工作集逐步逼近私有 cache、共享 cache 乃至主存时的性能变化。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{cccc}
+  \toprule
+  规模 $n$ & 矩阵 $B$ & 向量与结果数组 & 总工作集 \\
+  \midrule
+  128 & 128 KiB & 2 KiB & 130 KiB \\
+  256 & 512 KiB & 4 KiB & 516 KiB \\
+  512 & 2.00 MiB & 8 KiB & 2.01 MiB \\
+  1024 & 8.00 MiB & 16 KiB & 8.02 MiB \\
+  \bottomrule
+  \end{tabular}
+  \caption{矩阵题工作集规模估算}
+  \label{tab:matrix-footprint}
+\end{table}
+
+\subsection{\texorpdfstring{$n$}{n} 个数求和}
+求和实验关注的不是算法复杂度，而是累加过程中的数据相关。单链式累加存在严格的串行依赖，而多路累加可把长依赖链拆成多条较短的依赖链，更有利于处理器发掘指令级并行。
+
+\subsubsection{算法设计}
+\begin{enumerate}
+  \item \texttt{sum\_naive}：使用单个累加器顺序累加，作为基准实现。
+  \item \texttt{sum\_dual}：使用两个累加器分别处理偶数位与奇数位，减少单一路径的相关长度。
+  \item \texttt{sum\_unroll4}：采用四个累加器并配合四路循环展开。
+  \item \texttt{sum\_pairwise}：使用树形规约思路，两两相加后写回数组，体现不同设计思路，但会引入额外访存。
+\end{enumerate}
+
+\begin{breakablealgorithm}
+  \caption{四路展开求和}
+  \begin{algorithmic}[1]
+    \Require 输入数组 $a[0 \ldots n-1]$
+    \Ensure 数组所有元素之和
+    \State $s_0, s_1, s_2, s_3 \gets 0$
+    \State $i \gets 0$
+    \While{$i + 3 < n$}
+      \State $s_0 \gets s_0 + a[i]$
+      \State $s_1 \gets s_1 + a[i + 1]$
+      \State $s_2 \gets s_2 + a[i + 2]$
+      \State $s_3 \gets s_3 + a[i + 3]$
+      \State $i \gets i + 4$
+    \EndWhile
+    \While{$i < n$}
+      \State $s_0 \gets s_0 + a[i]$
+      \State $i \gets i + 1$
+    \EndWhile
+    \State \Return $(s_0 + s_1) + (s_2 + s_3)$
+  \end{algorithmic}
+\end{breakablealgorithm}
+
+\begin{lstlisting}[title=求和实验中的四路展开实现,frame=trbl,language={C++}]
+double sum_unroll4(const Vector& a) {
+    double sum0 = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0;
+    std::size_t i = 0;
+    for (; i + 3 < a.size(); i += 4) {
+        sum0 += a[i];
+        sum1 += a[i + 1];
+        sum2 += a[i + 2];
+        sum3 += a[i + 3];
+    }
+    for (; i < a.size(); ++i) {
+        sum0 += a[i];
+    }
+    return (sum0 + sum1) + (sum2 + sum3);
+}
+\end{lstlisting}
+
+\subsubsection{规模设置说明}
+求和题选择 $2^{10}$、$2^{14}$、$2^{18}$、$2^{22}$ 四组输入规模，主要是为了让数据规模跨越多个数量级：
+\begin{enumerate}
+  \item 小规模时，处理器更可能受益于减少依赖链长度带来的指令级并行提升；
+  \item 大规模时，数据访问的带宽与 cache 行为会逐渐成为主导因素，可以观察展开收益是否衰减；
+  \item 以 $2^k$ 形式设置规模，也便于把实验现象与 cache 容量、对齐和规约层数联系起来分析。
+\end{enumerate}
+
+\subsubsection{工作集估算}
+对于求和题，输入数组大小为 $8n$ Byte。表\ref{tab:sum-footprint} 显示，测试规模从 8 KiB 跨越到 32 MiB，既包含很可能完全驻留于较低层 cache 的小数组，也包含必须频繁访问更高层 cache 甚至主存的大数组。这样的设置有利于观察“依赖链优化收益”与“内存访问开销”之间的主导关系如何随规模改变。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{cc}
+  \toprule
+  规模 $n$ & 输入数组大小 \\
+  \midrule
+  $2^{10}$ & 8 KiB \\
+  $2^{14}$ & 128 KiB \\
+  $2^{18}$ & 2 MiB \\
+  $2^{22}$ & 32 MiB \\
+  \bottomrule
+  \end{tabular}
+  \caption{求和题工作集规模估算}
+  \label{tab:sum-footprint}
+\end{table}
+
+\subsection{编译与运行}
+项目提供统一的 \texttt{Makefile}，分别使用如下命令生成不同优化等级的可执行文件：
+\begin{lstlisting}[title=构建命令,frame=trbl,language={bash}]
+make o0
+make o2
+make o3
+\end{lstlisting}
+
+对应的测试程序如下：
+\begin{itemize}
+  \item \texttt{bin/matrix\_dot\_o0.exe}、\texttt{bin/matrix\_dot\_o2.exe}、\texttt{bin/matrix\_dot\_o3.exe}
+  \item \texttt{bin/sum\_bench\_o0.exe}、\texttt{bin/sum\_bench\_o2.exe}、\texttt{bin/sum\_bench\_o3.exe}
+\end{itemize}
+
+\section{实验结果与分析}
+\subsection{矩阵与向量内积结果}
+矩阵题测试规模为 $n=128,256,512,1024$，结果如表\ref{tab:matrix} 所示。
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{cccccc}
+  \toprule
+  优化等级 & 规模 $n$ & \texttt{col\_naive}/s & \texttt{row\_cache}/s & \texttt{row\_cache\_u4}/s & 最优加速比 \\
+  \midrule
+  \texttt{-O0} & 128  & 0.035911 & 0.032405 & 0.032201 & 1.115 \\
+  \texttt{-O0} & 256  & 0.045614 & 0.038836 & 0.038891 & 1.175 \\
+  \texttt{-O0} & 512  & 0.066748 & 0.038642 & 0.038735 & 1.727 \\
+  \texttt{-O0} & 1024 & 0.232900 & 0.036803 & 0.044080 & 6.328 \\
+  \midrule
+  \texttt{-O2} & 128  & 0.005892 & 0.002102 & 0.001640 & 3.592 \\
+  \texttt{-O2} & 256  & 0.005733 & 0.002111 & 0.001892 & 3.030 \\
+  \texttt{-O2} & 512  & 0.006746 & 0.002036 & 0.001957 & 3.447 \\
+  \texttt{-O2} & 1024 & 0.048577 & 0.004488 & 0.003531 & 13.758 \\
+  \midrule
+  \texttt{-O3} & 128  & 0.005127 & 0.001258 & 0.000972 & 5.274 \\
+  \texttt{-O3} & 256  & 0.005754 & 0.001380 & 0.001369 & 4.203 \\
+  \texttt{-O3} & 512  & 0.007091 & 0.001192 & 0.001243 & 5.951 \\
+  \texttt{-O3} & 1024 & 0.043438 & 0.003575 & 0.003100 & 14.011 \\
+  \bottomrule
+  \end{tabular}
+ \caption{矩阵列内积实验结果}
+  \label{tab:matrix}
+\end{table}
+
+图\ref{fig:matrix-speedup} 展示了 \texttt{-O3} 下不同规模的相对加速比变化趋势。
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={矩阵规模 $n$},
+      ylabel={Speedup},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major
+    ]
+      \addplot[color=blue,mark=*] coordinates {
+        (128,4.077) (256,4.170) (512,5.951) (1024,12.151)
+      };
+      \addlegendentry{\texttt{row\_cache}}
+      \addplot[color=red,mark=square*] coordinates {
+        (128,5.274) (256,4.203) (512,5.704) (1024,14.011)
+      };
+      \addlegendentry{\texttt{row\_cache\_u4}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{\texttt{-O3} 下矩阵题相对 \texttt{col\_naive} 的加速比}
+  \label{fig:matrix-speedup}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={矩阵规模 $n$},
+      ylabel={运行时间 / s},
+      ymode=log,
+      log basis y={10},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major
+    ]
+      \addplot[color=black,mark=*] coordinates {
+        (128,0.035911) (256,0.045614) (512,0.066748) (1024,0.232900)
+      };
+      \addlegendentry{\texttt{col\_naive} @ \texttt{-O0}}
+      \addplot[color=blue,mark=square*] coordinates {
+        (128,0.005892) (256,0.005733) (512,0.006746) (1024,0.048577)
+      };
+      \addlegendentry{\texttt{col\_naive} @ \texttt{-O2}}
+      \addplot[color=red,mark=triangle*] coordinates {
+        (128,0.005127) (256,0.005754) (512,0.007091) (1024,0.043438)
+      };
+      \addlegendentry{\texttt{col\_naive} @ \texttt{-O3}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{矩阵题中 \texttt{col\_naive} 在不同优化等级下的运行时间}
+  \label{fig:matrix-opt}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={矩阵规模 $n$},
+      ylabel={最佳加速比},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major
+    ]
+      \addplot[color=black,mark=*] coordinates {
+        (128,1.115) (256,1.175) (512,1.727) (1024,6.328)
+      };
+      \addlegendentry{best @ \texttt{-O0}}
+      \addplot[color=blue,mark=square*] coordinates {
+        (128,3.592) (256,3.030) (512,3.447) (1024,13.758)
+      };
+      \addlegendentry{best @ \texttt{-O2}}
+      \addplot[color=red,mark=triangle*] coordinates {
+        (128,5.274) (256,4.203) (512,5.951) (1024,14.011)
+      };
+      \addlegendentry{best @ \texttt{-O3}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{不同优化等级下矩阵题的最佳加速比}
+  \label{fig:matrix-best-opt}
+\end{figure}
+
+\subsubsection{结果分析}
+\begin{enumerate}
+  \item \texttt{row\_cache} 在所有规模和优化等级下都明显优于 \texttt{col\_naive}。随着矩阵工作集从 130 KiB 增长到 8.02 MiB，按列访问的跨步读代价被持续放大，而按行顺序访问仍能受益于 cache line 的空间局部性。
+  \item 图\ref{fig:matrix-speedup} 和图\ref{fig:matrix-best-opt} 表明，这种优势会被问题规模和编译器优化共同放大。特别是 $n=1024$ 时，\texttt{-O3} 下 \texttt{row\_cache\_u4} 的加速比达到 14.011 倍。
+  \item \texttt{row\_cache\_u4} 多数情况下优于 \texttt{row\_cache}，但收益明显小于“按列改按行”。这说明循环展开只是次一级优化，最终效果仍受寄存器分配、指令调度和自动向量化影响。
+  \item 图\ref{fig:matrix-opt} 还说明编译器优化能显著加速基线算法，但无法根本修复不良访存模式，因此算法设计仍是决定性因素。
+  \item 综合来看，在行主序存储条件下，访存顺序比局部展开更重要；循环展开的价值主要在于进一步压缩已经 cache 友好的循环体。
+\end{enumerate}
+
+\subsection{\texorpdfstring{$n$}{n} 个数求和结果}
+求和实验的规模分别为 $2^{10}$、$2^{14}$、$2^{18}$、$2^{22}$。测试结果如表\ref{tab:sum} 所示。
+
+\begin{table}[H]
+  \centering
+  \small
+  \begin{tabular}{ccccccc}
+  \toprule
+  优化等级 & 规模 $n$ & \texttt{sum\_naive}/s & \texttt{sum\_dual}/s & \texttt{sum\_unroll4}/s & \texttt{sum\_pairwise}/s & 最优加速比 \\
+  \midrule
+  \texttt{-O0} & 1024    & 0.041079 & 0.070381 & 0.064958 & 0.190056 & 1.000 \\
+  \texttt{-O0} & 16384   & 0.128563 & 0.223203 & 0.210417 & 0.665581 & 1.000 \\
+  \texttt{-O0} & 262144  & 0.338992 & 0.566687 & 0.474945 & 1.428311 & 1.000 \\
+  \texttt{-O0} & 4194304 & 0.729098 & 1.257167 & 1.137982 & 3.279034 & 1.000 \\
+  \midrule
+  \texttt{-O2} & 1024    & 0.008649 & 0.004537 & 0.002311 & 0.006870 & 3.742 \\
+  \texttt{-O2} & 16384   & 0.039790 & 0.016440 & 0.007876 & 0.029359 & 5.052 \\
+  \texttt{-O2} & 262144  & 0.076637 & 0.045045 & 0.020669 & 0.419883 & 3.708 \\
+  \texttt{-O2} & 4194304 & 0.214646 & 0.164202 & 0.163617 & 1.111949 & 1.312 \\
+  \midrule
+  \texttt{-O3} & 1024    & 0.009025 & 0.004388 & 0.002246 & 0.007210 & 4.018 \\
+  \texttt{-O3} & 16384   & 0.031813 & 0.015477 & 0.007777 & 0.029042 & 4.091 \\
+  \texttt{-O3} & 262144  & 0.095107 & 0.045808 & 0.021920 & 0.377787 & 4.339 \\
+  \texttt{-O3} & 4194304 & 0.190002 & 0.137766 & 0.140909 & 0.993874 & 1.379 \\
+  \bottomrule
+  \end{tabular}
+  \caption{$n$ 个数求和实验结果}
+  \label{tab:sum}
+\end{table}
+
+图\ref{fig:sum-speedup} 展示了 \texttt{-O3} 下三种改进算法相对于 \texttt{sum\_naive} 的加速比。
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={求和规模 $n$},
+      ylabel={Speedup},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major,
+      xtick={1024,16384,262144,4194304},
+      xticklabels={$2^{10}$,$2^{14}$,$2^{18}$,$2^{22}$}
+    ]
+      \addplot[color=blue,mark=*] coordinates {
+        (1024,2.057) (16384,2.055) (262144,2.076) (4194304,1.379)
+      };
+      \addlegendentry{\texttt{sum\_dual}}
+      \addplot[color=red,mark=square*] coordinates {
+        (1024,4.018) (16384,4.091) (262144,4.339) (4194304,1.348)
+      };
+      \addlegendentry{\texttt{sum\_unroll4}}
+      \addplot[color=black,mark=triangle*] coordinates {
+        (1024,1.252) (16384,1.095) (262144,0.252) (4194304,0.191)
+      };
+      \addlegendentry{\texttt{sum\_pairwise}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{\texttt{-O3} 下求和题相对 \texttt{sum\_naive} 的加速比}
+  \label{fig:sum-speedup}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={求和规模 $n$},
+      ylabel={运行时间 / s},
+      ymode=log,
+      log basis y={10},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major,
+      xtick={1024,16384,262144,4194304},
+      xticklabels={$2^{10}$,$2^{14}$,$2^{18}$,$2^{22}$}
+    ]
+      \addplot[color=black,mark=*] coordinates {
+        (1024,0.041079) (16384,0.128563) (262144,0.338992) (4194304,0.729098)
+      };
+      \addlegendentry{\texttt{sum\_naive} @ \texttt{-O0}}
+      \addplot[color=blue,mark=square*] coordinates {
+        (1024,0.008649) (16384,0.039790) (262144,0.076637) (4194304,0.214646)
+      };
+      \addlegendentry{\texttt{sum\_naive} @ \texttt{-O2}}
+      \addplot[color=red,mark=triangle*] coordinates {
+        (1024,0.009025) (16384,0.031813) (262144,0.095107) (4194304,0.190002)
+      };
+      \addlegendentry{\texttt{sum\_naive} @ \texttt{-O3}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{求和题中 \texttt{sum\_naive} 在不同优化等级下的运行时间}
+  \label{fig:sum-opt}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=12cm,
+      height=7cm,
+      xlabel={求和规模 $n$},
+      ylabel={最佳加速比},
+      legend style={at={(1.02,1)},anchor=north west},
+      grid=major,
+      xtick={1024,16384,262144,4194304},
+      xticklabels={$2^{10}$,$2^{14}$,$2^{18}$,$2^{22}$}
+    ]
+      \addplot[color=black,mark=*] coordinates {
+        (1024,1.000) (16384,1.000) (262144,1.000) (4194304,1.000)
+      };
+      \addlegendentry{best @ \texttt{-O0}}
+      \addplot[color=blue,mark=square*] coordinates {
+        (1024,3.742) (16384,5.052) (262144,3.708) (4194304,1.312)
+      };
+      \addlegendentry{best @ \texttt{-O2}}
+      \addplot[color=red,mark=triangle*] coordinates {
+        (1024,4.018) (16384,4.091) (262144,4.339) (4194304,1.379)
+      };
+      \addlegendentry{best @ \texttt{-O3}}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{不同优化等级下求和题的最佳加速比}
+  \label{fig:sum-best-opt}
+\end{figure}
+
+\subsubsection{结果分析}
+\begin{enumerate}
+  \item 在 \texttt{-O0} 下，\texttt{sum\_dual} 和 \texttt{sum\_unroll4} 普遍慢于 \texttt{sum\_naive}，说明缺少寄存器分配和向量化支持时，多累加器结构本身会带来额外控制开销。
+  \item 当优化等级提升到 \texttt{-O2} 和 \texttt{-O3} 后，多路累加优势迅速显现。图\ref{fig:sum-speedup} 和图\ref{fig:sum-best-opt} 显示，在 $2^{10}$ 至 $2^{18}$ 的规模区间内，\texttt{sum\_unroll4} 可稳定获得约 4 倍加速。
+  \item \texttt{sum\_unroll4} 在中等规模上表现最佳。例如 \texttt{-O3}、$n=262144$ 时加速比达到 4.339，说明此时“缩短依赖链 + 减少循环控制”的收益仍明显高于额外访存成本。
+  \item 当规模达到 $2^{22}$（32 MiB）时，\texttt{sum\_dual} 与 \texttt{sum\_unroll4} 的优势缩小到约 1.35 倍，表明瓶颈已逐渐从依赖链转向内存访问与数据搬运。
+  \item \texttt{sum\_pairwise} 在大规模下显著落后，主要原因是树形规约需要反复写回中间结果，带来额外复制和访存开销。
+  \item 图\ref{fig:sum-opt} 说明编译器优化本身就能显著加速基线算法，因此评价手工优化时，必须把编译器选项与算法结构结合起来看。
+\end{enumerate}
+
+\subsection{综合结论}
+结合两组实验，可以得到以下结论：
+\begin{enumerate}
+ \item 对矩阵题而言，访存顺序决定了 cache 行为。与数据布局一致的顺序访问能够显著降低访存延迟，其收益会随问题规模扩大而增强。
+  \item 对求和题而言，算法复杂度虽然相同，但数据相关不同。通过多路累加缩短依赖链，可以显著提高超标量执行效率；这一收益在中等工作集上最明显，在超大工作集上会被访存成本部分抵消。
+  \item 编译器优化等级会强烈影响手工优化的最终表现。高优化等级不仅能降低基线算法的执行时间，也能把 cache 友好写法和多累加器结构进一步转化为向量化与更有效的指令调度。
+  \item VTune 与 Godbolt 的剖析结果和性能表、趋势图相互印证，因此本文结论不仅来自现象观察，也获得了 profiling 与汇编层面的支持。
+\end{enumerate}
+
+\section{VTune 剖析}
+\subsection{矩阵题：Hotspots 与 Memory Access}
+为了进一步验证矩阵题中“按列访问慢、按行访问快”的原因，本文对 \texttt{matrix\_dot\_vtune.exe} 在参数 $n=1024$ 下进行了 \texttt{Hotspots} 和 \texttt{Memory Access} 分析，重点关注热点位置以及性能差异是否主要来自访存。
+
+\subsubsection{Hotspots 结果}
+Hotspots 结果表明，矩阵题中最主要的热点函数是 \texttt{col\_naive}，其 CPU Time 为 70.793 ms，占总热点时间的 82.0\%；\texttt{row\_cache\_u4} 为 15.489 ms，占 18.0\%。源码级热点也很直接：\texttt{col\_naive} 的主要开销集中在 \texttt{acc += b[idx(j, i, n)] * a[j];}，而 \texttt{row\_cache\_u4} 的热点位于 \texttt{sum[i] += b[base + i] * aj;}，与前文性能测试的差异一致。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lcc}
+  \toprule
+  函数 & CPU Time & 占比 \\
+  \midrule
+  \texttt{col\_naive} & 70.793 ms & 82.0\% \\
+  \texttt{row\_cache\_u4} & 15.489 ms & 18.0\% \\
+  \bottomrule
+  \end{tabular}
+  \caption{VTune Hotspots 下矩阵题核心函数对比}
+  \label{tab:vtune-matrix-hotspots}
+\end{table}
+
+\subsubsection{Memory Access 结果}
+Memory Access 分析进一步给出了硬件证据：整体 \texttt{Memory Bound} 为 25.0\% pipeline slots，而 \texttt{DRAM Bandwidth Bound} 为 0.0\%，说明瓶颈更像是访存延迟而非主存带宽饱和。函数级上，\texttt{col\_naive} 的相关 CPU 时间为 55.996 ms，显著高于 \texttt{row\_cache} 的 4.000 ms 和 \texttt{row\_cache\_u4} 的 3.000 ms，说明跨步读取确实带来了更明显的流水线停顿。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lcc}
+  \toprule
+  函数 & CPU Time & Memory Bound \\
+  \midrule
+  \texttt{col\_naive} & 55.996 ms & 25.0\% \\
+  \texttt{row\_cache} & 4.000 ms & 0.0\% \\
+  \texttt{row\_cache\_u4} & 3.000 ms & 0.0\% \\
+  \bottomrule
+  \end{tabular}
+  \caption{VTune Memory Access 下矩阵题核心函数对比}
+  \label{tab:vtune-matrix-memory}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.8\linewidth}
+    \centering
+    \optionalimage{fig/vtune_matrix_memory_summary.png}{VTune 代表性截图之一：矩阵题 Memory Access Summary。}
+  \end{minipage}
+  \caption{矩阵题的 VTune Memory Access Summary}
+  \label{fig:vtune-matrix-memory-summary}
+\end{figure}
+
+\subsubsection{矩阵题 VTune 结论}
+结合 Hotspots 与 Memory Access，可得出一个更紧凑的结论：\texttt{col\_naive} 的瓶颈确实集中在按列访问的内层乘加语句上；问题并非受 DRAM 带宽限制，而是受跨步访存带来的 cache / memory latency 影响；\texttt{row\_cache} 与 \texttt{row\_cache\_u4} 通过顺序访问显著降低了访存停顿，而 \texttt{row\_cache\_u4} 仅在此基础上再略微减少循环控制开销。
+
+\subsection{求和题：Hotspots 与 Microarchitecture Exploration}
+为了验证求和题中“多路累加优于单链累加”的原因，本文对 \texttt{sum\_bench\_vtune.exe} 在参数 $n=262144$ 下进行了 \texttt{Hotspots} 与 \texttt{Microarchitecture Exploration} 分析，重点比较函数级 CPU 时间、热点源码位置以及瓶颈更偏向依赖链还是数据搬运。
+
+\subsubsection{Hotspots 结果}
+Hotspots 结果表明，本次运行总耗时为 0.583 s，总 CPU 时间为 0.511 s。函数级上，\texttt{sum\_unroll4} 的 CPU 时间仅为 15.809 ms，明显低于 \texttt{sum\_dual} 的 46.375 ms 和 \texttt{sum\_naive} 的 62.772 ms；\texttt{sum\_pairwise} 则达到 136.124 ms，同时 \texttt{std::vector} 构造函数还额外占用了 194.787 ms，说明树形求和当前实现中的数据复制成本较高。源码级截图也表明，\texttt{sum\_naive} 的热点落在 \texttt{sum += v;} 上，而 \texttt{sum\_unroll4} 的热点落在局部累加语句上。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lcc}
+  \toprule
+  函数 & CPU Time & CPU 占比 \\
+  \midrule
+  \texttt{sum\_pairwise} & 136.124 ms & 26.7\% \\
+  \texttt{sum\_naive} & 62.772 ms & 12.3\% \\
+  \texttt{sum\_dual} & 46.375 ms & 9.1\% \\
+  \texttt{sum\_unroll4} & 15.809 ms & 3.1\% \\
+  \texttt{std::vector::vector} & 194.787 ms & 38.1\% \\
+  \bottomrule
+  \end{tabular}
+  \caption{VTune Hotspots 下求和题核心函数对比}
+  \label{tab:vtune-sum-hotspots}
+\end{table}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.8\linewidth}
+    \centering
+    \optionalimage{fig/vtune_sum_hotspots_bottomup.png}{VTune 代表性截图之二：求和题 Hotspots Bottom-up 视图。}
+  \end{minipage}
+  \caption{求和题的 VTune Hotspots Bottom-up 视图}
+  \label{fig:vtune-sum-hotspots-bottomup}
+\end{figure}
+
+\subsubsection{Microarchitecture Exploration 结果}
+VTune 的微架构分析显示，本次运行的 \texttt{Elapsed Time} 为 0.610 s，整体 \texttt{CPI Rate} 为 0.767，平均 CPU 频率约 4.4 GHz；从 Top-down 指标看，P-core 上 \texttt{Front-End Bound} 为 5.4\%，而 \texttt{Back-End Bound} 高达 82.1\%，说明瓶颈主要集中在后端执行阶段。函数级上，\texttt{sum\_naive} 的 \texttt{CPI} 为 0.807，\texttt{sum\_dual} 和 \texttt{sum\_unroll4} 分别降到 0.321 和 0.329；\texttt{sum\_pairwise} 虽然 \texttt{CPI} 只有 0.689，但伴随明显的 \texttt{memcpy} 热点，说明它的主要问题是数据复制和重复写回，而不是标量加法吞吐本身。
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lcccc}
+  \toprule
+  函数 & CPU Time & CPI & Retiring & 主要现象 \\
+  \midrule
+  \texttt{sum\_naive} & 70.995 ms & 0.807 & 40.0\% & 单累加链，后端吞吐受限 \\
+  \texttt{sum\_dual} & 41.997 ms & 0.321 & 80.0\% & 两路累加降低相关性 \\
+  \texttt{sum\_unroll4} & 15.999 ms & 0.329 & 12.5\% & 四路展开，CPU 时间最低 \\
+  \texttt{sum\_pairwise} & 128.991 ms & 0.689 & 25.5\% & 规约写回与复制开销明显 \\
+  \texttt{memcpy} & 131.991 ms & 5.387 & 5.3\% & 数据复制成为额外热点 \\
+  \bottomrule
+  \end{tabular}
+  \caption{VTune Microarchitecture Exploration 下求和题核心函数对比}
+  \label{tab:vtune-sum-micro}
+\end{table}
+
+\subsubsection{求和题 VTune 结论}
+综上，求和题的 VTune 结果与性能表和 Godbolt 汇编分析可以形成统一解释：\texttt{sum\_naive} 慢，主要因为单条累加链使后端吞吐受限；\texttt{sum\_dual} 与 \texttt{sum\_unroll4} 通过多累加器降低了串行依赖，因此 \texttt{CPI} 更低、执行更快；\texttt{sum\_pairwise} 则主要受数据复制和中间写回开销拖累。
+
+\section{Godbolt 汇编分析}
+\subsection{分析方法}
+为了进一步解释性能测试中的差异，本文使用 Godbolt（Compiler Explorer）观察关键函数在不同优化选项下生成的汇编代码，主要对比如下几组函数：
+\begin{itemize}
+  \item 矩阵题：\texttt{col\_naive}、\texttt{row\_cache}、\texttt{row\_cache\_u4}
+  \item 求和题：\texttt{sum\_naive}、\texttt{sum\_dual}、\texttt{sum\_unroll4}、\texttt{sum\_pairwise}
+\end{itemize}
+编译器选用 x86-64 GCC，主要考察 \texttt{-O0}、\texttt{-O3} 和 \texttt{-O3 -march=native} 三组编译选项，分析重点包括：
+\begin{enumerate}
+  \item 内层循环的地址计算是否简化；
+  \item 是否减少了循环控制与分支开销；
+  \item 是否通过多个寄存器暴露更多独立计算链；
+  \item 编译器是否自动生成了 SSE/AVX 向量指令。
+\end{enumerate}
+图\ref{fig:godbolt-screenshot} 给出了本文进行 Godbolt 汇编观察时的界面示例。
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}{0.92\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{{fig/godbolt screenshot}.png}
+  \end{minipage}
+  \caption{godbolt使用截图示例}
+  \label{fig:godbolt-screenshot}
+\end{figure}
+
+\subsection{矩阵题汇编分析}
+\subsubsection{\texttt{col\_naive} 与 \texttt{row\_cache}}
+从 \texttt{-O0} 版本可以直接看出，\texttt{col\_naive} 的内层循环需要反复做索引计算和跨步读，循环体较长；\texttt{row\_cache} 则已经更接近“缓存当前标量 + 顺序扫描当前行”的结构。到了 \texttt{-O3} 和 \texttt{-O3 -march=native}，两者都能生成 SSE/AVX 乘加指令，但 \texttt{col\_naive} 的访存本质仍是跨行取列，而 \texttt{row\_cache} 对应的是连续地址上的向量乘加，因此算法层面的局部性优势会被编译器进一步放大。这与表\ref{tab:matrix} 中 \texttt{row\_cache} 和 \texttt{row\_cache\_u4} 明显优于 \texttt{col\_naive} 的结果一致。
+
+\subsubsection{\texttt{row\_cache} 与 \texttt{row\_cache\_u4}}
+从汇编上看，\texttt{row\_cache\_u4} 的主要作用是进一步减少循环控制开销。高优化下普通 \texttt{row\_cache} 已经被自动优化，因此两者的汇编差距并不大，这也解释了为什么 \texttt{row\_cache\_u4} 往往更快，但收益远小于“按列改按行”带来的提升。
+
+因此，矩阵题的 Godbolt 结论可以概括为：决定性优化首先来自访问顺序的改变，循环展开属于次一级优化；编译器在 \texttt{-O3} 及以上会放大这种优势，但无法从根本上修复不良的访存模式。
+
+\subsection{求和题汇编分析}
+\subsubsection{\texttt{sum\_naive} 与 \texttt{sum\_dual} / \texttt{sum\_unroll4}}
+求和题中最关键的现象是“累加依赖链”的变化。\texttt{sum\_naive} 在 \texttt{-O3} 下虽然已经减少了部分循环开销，但核心仍围绕单个累加寄存器形成长依赖链；\texttt{sum\_dual} 和 \texttt{sum\_unroll4} 则在源码层面显式提供了多条独立累加路径。尤其是 \texttt{sum\_unroll4}，在 \texttt{-O3} 及 \texttt{-O3 -march=native} 下可以看到更明显的 SIMD 累加指令和更宽寄存器使用，说明它更容易同时利用超标量调度与向量化能力。这与表\ref{tab:sum} 中 \texttt{sum\_dual}、\texttt{sum\_unroll4} 在 \texttt{-O2/-O3} 下显著优于 \texttt{sum\_naive} 的结果一致。
+
+\subsubsection{\texttt{sum\_unroll4} 与 \texttt{sum\_pairwise}}
+\texttt{sum\_pairwise} 的汇编则体现出另一类思路：它不是围绕单次扫描构建多累加器，而是反复对 \texttt{g\_work} 做“读-加-写回”的两两规约。即使在 \texttt{-O3 -march=native} 下，这种结构仍明显依赖内存访问，难以像 \texttt{sum\_unroll4} 那样把主要工作保留在寄存器中完成，因此在大规模下明显更慢。
+
+\subsection{Godbolt 分析结论}
+结合以上汇编观察，可以得到如下结论：
+\begin{enumerate}
+  \item 对矩阵题而言，\texttt{row\_cache} 的核心优势首先来自顺序访存，而不是单纯依赖编译器自动优化。
+  \item 对求和题而言，\texttt{sum\_dual} 和 \texttt{sum\_unroll4} 的收益主要来自减少单一累加器上的串行依赖，使编译器更容易生成多路并行累加和 SIMD 指令。
+  \item \texttt{sum\_pairwise} 说明算法形式不同并不必然更快；若实现中引入大量中间结果写回，访存开销会抵消其结构优势。
+  \item Godbolt 观察到的汇编特征与前文性能表中的规律基本一致，因此可以作为解释实验结果的底层证据。
+\end{enumerate}
+
+\end{document}

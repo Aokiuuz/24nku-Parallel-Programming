@@ -1,0 +1,5 @@
+gpu,branch,pt_count,batch_size,pt_type,cpu_ms,h2d_ms,kernel_ms,d2h_ms,gpu_total_ms,cpu_overlap_ms,speedup,correctness
+AMD Radeon 8060S,single_pt,1,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO
+AMD Radeon 8060S,multi_pt,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO
+AMD Radeon 8060S,overlap_stream,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO
+AMD Radeon 8060S,workload_schedule,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO,TODO

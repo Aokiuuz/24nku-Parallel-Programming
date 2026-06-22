@@ -1,0 +1,14 @@
+name=Radeon 8060S Graphics
+multiProcessorCount=20
+warpSize=32
+maxThreadsPerBlock=1024
+maxThreadsPerMultiProcessor=2048
+maxBlocksPerMultiProcessor=64
+sharedMemPerBlock=65536
+sharedMemPerMultiprocessor=65536
+maxWavefrontsPerMultiProcessor=64
+  Marketing Name:          AMD RYZEN AI MAX+ PRO 395 w/ Radeon 8060S
+  Compute Unit:            32                                 
+  Marketing Name:          Radeon 8060S Graphics              
+  Compute Unit:            40                                 
+  Wavefront Size:          32(0x20)                           

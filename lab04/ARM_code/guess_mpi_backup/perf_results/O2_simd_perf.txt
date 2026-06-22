@@ -1,0 +1,12 @@
+
+ Performance counter stats for './main_O2' (3 runs):
+
+    95,639,545,514      cycles:u                                                      ( +-  0.03% )
+    43,128,831,820      instructions:u            #    0.45  insn per cycle           ( +-  0.00% )
+   <not supported>      branches:u                                                  
+       652,354,814      branch-misses:u                                               ( +-  0.41% )
+    14,388,316,732      cache-references:u                                            ( +-  0.13% )
+       974,896,943      cache-misses:u            #    6.776 % of all cache refs      ( +-  0.04% )
+
+          37.77240 +- 0.00617 seconds time elapsed  ( +-  0.02% )
+

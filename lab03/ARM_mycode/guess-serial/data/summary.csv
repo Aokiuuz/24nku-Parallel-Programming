@@ -1,0 +1,4 @@
+version,opt,threads,runs,avg_guess,avg_hash,avg_train,avg_total
+serial,O0,1,5,7.950330,10.393220,99.079200,18.343550
+serial,O1,1,5,0.603787,1.125268,24.771360,1.729055
+serial,O2,1,5,0.672727,1.211160,24.342300,1.883887

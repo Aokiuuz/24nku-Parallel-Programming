@@ -1,0 +1,935 @@
+IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025                                                                       3483
+
+
+
+
+Using Parallel Techniques to Accelerate PCFG-Based
+             Password Cracking Attacks
+          Ming Xu , Shenghao Zhang, Kai Zhang , Haodong Zhang, Junjie Zhang , Jitao Yu, Luwei Cheng,
+                                        and Weili Han , Member, IEEE
+
+
+   Abstract—Textual passwords play an important role among                            Recently, researchers proposed many data-driven probabilis-
+access-control mechanisms and are usually stored as ciphertext                     tic guessing models [8], [33], e.g., Probabilistic Context-free
+in the server. However, an attacker may attempt to hash a large                    Grammars (PCFG, for short) [37], which they usually learn an
+number of candidate passwords to find the match of the target
+hash of a password database. To crack the password database, at-                   educated password space based on the training sets to gener-
+tackers in industry usually use the cracking software like Hashcat.                ate password candidates in descending probabilities [15], [26].
+Academic researchers recently proposed many data-driven proba-                     While PCFG becomes a powerful competitor across many data-
+bilistic models, in which the Probabilistic Context-free Grammars                  driven models [14], [37], the generation methods of PCFG-based
+(PCFG, for short) stand out. Despite the great cracking efficiency,                models significantly suffer from the slow generation speed.
+the data-driven models are seldom used by industrial practice due
+to the significant slow generation speed of password candidates. To                In real-world industrial cases, hackers seldom use data-driven
+bridge the gap and promote the efficient data-driven models being                  models due to the following reasons: (1) The generation speed
+practically used in industry, we propose that using parallel tech-                 of data-driven models is slow, e.g., it usually takes a day or
+niques to accelerate the candidate password generation, enabling                   more days to generate around 1014 candidate passwords [34],
+the integration of PCFG models into the practically-used Hashcat                   [37], increasing the time costs. (2) When targeting ciphertext
+tool. To this end, we mainly propose two algorithms to accelerate
+the password generation for PCFG-based models: first, we design                    passwords, data-driven models should leverage the hash func-
+a storage structure with the memory load balance strategy to more                  tions embeded in the cracking software like Hashcat to encrypt
+evenly store the data structures used to generate passwords; second,               the generated plain-text password candidates. Existing industrial
+we design an algorithm to produce candidate passwords in parallel                  practices usually use the pipeline mode that serially transmits ev-
+by different threads. Based on the two algorithms, we propose
+                                                                                   ery generated candidate password to a cracking software, whose
+Parallel_PCFG, and implement Parallel_PCFG upon Hash-
+cat based on its built-in GPU kernel. We comprehensively evaluate                  efficiency is significantly limited by the slow speed of candidate
+Parallel_PCFG against state-of-the-art data-driven models, and                     generation. (3) Data-driven models typically evaluate cracking
+find that Parallel_PCFG only takes 14.33% of time to achieve the                   rates based on an equal number of guesses [20], [37], [38],
+same cracking rates compared with the best-performing models,                      offering limited insight into how guessing actually performs
+paving a way about the integration between PCFG-based models                       over time (e.g., within half an hour). Some scenarios may be
+and Hashcat.
+                                                                                   highly time-sensitive, such as when multiple attackers target the
+  Index Terms—Password security, PCFG-based                           models,      same system simultaneously, with the first to breach the system
+candidate password generation, GPU parallelism.                                    potentially siphoning off funds or stealing valuable information.
+                                                                                      To compensate for the gap in the use of data-driven models
+                            I. INTRODUCTION                                        in industrial guessing attacks, a rich literature [5], [8], [11] has
+                                                                                   presented efficient techniques for accelerating the password gen-
+      EXTUAL passwords are still widely used to protect ac-
+T     counts and private data in our daily life due to the advan-
+tages of easy use and low cost [3], [9], [37], and are typically
+                                                                                   eration of data-driven probabilistic models. First, they optimize
+                                                                                   the model structure used to accelerate password generation.
+                                                                                   Typical example is OMEN [8] that classifies probabilities of
+stored in ciphertext to prevent malicious attacks. Human-created
+                                                                                   a candidate password into ten levels to generate passwords of
+passwords are always not strong enough to resist password
+                                                                                   the same level simultaneously, i.e., generating candidate pass-
+cracking attacks. Hackers have recovered many plain-text pass-
+                                                                                   words in a coarsed descending probability order. Second, they
+words by attempting to hash a large number of candidate
+                                                                                   leverage the distributed computer clusters, i.e., more computer
+passwords to find the match of the target ciphertext password
+                                                                                   resources, to generate candidate passwords. Typical examples
+database, which are referred to as generic password cracking
+                                                                                   are PCFG-manager method [5], [11] that distributes the pass-
+attacks.
+                                                                                   word generation tasks to multiple machines with a thoughtful
+                                                                                   communication protocol. Still, it has significant potential to
+  Received 8 November 2022; revised 13 September 2024; accepted 17 January
+2025. Date of publication 22 January 2025; date of current version 11 July 2025.   accelerate generation speed with the aid of parallel techniques,
+This work was supported in part by NSFC under Grant 62172100 and Grant             supporting the industrial use of data-driven models.
+U1836207. (Corresponding author: Weili Han.)                                          As the hardware develops, GPUs can be a promising way for
+  The authors are with the School of Computer Science, Fudan University,
+Shanghai 200433, China (e-mail: wlhan@fudan.edu.cn).                               accelerating the password generation tasks because its many-
+  Digital Object Identifier 10.1109/TDSC.2025.3532804                              core architecture can offer a higher computational throughput
+
+      1545-5971 © 2025 IEEE. All rights reserved, including rights for text and data mining, and training of artificial intelligence and similar technologies.
+Personal use is permitted, but republication/redistribution requires IEEE permission. See https://www.ieee.org/publications/rights/index.html for more information.
+
+
+           Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3484                                                IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+with ample parallelism. We, in this paper, are motivated to                       takes 14.33% time to achieve the similar cracking rates by
+improve password generation speed using the parallel GPU-                         previous counter-parts.
+based techniques. To this end, the challenges are as follows:                  r We provide insights in terms of evaluating the password
+1) The storage structures for data-driven generation methods                      guessing performance from the timing perspective, rather
+must be carefully tailored to align with the GPU’s parallel gen-                  than simply focusing on the number of guesses. We take
+eration algorithm. Since GPU runtime is typically constrained by                  the substantial step to unlock that 30 ∼ 60% passwords can
+the slowest thread, unbalanced storage structures can severely                    be guessed within a certain time (e.g, half an hour).
+hinder performance. Optimizing these structures is crucial to                 Organization: We first present background knowledge in
+minimize bottlenecks and maximize efficiency. 2) Ensuring that              Section II. Then we explain related concepts (e.g., existing
+the output candidate passwords are in descending order presents             PCFG generation methods and the challenges of Paral-
+another challenge. This objective involves assigning generation             lel_PCFG) as preliminaries in Section III. In Section IV, we
+tasks to different threads and designing lookup tables to locate            detail the design of our Parallel_PCFG, which includes two
+each thread’s candidates becomes challenging.                               components. We present our evaluation in Section V. Finally,
+   To tackle the challenges above, we propose using the GPU-                we discuss the economic costs in Section VI and conclude this
+based parallel techniques to accelerate PCFG-based password                 paper in Section VII.
+cracking attacks, referred to as Parallel_PCFG. Paral-
+lel_PCFG includes two key algorithms: 1) A novel storage                                       II. BACKGROUND KNOWLEDGE
+structure for PCFG with the memory load balance to maximize
+the memory use. 2) A parallel algorithm assigns password                    A. Password Cracking Attacks
+candidate generation to different threads and ensures descending               In recent decades, password cracking attacks are a hotspot for
+generation by each thread. In detail, we design a lookup table              practical attack scenarios and research fields. On the one hand,
+so that threads can simultaneously locate, and generate the                 a hacker could leverage the cracking softwares (e.g., Hashcat or
+password candidates. We implement Parallel_PCFG in the                      JtR) to crack the target passwords by comparing the candidate
+popular password cracking software of Hashcat [12] due to                   guesses, which are obtained by applying the set of rules to a
+its built-in GPU kernel.                                                    dictionary, and further compromise the dataset database or steal
+   We evaluate the cracking rates of Parallel_PCFG within                   the personal data property of users.
+the same time frame (e.g., half an hour) on six leaked public                  On the other hand, researchers proposed several efficient
+password datasets, and compare with multiple models including               data-driven guessing models [16], [18], [33] that learn an ed-
+OMEN, PCFG Manager and other PCFG-based counter-parts.                      ucated password space to produce a larger number of candi-
+We find that Parallel_PCFG can achieve 30 ∼ 60% cracking                    date passwords, which are used compared against target pass-
+rates in just half hour across six datasets. Particularly, Par-             words. Usually, these data-driven models are used to evaluate
+allel_PCFG only takes 14.33% of the total time to achieve                   the strength of a password via the effort (i.e., the number of
+the same cracking rates of the state-of-the-art models; Par-                guesses) of successfully cracking it, in which they adopts the
+allel_PCFG only needs 10 minutes on average to crack                        efficient techniques like the Monte-Carlo [7] algorithms to map
+similar percentage of passwords from state-of-the-art models,               the probability to the number of guesses.
+demonstrating the effectiveness of reducing the time overhead
+of password cracking. We also compare that Parallel_PCFG
+can significantly outperform the default Hashcat with various               B. Related Works
+rules-set, and even the optimized rules-set [4]. We believe that               Accelerating password cracking attacks: A rich literature
+this work can serve as promising solutions that integrate the               has presented efficient techniques to accelerate the password
+PCFG-based models into industrial tools of Hashcat, showing                 generation methods for data-driven models, which generally
+its potential to be industrially used.                                      involves optimizing the data structure or using the the distributed
+   We summarize the main contributions as follows:                          computer clusters. For one thing, they constantly improve the
+    r We propose two algorithms to enable the PCFG-based                    model structure to accelerate the password generation process.
+      model to generate password candidates in parallel upon                For PCFG-based methods, Weir et al. [13] released a compiled
+      GPU. First, we design a storage with a memory load                    PCFG password guesser, referred to as Compiled-PCFG written
+      balance strategy for the data used in password generation             in C programming language to achieve faster cracking and
+      of PCFG. Second, we design an algorithm to assign the                 easier inter-connection with existing cracking softwares. For
+      generation tasks to multiple threads.                                 Markov-based methods, Durmuth et al. proposed the OMEN [8]
+    r We implement Parallel_PCFG in Hashcat based on                        (Ordered Markov Enumerator) as a faster password guessing
+      the two algorithms, improving the password generation                 method, which divides the probabilities into ten levels and
+      speed in PCFG-based models. We empirically evaluate that              generate candidate passwords of the same level at once. On
+      Parallel_PCFG can significantly reduce the time over-                 the other part, researchers proposed to leverage the distributed
+      head in password cracking attacks, showing the potential              computer clusters (i.e., more computer resources) to produce
+      of integrating PCFG into the Hashcat used in practical                candidate passwords simultaneously. For example, Hranický
+      guessing scenarios. Specifically, Parallel_PCFG only                  et al. [10] improved the generation process of PCFG, referred to
+
+
+       Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                           3485
+
+
+
+as PCFG-manager, based on the distributed clusters computers                 wallet), only the first attacker who cracks the password can get
+via the programming language of Go. They introduced a PCFG                   the reward, while the rest attackers waste all of their resource
+manager to handle many client’s machine to generate candidate                payment. Such competition makes the time cost of attack need
+passwords based on multiple computers at the same time.                      to be considered by the attacker, which is undervalued by most
+   Combination of data-driven models and cracking software:                  existing offline guessing works.
+In 2020, Radek Hranický [11] recommended that combining the
+data-driven models with the guessing soft-wares, especially the              D. Threat Model
+efficient PCFG to the GPU-based Hashcat guessing software, to
+launch password cracking attacks. Since the cracking softwares                  In this paper, we mainly focus on the generic offline guessing
+usually depend on the quality of the rules-set [21] (summarized              scenarios [31], [37] that aim to recover cipher-text and plain-text
+by experts) to achieve a higher cracking performance, which                  passwords by the matches of the candidate passwords. We
+also limits their wider application. For the data-driven models              believe that other guessing scenarios like targeted guessing,
+being used in real-world cracking, attackers can transmit the                masked guessing, or other real-world guessings [20], [30], [38]
+generated candidate passwords into the guessing soft-wares                   are beyond the scope of this work. We generate the password
+to crack cipher-text passwords. Unfortunately, it usually takes              candidates given limited time (e.g, half hour), and measure the
+one day or more days to produce a large number of candidate                  percentage of passwords are matched with the targets, serving
+passwords (1014 ). Then, existing mechanisms usually adopt the               as the passwords an attacker can crack within the certain time.
+pipeline mode as a channel that serially transmits every candidate           Specifically, we assume that attackers can use the Hashcat
+password to Hashcat. The bottleneck lies in the generation speed             software and a trained PCFG model, where they can perform
+of every candidate. Such undesirable workflow generally results              password generation tasks in parallel, to show the potential
+in the significant time waste, limiting its practical application of         cracking opportunities of PCFG models in real world.
+real-world guessing. Besides, previously in 2018, on the official
+forum of Hashcat [17], Weir (one of the initiators of PCFG-based                                       III. PRELIMINARIES
+guessing methods, whose nickname on the forum is lakiw), and
+                                                                             A. Probabilistic Context-Free Grammars
+Steube (one of the authors of Hashcat, whose nickname on the
+forum is atom) discussed the topic of adding PCFG models to                     Probabilistic Context-free Grammars (PCFG) is first pro-
+Hashcat. They tried to assign the candidate passwords to each                posed by Weir et al. [33] in 2009 (referred to as PCFG-2009).
+thread by the order in priority queue. However, they discussed               They continuously optimized the method and proposed the im-
+that they must initialize the priority queue and generate pass-              proved version of PCFG (referred to as PCFGv4.1 [32]). PCFG
+words from the beginning to determine the specific passwords at              is mainly divided into two phases: training and generation.
+a particular position in the priority queue, making it challenging           In the training phase, PCFG counts the statistical information
+to locate the candidate passwords associated with each thread,               with their probabilities based on the training datasets. We de-
+ending this topic.                                                           scribe the statistical information as follows: the grammars (a.k.a,
+                                                                             structures) and specific strings (associated with structures) with
+                                                                             their probabilities based on the training sets. The grammars
+C. Password Cracking Scenarios                                               (structures like L4 D4 ) describe the category and length of
+   Password cracking scenarios are usually divided into online               characters that consist of the password, where the homogeneous
+and offline guessing scenarios, whose main difference is that                Ln , Dn and Sn refer to a sub-structure in a structure, where each
+attackers can try different guesses. Attackers are limited with              sub-structure contains the specific strings composed of letters,
+smaller guesses (e.g., less than 1,000 guesses) to crack target              digits or special characters with n characters. For example, L4
+passwords due to the limitation of service providers, therefore,             is a sub-structure that contains the specific strings like “pass”.
+online guessing is often doing the targeted guessing tasks that
+compromise passwords of a specific use based on their personal                          Grammars −→ L4 D4 : prob
+information.                                                                            L4 −→ pass : prob1 ; D4 −→ 1234 : prob2
+   Offline cracking attacks generally try a large number of
+candidate guesses in descending probability to compromise a                  PCFG-based generation phrases: In the process of generating
+hashed general password database in the event of an password                 candidate passwords, PCFG uses a priority queue to ensure the
+server breach. These candidate passwords (generated based on                 priority of candidate passwords with higher probabilities. To
+the data-drive models or rule-transformed passwords) are then                reduce the memory overhead of the queue, Aggarmal et al.
+used to be hashed by using the hashing algorithm (e.g., MD5,                 [1] adopted the structure of pre-terminal and the algorithm of
+SHA-1) to compare with the cipher-text password, in which                    Deadbeat dad.
+the matching probability is the cracking rate. Existing offline                 Specifically, it can be useful to clarify several concepts in the
+guessing works [23], [37] usually evaluate how many candidate                candidate password generation in PCFG-based guessing models.
+passwords are matched with the target passwords under 1014                      r Container: a container refers to all of the specific strings
+guesses. However, in an event that the breach is public, there may                 with the same character categories, lengths and probabili-
+occur competition that several attackers are trying to compro-                     ties. Usually, a sub-structure (e.g., L4 ) can contain several
+mise the same password database. In extreme cases (e.g., digital                   containers with different probabilities.
+
+         Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3486                                                     IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+
+Fig. 1.   Example of a pre-terminal, which comes from the structure of L4 D4 .
+
+
+
+    r Pre-terminal (PT, for short): a PT is a basic structure used               Fig. 2. The uneven distribution of the number of candidate passwords gener-
+                                                                                 ated by different pre-terminals.
+      for password generation, and refers to the collection of
+      containers from all sub-structures in a grammar (structure).
+      Therefore, the candidate passwords generated from the
+      same PT have the same probabilities.                                          1) GPU Parallelism Logic: As the hardware develops,
+   Fig. 1 shows an example of a PT, which contains two contain-                  GPUs, which are an electronic circuit that is originally designed
+ers. The PT comes from the structure of L4 D4 that consists of                   to accelerate 3D graphics rendering, gradually become more
+two sub-structures L4 and D4 , whose top two containers (from                    flexible and programmable to solve more parallel problems.
+L4 and D4 ) make up the first pre-terminal (PT-1). For example,                  Especially, Hashcat generally performs the guessing tasks in
+the top container associated with the sub-structure L4 is the set                GPUs, which also motivate us to develop GPU-based parallel
+of “pass, word”, whose probabilities are both 0.2.                               methods for PCFG-based guessing models based on their supe-
+   PCFG generates candidate passwords by the structure of PTs,                   rior guessing performance across data-driven models. Generally,
+whose resulting candidate passwords from a PT are with the                       we summarize the characteristics of GPUs in parallel tasks as
+same probability. PCFG uses the Cartesian’s product of the                       follows.
+specific strings to generate the candidate passwords. As shown                       r GPUs read data from memory with a fixed size of space
+in Fig. 1, the index sets of two specific strings are both {1, 2},                     (i.e., 128 bytes), which is also known as the cache line
+resulting in the four pairs of the Cartesian product as follows:                       strategies. Therefore, GPU need to read data multiple times
+                                                                                       when a cache line stores a smaller size of data, resulting in
+                      {(1, 1), (1, 2), (2, 1), (2, 2)}
+                                                                                       the space and transmission time cost.
+                                                                                     r GPUs adopt a warp (i.e., multiple threads), which usually
+Each pair can describe the combination of the specific strings
+from every containers that make up a candidate password, For                           involves 32 threads, to perform tasks in parallel in SIMT
+example, (1, 1) describes the candidate password of pass1234,                          (Single Instruction Multiple Threads) structure. The warp
+which is composed of the pass (the index is 1) from L4 and                             executes the same instruction with different data resources,
+1234 (the index is 1) from D4 .                                                        whose running time depends on the slowest thread.
+   In the password generation process of PCFG based mod-                            2) Issue Analysis: Based on the characteristic above, gener-
+els, specifically, the priority queue initially contains the most                ating candidate passwords in parallel for PCFG still faces the
+possible (a higher probability) pre-terminal of each structure.                  following issues:
+Assuming the pre-terminal from Fig. 1 (PT-1) is the top of the                      Imbalance issue: PCFG-based guessing methods generate
+priority queue. After popping the pre-terminal and generating                    candidate passwords by the unit of pre-terminals, i.e., they start
+all the four candidate passwords based on it, we derive PTs with                 from the top pre-terminal, enumerate all its possible candidate
+a lower priority. For example, we can replace the first containers               passwords and turn to the next pre-terminal. However, the
+(associated with L4 ) with other containers of the lower proba-                  candidate passwords generated by different pre-terminals are
+bility of 0.1. Then, we put the newly obtained pre-terminal back                 significantly imbalanced, i.e., those pre-terminals with a lower
+into the priority queue. The priority queue will rearrange the                   probability can generate more candidate passwords. As shown
+order of all the pre-terminals in it. Then PCFG can take the new                 in Fig. 2, we count the number of candidate passwords generated
+top pre-terminal out of the priority queue and repeat above steps                by the top 10,000 pre-terminals in the dataset of CSDN and
+of generation.                                                                   find that the maximum value is 54 while the minimum value
+                                                                                 is only 1. This is because that the size of containers becomes
+                                                                                 imbalanced, particularly, those specific strings with the same
+B. Challenges of Parallel Password Generation                                    higher probability are less, while most of specific strings share
+   Here, after we understand the PCFG generation methods, we                     a lower probability, resulting the pheonmenon. Then when we
+present the issues when straightforwardly deploying the gener-                   straightforwardly assign the generation tasks associated with
+ation methods in parallel tasks across different threads, which                  different PTs to different threads, the generation speed can be
+are also the challenges. We first present the GPU parallelism                    significantly limited, since the running time in GPUs depends on
+logic and then analyze the issues when deploying the PCFG                        the slowest thread in a warp [10], promoting to a novel balanced
+generation methods in parallel upon GPUs.                                        storage structure.
+
+          Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                                 3487
+
+
+
+
+                                                                             Fig. 4. The three-level sorting strategies of the dictionary storage for all the
+                                                                             specific strings in PCFG models.
+
+
+                                                                             B. Memory Load Balancing
+                                                                                Here, we introduce our load balancing mechanism that evenly
+                                                                             stores all the specific strings in a trained PCFG model and the
+Fig. 3. The workflow of PCFG-based models in Hashcat, whose shaded           PTs generated based on the PCFG model. First, we design a
+part is our main modified module.
+                                                                             dictionary to store all the specific strings in a PCFG model.
+                                                                             Second, we design a storage structure of PTs to improve the
+                                                                             efficiency of memory access.
+   Parallel issue: Existing PCFG candidate password generation
+                                                                                1) Storage of PCFG Models: For all the specific strings in a
+methods are on the level of PTs [10] with a priority queue,
+                                                                             trained PCFG model, we design a one-dimensional array and use
+however, the priority order can be compromised when we gen-
+                                                                             the three-level principle for storing them by order of type, length
+erate PTs in parallel. That said, we cannot directly produce
+                                                                             and probability. That said, we first sort them by type (i.e., letters,
+PTs by different threads in parallel. Therefore, we carefully
+                                                                             digits, or special symbols, and so on); For the specific strings
+determine that the parallel granularity is on the level of can-
+                                                                             with the same character type, we sort them by length (i.e., from
+didate passwords (specific strings stored in a trained PCFG
+                                                                             short to long length); For those specific strings with the same
+model). In this way, it requires a thoughtful parallel algorithms
+                                                                             type and length, we sort them by descending probability (i.e.,
+to assign the candidate password generation tasks to different
+                                                                             from high to low probability).
+threads and a careful design principle to locate every specific
+                                                                                Take Fig. 4 as an example, the character “a” comes first in the
+strings.
+                                                                             dictionary (i.e., the index is 1in the dictionary), since it has the
+                                                                             highest probability in the letter strings with one character.
+                IV. Parallel_PCFG: DESIGN                                       Then, we can locate the specific strings by its position (i.e.,
+   In this section, we present the design to enable the parallel             index) in the dictionary by the following Formula:
+password generation of PCFG-based methods, which mainly                              position = starting_position + rank × length
+includes two key components of a storage with memory load
+balancing strategy and a parallel algorithm to assign the gener-             where starting_position refers to the starting position of the
+ation tasks to different threads.                                            specific strings with the same type and length, rank refers to the
+                                                                             probability ranking (i.e., the number in descending probability
+                                                                             across the strings with the same type and length), and length
+A. Overview
+                                                                             refers to the length of this string.
+   We present the workflow of the parallel PCFG-based mod-                      To locate the specific strings in our designed dictionary, we
+els when deployed in Hashcat softwares in Fig. 3. The main                   should use another array with the one-dimensional size of T × L
+difference lies in the two designed algorithms (in shaded part)              to store the starting position for the specific strings with the same
+that enables generating passwords in parallel upon the GPU                   types and lengths, where T refers to the number of types and L
+kernal in Hashcat, while existing general models usually adopt               indicates the maximum length of the types.
+pipeline mode to transmit every generated candidate passwords                   2) Storage of PTs: Based on the dictionary of all the specific
+in sequence to GPUs. Parallel_PCFG first loads the PCFG                      strings of a PCFG model, we design a novel storage structure of
+models and creates the priority queue for pre-terminals on CPU.              PTs to make the passwords generated by different PTs towards
+Then, we use a designed storage structure with a load balancing              even, supporting the parallel generation algorithm. To assign
+strategy. Basically, we adopt a dictionary to store and locate               each thread to generate each candidate password simultaneously,
+all the specific strings in a trained PCFG model and the PTs,                each warp to generate passwords from the same PT, reducing
+Parallel_PCFG transmits the PCFG models and PTs to                           the time wait delay between threads. Besides, existing storage
+GPU. Next, Parallel_PCFG assigns the password generation                     of PTs might store much redundant information, for example,
+tasks to different threats to generate candidate passwords in                “word” may both exists in a PT associated with the structure of
+parallel. Finally, Parallel_PCFG leverages the hash func-                    L4 D4 or a PT with the structure of L4 .
+tions implemented in the GPU kernel of Hashcat to encrypt                       First, we optimize the storage of the PTs to storage the specific
+these passwords and match the encrypted passwords with target                strings once. As shown in the Fig. 5, we add four values (i.e., the
+passwords.                                                                   offset, number of container, previous guesses and total guesses).
+
+         Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3488                                                   IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+                                                                                                               TABLE II
+                                                                                                   REPETITIONS OF THE SELECTION OF N
+
+
+
+
+Fig. 5.   Our storage structure of the pre-terminal.
+
+
+
+                                  TABLE I
+                           NOTATIONS USED IN A PT
+
+
+                                                                               Since the size of a cache line in GPUs is generally 128 bytes,
+                                                                               our storage size of PTs is exactly twice the size of a cache line
+                                                                               so that we can mitigate the multiple reading for PTs caused by
+                                                                               the in-appropriate storage.
+                                                                                  Finally, we use a smoothing technique that re-assigns the
+                                                                               probabilities for the specific strings with the same type and
+                                                                               length so that every containers can include the same number
+                                                                               of specific strings, further guaranteeing a similar number of
+                                                                               candidate passwords generated by every PTs. In this way, we
+                                                                               can enable the threads in a warp process the same PT to generate
+                                                                               passwords in parallel, thereby reducing the waiting delay among
+                                                                               threads in a warp.
+                                                                                  To this end, we sort the specific strings with the same type and
+                                                                               lengths by descending probabilities, divides them into several
+                                                                               groups, and re-assign the probability of the strings from the
+                                                                               same group as the average probability across all the strings of
+                                                                               the group. Particularly, we set the number of specific strings in
+                                                                               a group is 2n (n ≥ 1), that said, the adjusted container size is
+                                                                               2n . We choose the size of 2n to guarantee that the PTs would
+                                                                               produce 32 (25 ) integer multiples of candidate passwords. To our
+                                                                               knowledge, a warp generally includes 32 threads. Therefore,
+                                                                               with the 32 integer multiples of candidate passwords, a warp
+                                                                               can process candidate passwords from the same PT. When the
+We can divide the data structure of a pre-terminal into the header             n becomes larger (i.e., ≥5), the number of candidate passwords
+data (showed by the dotted box) that stores the statistical infor-             generated by all PTs can be an integer multiple of 32; When
+mation of the pre-terminal and the body data (showed by the solid              the n becomes smaller, we should repeat some PTs to make the
+box) that stores the the detailed information of the containers in             generated passwords reach 32. Take n = 3 as an example, then
+the PT. In this way, the redundant storage of original structure               each container includes 8 specific strings, Therefore, the PTs
+is reduced, which is also prepared for subsequent calculation                  coming from a structure with more than two sub-structures (the
+of parallel algorithms. We summarize the detailed meanings of                  number of containers is more than two) would straightforwardly
+these values as follows in Table I                                             generate 64 (8 × 8 when the number of containers is exactly
+   Second, we adjust the storage size of PTs to the integer times              two) or more candidate passwords. For the PTs with only one
+of the cache line to reduce the memory access (i.e., increase                  container, we use the extra storage that repeats the the specific
+the number of PTs in one transmission). This is because when                   strings for 4 times to satisfy 32 threads, in order to make sure that
+the storage size of a PT is larger than the cache lines, GPU                   threads in a warp can process the passwords from the same PT.
+loads the PTs with multiple times. Specifically, we use 8 bytes,                  We show the number of repetition for different n in Table II.
+8 bytes, 1 B and 7 bytes for Offset, Previous Guesses, Number of               We can conclude that when we select a smaller n, we need more
+Container, and Total Guesses (8 + 8 + 1 + 7 = 24 bytes); For                   repetitions, resulting in the space waste. On the contrary, when
+every container in the body data, we use 1 B, 1 B, 1 B and                     we select a larger n, our smoothing becomes coarse-grained that
+5 bytes for Type, Start Index, Length, and Container Size (1 +                 more specific strings share the same probabilities, affecting the
+1 + 1 + 5 = 8 bytes). Besides, we limit the maximum number of                  final guessing performance. Further, we empirically analyze the
+containers in a password to 29 since passwords with more than                  selection of n and recommend the parameter as 3 in Section V-C.
+29 sub-structures are rare (<0.1%) across password datasets.
+When we use 29 as the maximum number of containers, each
+PT will occupy 256 bytes, based on the following calculation:                  C. Parallel Algorithm
+                                                                                  Then, we design a parallel algorithm that each thread gen-
+          24 bytes (head data) + 8 × 29(body data) = 256                       erates one candidate password at the same time. Besides, we
+          Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                           3489
+
+
+
+make the threads in a warp generates passwords from the same
+PT to fully leverage parallelism. To this end, we should design
+two index algorithms for candidate password identification in
+every threads, and specific string identification that makes up
+the candidate password.
+   1) Candidate Password Identification: First, we design a
+two-dimensional look-up table to locate the the candidate pass-
+words generated in each thread. In specific, we use the PT_id-
+Guess_id (e.g., j-k) to describe the Guess_id (k) th candidate
+passwords generated from the PT_id (j) th pre-terminal. That
+said, we introduce the guess_id to describe the index of the
+candidate password in the generation order of a PT (i.e., the first
+dimensional index). Then, we can summarize that the Guess_id
+can be calculated by the Formula (1):
+   Guess_id = (T hread_id − Of f set[P T _id]
+                   + T hread_size) % T hread_size
+                   + n × T hread_size                                        Fig. 6.    The allocation of parallel generation tasks on GPU.
+
+                  where Guess_id ≤ T otal_Guess[P T _id]
+                                                                                                               TABLE III
+                  and n ∈ N                                           (1)                    INDEXES (I.E., Str_index) OF SPECIFIC STRINGS
+                                                                                                FOR DIFFERENT Guess_id (WE TAKE THE
+where the Of f set and T otal_guesses describe the shift value                                       PT-1IN FIG. 6 AS AN EXAMPLE)
+from the last PT (T hread_id in the last password generated the
+last PT) and the total number of candidate passwords generated
+by the current PT.
+   In Formula (1), we can get the thread index of the first
+password generated by the current PT by T hread_id - Of f set.
+Here, to avoid the negative value, we also take the modulus of
+the total number of threads (i.e., T hread_size) after adding
+the T hread_size. Then, we add an integer multiple of the total
+number of threads to label the next candidate password with
+Guess_id, while guaranteeing the Guess_id cannot exceed to                   “PT 1-1”. Similarly, we calculate the Guess_id when the P T _id
+T otal_guesses) since the current PT can only generates the                  is 2 for the first thread (T hread_id = 1). When P T _id is 2, the
+T otal_guesses) number of passwords. We traverse the values of               Guess_id is calculated as:
+T hread_id and P T _id from 1, and calculate the corresponding                         Guess_id = (1 − 4 + 5)%5 + n × 5 = 2 + n × 5.
+Guess_id for every T hread_id and P T _id until the Guess_id
+is greater than T otal_guesses. Then, we start to calculate the              Similarly, we take 2 as the Guess_id since Guess_id should be
+Guess_id of candidate passwords generated by the next PT.                    less than or equal to 6. That said, we can locate the next index
+   Then, we take the Fig. 6 as an example to present the process             of the generated password for the first thread (T hread_id = 1)
+of assigning the password generation to different threads based              is “PT 2-2”.
+on the Guess_id index algorithm. We use the “PT j-k” as                         For every threads, we can repeat the steps above to obtain the
+the result of second-dimensional lookup table to locate the                  P T j − k to locate the k th candidate password from j th PT. By
+k-th (Guess_id) candidate password generated from the j-th                   changing the value of T hread_id, we can calculate the indexes
+(P T _id) PT.                                                                of passwords generated by other threads. Then we just should
+   In this example, we assume that the T hread_size is 5. For                locate the specific strings for the candidate passwords from the
+the first PT-1, the shift value is 0 (i.e., Of f set[1] is 0), and the       PT j − k, then we can produce the candidate password by every
+T otal_Guesses[1] is 4; For PT-2, the Of f set[2] is 4, and the              threads.
+T otal_Guesses[2] is 6.                                                         2) Specific String Identification: To generate candidate pass-
+   Then, we calculate the Guess_id for every threads. For the                words, we still should locate the specific string to finally produce
+first thread (T hread_id = 1), when P T _id is 1, we can get                 them. When we obtain Guess_id of a candidate password, we
+                                                                             can leverage the Guess_id to inversely deduce the index of
+      Guess_id = (1 − 0 + 5) % 5 + n × 5 = 1 + n × 5
+                                                                             every specific strings stored in a PCFG model. First, we show
+Considering that Guess_id should be less than or equal to                    the process of calculating the Guess_id. Based on the Cartesian
+T otal_Guesses (i.e., “4” in this example), so Guess_id can                  Product in the generation methods, the four candidate passwords
+only take 1. That said, we can locate the first index of the                 generated from the PT-1 (shown in Fig. 6) are deduced in
+generated password from the first thread (T hread_id = 1) is                 Table III (detailed in Section III-A). Then, we can summarize the
+
+         Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3490                                                 IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+                            TABLE IV
+        INFORMATION OF SIX LEAKED REAL PASSWORD DATASETS
+
+
+
+
+                                                                             Fig. 7. Comparison of running process before and after the optimization of
+                                                                             the running logic of Parallel_PCFG.
+relationship between the Guess_id and the indexes of specific
+strings (Str_index[id]) in Table III into Formula (2):
+                                                                               Algorithm 1: Forward Algorithm for Guess_id Calcula-
+   Guess_id = (Str_index[1] − 1) × Container_size[1]                           tion.
+                                                                                 Input: Str_index, Container_size, N umber_of _
+                   + Str_index[2]                                     (2)
+                                                                                  Container
+   As shown in Formula (2), for the candidate password with                      Output: Guess_id
+the Guess_id of 1, its Str_index[1] and Str_index[2] are                         1: Container_id ← 1
+both 1. The Container_size[Container_id] refers to the total                     2: Guess_id ← -1
+number of the specific strings in the corresponding container                    3: while Container_id ≤ N umber_of _Container do
+of Container_id. Then, the example of the first line in this                     4: if Guess_id == -1 then
+Formula is                                                                       5:    Guess_id = Str_index[Container_id]
+                                                                                 6: else
+               Guess_id = (1 − 1) × 2 + 1 = 1                                    7:    Guess_id = (Guess_id - 1) × N umber_of _
+                                                                                       Container[Container_id] + Str_index
+We abstract Formula (2) into the Algorithm 1.                                          [Container_id]
+   Based on the Formula (2), we can deduce the reverse algo-                     8: end if
+rithm that locates the index of specific strings by the modular                  9: Container_id += 1
+operation. In Table III, given the Guess_id of 3, the steps of                 10: end while
+calculating the indexes of specific strings in each container are              11: return Guess_id
+as follows:
+    r Initial state: Str_index is {−1, −1}, Guess_id is 3,
+      Container_size is {2, 2}.
+    r Step 1: Str_index becomes {−1, 1}, Guess_id becomes                    obtain the specific string based on the dictionary. Finally, we
+                                                                             concatenate each specific string to get the candidate password.
+      2.
+                                                                                Implementation optimization of the running logic: As shown
+      Str_index[2] = Guess_id % Container_size = 3 % 2 =
+                                                                             in Fig. 7, existing generation logic is serially implementing
+      1. Then, Guess_id =  Guess_id ÷ container_size[2],
+                                                                             the generating of passwords and processing of pre-terminals,
+      that is, Guess_id =  3 ÷ 2  = 3 | 2 + 1 = 2.
+    r Step 2: Str_index becomes {2, 1}. The calculation ends.                resulting in the unnecessary overhead of waiting time. In the
+                                                                             optimized implementation, we generate passwords and process
+      Str_index[1] = Guess_id % Container_size[1] = 2 %
+                                                                             the pre-terminals asynchronously. When GPU processes the
+      2 = 0. When the result of modulus operation is 0, we need
+                                                                             previous batch of pre-terminals, CPU starts to generate the next
+      to add the number of specific strings in current container
+                                                                             batch of the pre-terminals. We use two spaces of the same size
+      (i.e., Container_size). Thus, Str_index[1] = Guess_id
+                                                                             and two threads in CPU to asynchronously execute the gener-
+      % Container_size[1] + Container_size[1], that said,
+                                                                             ation and processing of the pre-terminals, whose size is equal
+      Str_index[1] = 2 % 2 + 2 = 2.
+                                                                             to the total space corresponding to the pre-terminals that can
+   We abstract the above steps into Algorithm 2.
+                                                                             be accommodated in one transmission. To avoid conflicts when
+   Complete design: We use the Guess_id calculation method
+                                                                             different threads access the same space, we use the semaphore
+to calculate P T _id-Guess_id to locate the candidate passwords
+                                                                             and the mutex by locking and unlocking the two spaces, and
+generated by every threads. Then, we calculate the index of
+                                                                             releasing the empty signals and full signals in turn.
+specific strings associated with the candidate passwords by the
+Guess_id. The startingindex is stored in a PT, which describes
+the starting position of the specific strings with the same type and                                     V. EVALUATION
+length in the dictionary of all specific strings of the trained PCFG
+model. The shift value can be obtained by the addition of Str_id             A. Experiment Settings
+and the starting_index. We leverage the one-dimensional array                  System environment: We use the computer with CPU of Intel
+with the T × L of all the starting position for the specific strings         Xcon Silver 4210 (2.20 GHz, 40 cores), 128 GB memory and
+with the same type and length to obtain its position, and then               four GPU cards of GeForce RTX 2090 Ti.
+
+        Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                           3491
+
+
+
+                                                                                                             TABLE V
+ Algorithm 2: Backward Algorithm of Str_id Calculation.                                                  BASELINE METHODS
+  Input: Guess_id, Container_size, N umber_of _
+   Container
+  Output: Str_index
+  1: Container_id ← N umber_of _Container
+  2: Str_index ← {}
+  3: while Container_id >0 do
+  4: mod = Guess_id %
+       Container_size[Container_id]
+  5: if mod == 0 then
+  6:     mod = mod + Container_size[Container_id]
+  7: end if                                                                      1) Comparison Against Data-Driven Models: We compare
+  8: Guess_id =  Guess_id ÷ Container_size                                  Parallel_PCFG against several state-of-the-art models when
+       [Container_id]                                                       deployed in Hashcat. We show the baseline models in
+  9: Str_index.addF irst(mod)                                                Table V, For PCFG-based models, we compare against the
+ 10: Container_id -= 1                                                       PCFG Cracker, Compiled PCFG and PCFG Manager since
+ 11: end while                                                               they are representative to accelerate password generation tasks.
+ 12: return Str_index                                                        PCFG-manager designs a distributed strategy to generate pass-
+                                                                             words in a distributed computer cluster. Besides, we also com-
+                                                                             pared with OMEN [8] because OMEN is a fast model for
+                                                                             password generation across Markov-based models. Due to the
+   Dataset: We use six large-scale password datasets leaked                  time-consuming nature of the neural-network-based guessing
+from real websites in the evaluation experiments: CSDN, 178,                 model [34] (e.g., 16 days to generate more than 101 0 passwords),
+Youku, Rockyou, Neopets and Cit0Day. These datasets                          we have decided not to evaluate these models in this work.
+are representative in terms of regional span and time span and                   For PCFG-cracker and Compiled-PCFG, we adopt the usual
+have been widely used in relevant studies [2], [6], [19], [22],              practice that serially transmits their generated passwords to
+[24], [25], [27], [28], [29], [34], [35], [36]. We show the basic            Hashcat via pipeline mode for cipher-text matching. For PCFG
+information of these six datasets in Table IV.                               Manager, we set the number of parallel threads as 50 since it
+   For the dataset cleaning [16], [37], we clean up passwords                performs best under our system environment. For OMEN, we
+containing non-printable ASCII codes and passwords with a                    set default settings of 10 levels for probability smoothing to
+length longer than 32 from the datasets. To evaluate the gen-                speed up the generation tasks. For Parallel_PCFG, we set
+eralization ability of the guessing methods (i.e., cracking new,             the container size as 8. For GPU parameters, we set the grid
+unseen passwords), we remove duplicate passwords with the                    size as 32, the block size as 1024. We empirically evaluate
+training sets and obtain a total of 120 million passwords. Besides,          the impact of these parameters to the guessing performance of
+Hashcat usually de-duplicates the testing datasets and adjusts               Parallel_PCFG in Section V-C.
+additional parameters when reading large-scale datasets, we                      We show our results in Fig. 8, in which we generally evaluate
+show the unique number of of testing datasets in the last column             the cracking rates of several models within a fixed cracking time
+in Table IV, where we also randomly select 25 million unique                 (i.e., half hour). We can find that Parallel_PCFG outper-
+passwords from Youku and Cit0Day to avoid additional pa-                     forms all of the baseline methods and achieves an average of
+rameters for fair comparison. We mainly use the three testing                14.85% improvement than the best guessing performance of
+cases: plain-text, MD-5 hash function encrypted, and SHA-1                   the baseline methods (i.e., Compile-PCFG). PCFG Manager,
+hash function encrypted to evaluate the plain-test and cipher-text           which adopts the parallel strategies across a cluster of computers
+password cracking attacks.                                                   (i.e., a large number of computers) in CPU, does not performs
+   Ethical claim: We claim that our study focuses on the overall             best, since they are superior with more CPUs. However, with
+characteristics of datasets without any analysis of individual               one CPU, PCFG Manager should waste time for scheduling,
+features for the requirement of ethical practice. We obtain the en-          thereby achieving a middle guessing performance. Therefore,
+crypted datasets by encrypting the plain-text leaked datasets with           it becomes a strict requirement for PCFG Manager bringing its
+corresponding hash functions, instead of trying to compromise                better guessing ability into full play.
+the leaked encrypted datasets. Namely, we do not compromise                      Cracking in longer time: Further, we can observe that the
+the real-world unleaked datasets. We believe that our research               cracking rates on half hours can almost converge, i.e., only a
+is in line with the ethical concerns.                                        little bit improvement over a longer period of time; Besides,
+                                                                             a short period of time (i.e., half hours) would be more widely
+B. Experiment Comparison and Results
+                                                                               1 https://github.com/lakiw/pcfg_cracker
+   We empirically compare the cracking rate in terms of the                    2 https://github.com/lakiw/compiled-pcfg
+comparison against the state-of-the-art data-driven models and                 3 https://github.com/Dasio/pcfg-manager
+
+the Hashcat-based mask and rule-based attacks.                                 4 https://github.com/RUB-SysSec/OMEN
+
+
+
+
+         Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3492                                                      IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+
+Fig. 8.   Cracking rates of Parallel_PCFG in half hour.
+
+
+
+
+                                                                               Fig. 10.   Performance of CKL-PCFG before and after the parallel design.
+Fig. 9.   Comparison with the longer time (e.g., an hour) settings.
+
+                                                                               attacks to gain more insights when compared with the industrial
+used in real world than a long period. Still, we supplement the                guessing scenarios. For completeness, we compare Paral-
+evaluation of longer time (i.e, from half hour to an hour) in Fig. 9.          lel_PCFG against the rule-based Hashcat attack with two
+We argue that the cracking time of half hours can be enough to                 widely-used rules and the mask attack mode. The rule-based
+obtain a large gains, and we don’t have to waster longer time on               attacks generally apply a rules-set to the password dictionary to
+pursuing small gains.                                                          produce password candidates. The mask attack mode consists
+   Generalization to other PCFGs: Our parallel password gener-                 of only searching passwords that match a specific pattern (i.e.,
+ation framework can be generalized to other PCFG-based meth-                   mask like “p@**word”). We settle down two different rule-sets,
+ods with its grammars of pattern type and length (e.g., “L_4”).                Passpro and TRule [4]. Passpro is a common handwritten rule
+We then adapt our parallel password generation framework to the                set. TRule is an optimized rule set recently proposed in 2022.
+optimized PCFG models (e.g., CKL-PCFG [37]) on GPU. We                         Specifically, we pick the TRule with 1,728 optimized rules by
+conduct our experiments on two guessing scenarios and show                     Di Campi’s work [4], where the rules-set is lightweight and can
+the results in Fig. 10. We observe that the CKL_PCFG_Parallel                  achieve the highest guessing performance than the other rules-set
+achieves nearly 60% cracking rates in one hour both on the                     in their empirical study. The 1,728 optimized TRule rules and
+plain-text and the hashed test sets, approximately 22% higher                  the masked set are both downloaded from the repository.5
+than CKL_PCFG_Original, showcasing the generation ability                         We show our results in Fig. 11, where we can find that
+of our parallel frameworks for the optimized CKL_PCFG.                         Parallel_PCFG achieves higher cracking rates. The mask
+   2) Comparison Against mask and Rule-Based Attacks: We
+also compare the efficiency against the mask and the rule-based                   5 https://github.com/focardi/PasswordCrackingTraining/tree/master
+
+
+
+
+          Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                                 3493
+
+
+
+
+Fig. 11.   Comparison with the multiple Hashcat based attacks.
+
+                                                                               Fig. 12.   Influence of block size on parallel PCFG password processing speed.
+                            TABLE VI
+ TIME (MINUTES) REQUIRED FOR Parallel_PCFG TO ACHIEVE THE SAME
+  CRACKING RATE THAT COMPILED-PCFG ACHIEVES IN LONGER CRACKING
+                        TIME (I.E., AN HOUR)
+
+
+
+
+                                                                               Fig. 13. Influence of grid size on Parallel_PCFG. The value in parentheses
+                                                                               of the legend refers to the container size of each segment.
+
+
+
+                                                                               number of blocks in the grid). We also evaluate the impact of
+                                                                               the container size on the performance of Parallel_PCFG.
+attack mode generally yields lowest efficiency, perhaps because
+                                                                                  Influence of the block size: We set the grid size to 1 and use
+the trained masked passwords exhibit a mismatch with the evalu-
+                                                                               two container sizes of 4 and 8 for comprehensive comparision.
+ation sets of Cit0Day due to the straightforward configuration
+                                                                               We consider the first two rounds since the first round involves
+for generic guessing. In summary, we recommend combining
+                                                                               the initialization of the GPU kernel, while the second round and
+data-driven models (e.g., PCFG) and the guessing softwares
+                                                                               subsequent rounds of generation do not have the initialization
+(e.g., Hashcat) be used more widely, as the pure guessing
+                                                                               step. As shown in Fig. 12, the consumed time of Paral-
+softwares (e.g., Hashcat) needs a summarized rules-set (e.g.,
+                                                                               lel_PCFG decreases as the block size increases. We obtain
+TRule) to achieve a sound performance.
+                                                                               the minimum time overhead when the block size is 1024. For
+   Reduced cracking time: We supplement to show how much
+                                                                               Parallel_PCFG, the increase in the number of threads in the
+cracking time our Parallel_PCFG can save in a longer
+                                                                               block improves the ability of parallel processing, which finally
+cracking time (an hour) in Table VI, where we find that
+                                                                               reduces the consumed time. Therefore, we recommend setting
+Parallel_PCFG achieves the similar cracking rate in an av-
+                                                                               the block size to 1024.
+erage of 10 minutes than that from Compiled-PCFG, indicating
+                                                                                  Influence of the grid size: When exploring the impact of
+that Parallel_PCFG can largely reduce the time overhead,
+                                                                               grid size, we set the block size to 1024 based on the result of
+especially when testing sets becomes larger. Parallel_PCFG
+                                                                               the previous section to control the variables. The experimental
+performs better upon Youku than 178, and similarly saves
+                                                                               results are shown in Fig. 13, where the consumed time of
+more cracking time upon Neopets than Cit0Day. Both the
+                                                                               Parallel_PCFG first decreases and then increase. We can
+Neopets and Youku have the significant larger size, indicat-
+                                                                               observe the minimum time when the grid size is between 16
+ing that Parallel_PCFG can greatly benefit those guessing
+                                                                               and 64. Based on the results, we recommend setting the grid
+scenarios with larger testing sets. This key reason could be
+                                                                               size to 32, given that a small and large size can lead to the extra
+that the models upon larger testing sets requires more time in
+                                                                               time overhead. When the grid size is too small, the total number
+GPU processing, which can be reduced in Parallel_PCFG.
+                                                                               of GPU threads is small, so each thread needs to process more
+When attackers face to crack a large amount of passwords,
+                                                                               passwords in each round of guessing. However, when the grid
+Parallel_PCFG can be extremely useful.
+                                                                               size is too large, GPU fails to fully schedule all blocks since
+                                                                               the number of streaming multiprocessors in GPU is limited,
+C. Influence of Parameters
+                                                                               increasing the overall time consumption.
+   In this section, we explore the Influence of several parameters                Influence of the container size: We explore the influence of
+on the performance of Parallel_PCFG. Two parameters are                        the container size on the performance of Parallel_PCFG by
+considered here: the block size of GPU (i.e., the number of                    comparing the number of processed candidate passwords and the
+threads in a single block) and the grid size of GPU (i.e., the                 number of cracked target passwords. We select the 15 minutes
+
+           Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3494                                                    IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+                                                                                                            TABLE VII
+                                                                                CRACKING RATES BETWEEN Parallel_PCFG WITH 1 GPU CARD AND 4
+                                                                                GPU CARDS, INDICATING THE INTRINSIC FEATURE THAT Parallel_PCFG
+                                                                                  HAS REACHED FULL POTENTIAL WITH 1 GPU CARD IN THE PASSWORD
+                                                                                                        GENERATION TASK
+
+
+
+
+Fig. 14. Influence of the container size on the number of processed passwords
+and cracked targets by Parallel_PCFG at the same time. The symbol “#”
+represents “the number of”.
+
+
+
+as a fixed time period, set the block size to 1024, and set the grid
+size to 32. We show the experimental results in Fig. 14.                        of the computer used is $8000, and the price of the GPU card used
+   By observing Fig. 14, we can find that with the increase of                  in our experiment is $1000. Before using GPU, PCFG-based
+the container size, the number of processed passwords and the                   methods can successfully crack 2,102 passwords per second,
+number of cracked first increase and then decrease. Given that                  translating into 263 passwords per second per $1000; After
+increasing the container size of 8 will not significantly improve               using GPU, PCFG-based method can successfully crack 2,437
+the processing speed and the cracked targets, we settle down                    passwords per second, translating into 271 passwords per second
+the container size of 8 in our experiments. We analyze the                      per $1000. Even one second can crack 8 more passwords with
+reasons below. When the container size is small, the number                     the same economic cost ($1000), let alone half hour or longer
+of candidate passwords that a pre-terminal can generate will be                 times of password cracking. In summary, Parallel_PCFG
+small, so the proportion of consumed time of generating will                    can achieve similar cracking rates within around 10 minutes
+be smaller. More time will be used for data transmission. When                  than that from traditional PCFG-based methods. The cost of
+the container size is large, the proportion of consumed time of                 time is shortened by 85.67% when the cost of money increases
+GPU processing will be larger. However, the processing speed                    by 12.5%.
+of candidate passwords would reach the bottleneck since the                        Full GPU acceleration: The running logic of Parallel_
+time of one transmission remain unchanged. Similarly, when                      PCFG has been carefully optimized to achieve CPU-GPU col-
+the container size is small, Parallel_PCFG must repeat the                      laboration, which is achieved by asynchronously generating (in
+contents of some pre-terminals to ensure that all the threads in a              CPU) and processing (in GPU) pre-terminals, ensuring GPU
+warp will handle the same pre-terminals, resulting in a memory                  cores engaged, minimizing waste time and maximizing through-
+space waste. When the number of fragment items is large, the                    put. By the measures above, Parallel_PCFG achieves better
+position of the items in the segment changes greatly compared                   schedule work (e.g., between CPU and GPU, balanced memory
+with its original position, resulting in a large change in the order            loading, or parallel threats) to run the cracker at full speed.
+of generated candidate passwords, leading to the reduction in                      Relevance with practical takeaways and defenses: This paper
+the cracked targets.                                                            offers valuable insights into password guessing performance by
+   Influence of more GPU cards: Parallel_PCFG is mainly                         focusing on time-based metrics rather than simply the number
+designed to fully use the single GPU power with efficient                       of guesses. We argue that time metrics more accurately reflect
+workload distribution and thread management, ensuring that                      real-world industrial scenarios, whereas guess counts are more
+the single GPU is always operating at its highest potential. By                 commonly emphasized in academic research. Relying solely on
+focusing on single GPU efficiency, Parallel_PCFG avoids                         guess counts can be misleading, as the varying cost of each guess
+the complexities and costs associated with multi-GPU setups.                    attempt may introduce bias. Given the highlighted vulnerabili-
+We have shown that Parallel_PCFG reaches full potential                         ties, enforcing strict password creation policies is essential. For
+in the password generation task by the comparison between                       example, we can encourage users to employ password managers
+1 GPU card and 4 GPU cards in Table VII, unlocking the                          to create robust passwords. We also encourage the two-factor
+intrinsic feature that Parallel_PCFG almost reaches its full                    authentication mechanisms to strengthen the authentication.
+potential in candidate password generation with one GPU card.                      Future work: Enhancing the speed of generating password
+We believe that it is our future work to explore how to accelerate              guesses is a critical challenge in the field. We encourage more
+the multiple-card scenarios, which requires a thoughtful and                    focused research on this issue and emphasize the importance
+carefully crafted design.                                                       of understanding how password guessing evolves over time. In
+                                                                                future work, we will explore acceleration techniques for specific
+                                                                                scenarios, such as masked or targeted guessing, given their
+                            VI. DISCUSSION                                      unique structures and customization requirements. Besides, we
+   Economic costs: We use GPU to accelerate the speed of                        plan to investigate how to better organize multiple GPU cards
+PCFG-based methods to generate candidate passwords, which                       to enhance collaboration and significantly speed up password
+significantly reduces the time cost of guessing attacks. The price              candidate generation.
+
+         Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+XU et al.: USING PARALLEL TECHNIQUES TO ACCELERATE PCFG-BASED PASSWORD CRACKING ATTACKS                                                                       3495
+
+
+
+                           VII. CONCLUSION                                        [17] M. Weir and J. Steube, “Adding PCFGs to Hashcat’s brain,“
+                                                                                       Nov. 2018. [Online]. Available: https://hashcat.net/forum/thread-7936.
+   In this paper, we manage to accelerate the password gen-                            html
+eration of PCFG-based methods using parallel techniques. We                       [18] W. Melicher et al., “Fast, lean, and accurate: Modeling password guess-
+                                                                                       ability using neural networks,” in Proc. 25th USENIX Secur. Symp., Austin,
+mainly propose two algorithms: a storage structure with a mem-                         TX, USA, 2016, pp. 175–191.
+ory balancing mechanism and a parallel algorithm that assigns                     [19] B. Pal, T. Daniel, R. Chatterjee, and T. Ristenpart, “Beyond credential
+the generation tasks to different threads. Based on the above two                      stuffing: Password similarity models using neural networks,” in Proc.
+                                                                                       2019 IEEE Symp. Secur. Privacy, San Francisco, CA, USA, 2019,
+algorithms, we propose and implement a Parallel_\break                                 pp. 417–434.
+PCFG in the popular password cracking software Hashcat. We                        [20] D. Pasquini, G. Ateniese, and C. Troncoso, “Universal neural-cracking-
+empirically evaluate the cracking rate of Parallel_PCFG                                machines: Self-configurable password models from auxiliary data,”
+                                                                                       2023, arXiv:2301.07628.
+from the perspective of cracking time period and find that                        [21] D. Pasquini, M. Cianfriglia, G. Ateniese, and M. Bernaschi, “Reduc-
+Parallel_PCFG can significantly save the cracking time with                            ing bias in modeling real-world password strength via deep learning
+several competitors. Particularly, Parallel_PCFG only takes                            and dynamic dictionaries,” in Proc. 30th USENIX Secur. Symp., 2021,
+                                                                                       pp. 821–838.
+14.33% of time to achieve the same cracking rate achieved by the                  [22] D. Pasquini, A. Gangwal, G. Ateniese, M. Bernaschi, and M. Conti,
+best-performing models, demonstrating that Parallel_PCFG                               “Improving password guessing via representation learning,” in Proc.
+can significantly improve the generation speed of candidate pass-                      42nd IEEE Symp. Secur. Privacy, San Francisco, CA, USA, 2021,
+                                                                                       pp. 1382–1399.
+words and reduce the time cost of password cracking attacks.                      [23] J. Tan, L. Bauer, N. Christin, and L. F. Cranor, “Practical recom-
+                                                                                       mendations for stronger, more usable passwords combining minimum-
+                                                                                       strength, minimum-length, and blocklist requirements,” in Proc.
+                                  REFERENCES                                           2020 ACM SIGSAC Conf. Comput. Commun. Secur., USA, 2020,
+                                                                                       pp. 1407–1426.
+ [1] S. Aggarmal and C. M. Weir, “Using probabilistic techniques to aid in        [24] B. Ur et al., “How does your password measure up? The effect of strength
+     password cracking attacks,” PhD thesis, Dept. Comput. Sci., Florida State         meters on password creation,” in Proc. 21th USENIX Secur. Symp., Belle-
+     Univ., Tallahassee, FL, 2010.                                                     vue, WA, USA, 2012, pp. 65–80.
+ [2] J. Blocki, B. Harsha, and S. Zhou, “On the economics of offline password     [25] B. Ur et al., “i added ’!’ at the end to make it secure”: Observing password
+     cracking,” in Proc. 2018 IEEE Symp. Secur. Privacy, San Francisco, CA,            creation in the lab,” in Proc. 11th Symp. On Usable Privacy Secur., Ottawa,
+     USA, 2018, pp. 853–871.                                                           Canada, USENIX Association, 2015, pp. 123–140.
+ [3] J. Bonneau, C. Herley, P. C. van Oorschot, and F. Stajano, “The quest to     [26] B. Ur et al., “Measuring real-world accuracies and biases in
+     replace passwords: A framework for comparative evaluation of web au-              modeling password guessability,” in Proc. 24th USENIX Secur.
+     thentication schemes,” in Proc. IEEE Symp. Secur. Privacy, San Francisco,         Symp., Washington, DC, USA, USENIX Association, 2015,
+     CA, USA, 2012, pp. 553–567.                                                       pp. 463–481.
+ [4] A. M. Di Campi, R. Focardi, and F. L. Luccio, “The revenge of password       [27] D. Wang, Y. Zou, Q. Dong, Y. Song, and X. Huang, “How to attack and
+     crackers: Automated training of password cracking tools,” in Proc. 27th           generate honeywords,” in Proc. 2022 IEEE Symp. Secur. Privacy, Los
+     Eur. Symp. Res. Comput. Secur., Copenhagen, Denmark, Springer, 2022,              Alamitos, CA, USA, 2022, pp. 489–506.
+     pp. 317–336.                                                                 [28] D. Wang, H. Cheng, P. Wang, X. Huang, and G. Jian, “Zipf’s law
+ [5] Dasio, “PCFG-manager,“ Feb. 2020. [Online]. Available: https://github.            in passwords,” IEEE Trans. Inf. Forensics Secur., vol. 12, no. 11,
+     com/Dasio/pcfg-manager                                                            pp. 2776–2791, Nov. 2017.
+ [6] X. de Carné de Carnavalet and M. Mannan, “From very weak to very             [29] D. Wang, P. Wang, D. He, and Y. Tian, “Birthday, name and bifacial-
+     strong: Analyzing password-strength meters,” in Proc. 21st Annu. Netw.            security: Understanding passwords of chinese web users,” in Proc. 28th
+     Distrib. Syst. Secur. Symp., San Diego, CA, USA, 2014, pp. 1–15.                  USENIX Secur. Symp., Santa Clara, CA, USA, USENIX Association, 2019,
+ [7] M. Dell’Amico and M. Filippone, “Monte Carlo strength evaluation:                 pp. 1537–1555.
+     Fast and reliable password checking,” in Proc. 22nd ACM SIGSAC Conf.         [30] D. Wang, Y. Zou, Y.-A. Xiao, S. Ma, and X. Chen, “Pass2Edit: A
+     Comput. Commun. Secur., Denver, CO, USA, 2015, pp. 158–169.                       multi-step generative model for guessing edited passwords,” in Proc. 32nd
+ [8] M. Dürmuth, F. Angelstorf, C. Castelluccia, D. Perito, and C. Abdelberi,          USENIX Secur. Symp., Anaheim, CA, USA, USENIX Association, 2023,
+     “OMEN: Faster password guessing using an ordered Markov enumerator,”              pp. 983–1000.
+     in Proc. 7th Int. Symp. Eng. Secure Softw. Syst., Milan, Italy, Springer,    [31] D. Wang, Y. Zou, Z. Zhang, and K. Xiu, “Password guessing using
+     2015, pp. 119–132.                                                                random forest,” in Proc. 32nd USENIX Secur. Symp., Anaheim, CA, USA,
+ [9] C. Herley and P. C. van Oorschot, “A research agenda acknowledging the            USENIX Association, 2023, pp. 965–982.
+     persistence of passwords,” IEEE Secur. Privacy, vol. 10, no. 1, pp. 28–36,   [32] M. Weir, “Practical PCFG password cracking,“ Dec. 2019. [Online].
+     Jan./Feb. 2012.                                                                   Available: https://www.youtube.com/hashtag/passwordscon
+[10] R. Hranický, F. Listiak, D. Mikus, and O. Rysavý, “On practical aspects      [33] M. Weir, S. Aggarwal, B. de Medeiros, and B. Glodek, “Password cracking
+     of PCFG password cracking,” in Proc. 33rd Annu. IFIP WG 11.3 Conf.                using probabilistic context-free grammars,” in Proc. 30th IEEE Symp.
+     Data Appl. Secur. Privacy XXXIII, Charleston, SC, USA, Springer, 2019,            Secur. Privacy, Oakland, CA, USA, 2009, pp. 391–405.
+     pp. 43–60.                                                                   [34] D. Lowe Wheeler, “zxcvbn: Low-budget password strength estimation,” in
+[11] R. Hranický, L. Zobal, O. Rysavý, D. Kolár, and D. Mikus, “Distributed            Proc. 25th USENIX Secur. Symp., Austin, TX, USA, USENIX Association,
+     PCFG password cracking,” in Proc. 25th Eur. Symp. Res. Comput. Secur.,            2016, pp. 157–173.
+     Guildford, U.K., Springer, 2020, pp. 701–719.                                [35] S. S. Woo, “How do we create a fantabulous password,” in Proc. Web
+[12] J. Steube and G. Gristina, “Hashcat: A password recovery tool,“ Dec. 2015.        Conf., Taipei, Taiwan, 2020, pp. 1491–1501.
+     [Online]. Available: https://hashcat.net/hashcat/                            [36] Y. Xiao and J. Zeng, “Dynamically generate password policy via Zipf
+[13] lakiw, “Compiled-PCFG,“ Dec. 2019. [Online]. Available: https://github.           distribution,” IEEE Trans. Inf. Forensics Secur., vol. 17, pp. 835–848,
+     com/lakiw/compiled-pcfg                                                           2022.
+[14] lakiw, “PCFG-cracker,“ Dec. 2019. [Online]. Available: https://github.       [37] M. Xu, C. Wang, J. Yu, J. Zhang, K. Zhang, and W. Han, “Chunk-level
+     com/lakiw/pcfg_cracker                                                            password guessing: Towards modeling refined password composition rep-
+[15] E. Liu, A. Nakanishi, M. Golla, D. Cash, and B. Ur, “Reasoning analyti-           resentations,” in Proc. 2021 ACM SIGSAC Conf. Comput. Commun. Secur.,
+     cally about password-cracking software,” in Proc. 2019 IEEE Symp. Secur.          2021, pp. 5–20.
+     Privacy, San Francisco, CA, USA, 2019, pp. 380–397.                          [38] M. Xu et al., “Improving real-world password guessing attacks
+[16] J. Ma, W. Yang, M. Luo, and N. Li, “A study of probabilistic password             via bi-directional transformers,” in Proc. 32nd USENIX Se-
+     models,” in Proc. 2014 IEEE Symp. Secur. Privacy, Berkeley, CA, USA,              cur. Symp., Anaheim, CA, USA, USENIX Association, 2023,
+     2014, pp. 689–704.                                                                pp. 1001–1018.
+
+
+
+
+           Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+3496                                                  IEEE TRANSACTIONS ON DEPENDABLE AND SECURE COMPUTING, VOL. 22, NO. 4, JULY/AUGUST 2025
+
+
+
+                      Ming Xu received the PhD degree from Fudan Uni-                                    Junjie Zhang is currently working toward the grad-
+                      versity in 2023. She is a research fellow with the Na-                             uate degree with Fudan University. He is currently a
+                      tional University of Singapore. Her research interests                             member of the Laboratory of Data Analysis and Secu-
+                      lie in pursuing the beautiful convergence of chaotic                               rity. His research interest mainly includes password
+                      data into informed insights in the usable security and                             security and system security.
+                      privacy aspects. Her research interest mainly includes
+                      the usable security and privacy including the pass-
+                      word security.
+
+
+
+
+                      Shenghao Zhang is currently working toward the                                     Jitao Yu is currently working toward the graduate de-
+                      graduate degree with Fudan University. His research                                gree with Fudan University. He is currently a member
+                      interest mainly includes the password security and                                 of the Laboratory of Data Analysis and Security. His
+                      system security. He is currently a member of the                                   research interest mainly includes password security
+                      Laboratory of Data Analysis and Security. His re-                                  and system security.
+                      search interest mainly includes password security and
+                      system security.
+
+
+
+
+                                                                                                         Luwei Cheng is currently working toward the grad-
+                                                                                                         uate degree with Fudan University. He is currently a
+                      Kai Zhang received the PhD degree from the Uni-                                    member of the Laboratory of Data Analysis and Secu-
+                      versity of Science and Technology of China in 2016.                                rity. His research interest mainly includes password
+                      He is an associate professor with Fudan University.                                security and system security.
+                      He is currently a member of the Laboratory of Data
+                      Analytics and Security. His research areas include
+                      database systems, networked systems, parallel and
+                      distributed computing.
+
+
+
+                                                                                                        Weili Han (Member, IEEE) received the PhD degree
+                                                                                                        from Zhejiang University in 2003. He is a full pro-
+                                                                                                        fessor with Software School, Fudan University. Then,
+                                                                                                        he joined the faculty of Software School with Fudan
+                      Haodong Zhang is currently working toward the                                     University. From 2008 to 2009, he visited Purdue
+                      graduate degree with Fudan University. He is cur-                                 University as a visiting professor funded by China
+                      rently a member of the Laboratory of Data Analysis                                Scholarship Council and Purdue University. His re-
+                      and Security. His research interest mainly includes                               search interests are mainly in the fields of Data System
+                      password security and system security.                                            Security, Access Control, and Password Security. He
+                                                                                                        is now the distinguished member of CCF and the
+                                                                                                        members of the ACM, SIGSAC. He serves in several
+                                                                               leading conferences and journals as PC members, reviewers, and an associate
+                                                                               editor.
+
+
+
+
+       Authorized licensed use limited to: NANKAI UNIVERSITY. Downloaded on May 22,2026 at 02:36:29 UTC from IEEE Xplore. Restrictions apply.
+

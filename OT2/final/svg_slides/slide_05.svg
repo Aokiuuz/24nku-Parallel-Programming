@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="事件循环到协程：把性能重新包装成可读代码">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .chartcard { fill: rgba(248,250,252,0.97); stroke: rgba(255,255,255,0.12); stroke-width: 1.1; }
+      .kicker { fill: #93C5FD; font-size: 14.5px; font-weight: 850; letter-spacing: 1.7px; }
+      .title { fill: #F8FAFC; font-size: 39px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 24px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 19.5px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16.8px; font-weight: 540; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 19.2px; font-weight: 620; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 13.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+      .node { fill: rgba(15,23,42,0.75); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1126" cy="-88" r="282" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-86" cy="650" r="310" fill="#059669" opacity="0.10"/>
+  <g class="page">
+    <text x="50" y="52" class="kicker" text-anchor="start">ABSTRACTION</text>
+    <text x="50" y="96" class="title" text-anchor="start">事件循环到协程：把性能重新包装成可读代码</text>
+    <text x="50" y="128" class="body" text-anchor="start">协程同时服务两个目标：保持事件驱动的资源效率，降低异步代码的状态管理成本。</text>
+
+    <rect x="48" y="166" width="360" height="392" rx="22" class="card"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#DC2626" opacity="0.95"/>
+    <text x="78" y="210" class="kicker">THREAD STYLE</text><text x="78" y="250" class="h2">同步线程式代码</text>
+    <circle cx="78" cy="299" r="4.5" fill="#F87171"/>
+<text x="96" y="304" class="body" text-anchor="start">调用链直观</text>
+<circle cx="78" cy="333" r="4.5" fill="#F87171"/>
+<text x="96" y="338" class="body" text-anchor="start">等待也占线程</text>
+<circle cx="78" cy="367" r="4.5" fill="#F87171"/>
+<text x="96" y="372" class="body" text-anchor="start">高并发资源成本高</text>
+    <rect x="78" y="430" width="300" height="72" rx="15" fill="rgba(255,255,255,0.08)"/><text x="104" y="462" class="small">data = read()</text><text x="104" y="488" class="small">return parse(data)</text>
+    <rect x="460" y="166" width="360" height="392" rx="22" class="card"/><rect x="460" y="166" width="6" height="392" rx="3" fill="#059669" opacity="0.95"/>
+    <text x="490" y="210" class="kicker">EVENT LOOP</text><text x="490" y="250" class="h2">事件循环回调</text>
+    <circle cx="490" cy="299" r="4.5" fill="#34D399"/>
+<text x="508" y="304" class="body" text-anchor="start">少线程高吞吐</text>
+<circle cx="490" cy="333" r="4.5" fill="#34D399"/>
+<text x="508" y="338" class="body" text-anchor="start">回调链复杂</text>
+<circle cx="490" cy="367" r="4.5" fill="#34D399"/>
+<text x="508" y="372" class="body" text-anchor="start">状态分散</text>
+    <rect x="490" y="430" width="300" height="72" rx="15" fill="rgba(255,255,255,0.08)"/><text x="516" y="462" class="small">read(on_done)</text><text x="516" y="488" class="small">on_done -> parse()</text>
+    <rect x="872" y="166" width="360" height="392" rx="22" class="card2"/><rect x="872" y="166" width="6" height="392" rx="3" fill="#2563EB" opacity="0.95"/>
+    <text x="902" y="210" class="kicker">COROUTINE</text><text x="902" y="250" class="h2">async / await 协程</text>
+    <circle cx="902" cy="299" r="4.5" fill="#60A5FA"/>
+<text x="920" y="304" class="body" text-anchor="start">等待不独占线程</text>
+<circle cx="902" cy="333" r="4.5" fill="#60A5FA"/>
+<text x="920" y="338" class="body" text-anchor="start">代码按流程阅读</text>
+<circle cx="902" cy="367" r="4.5" fill="#60A5FA"/>
+<text x="920" y="372" class="body" text-anchor="start">运行时恢复执行</text>
+    <rect x="902" y="430" width="300" height="72" rx="15" fill="rgba(37,99,235,0.22)" stroke="rgba(96,165,250,0.36)"/><text x="928" y="462" class="small">data = await read()</text><text x="928" y="488" class="small">return parse(data)</text>
+
+  </g>
+  <text x="1232" y="692" text-anchor="end" class="small">05/20</text>
+</svg>

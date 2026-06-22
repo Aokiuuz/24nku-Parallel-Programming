@@ -1,0 +1,5 @@
+status=PASS
+benchmark_rows=90
+expected_rows=90
+pt_stats_rows=3
+failures=0

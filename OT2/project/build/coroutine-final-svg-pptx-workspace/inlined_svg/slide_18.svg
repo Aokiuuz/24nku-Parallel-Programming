@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="工程选型：先判断瓶颈，再选择模型">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#0A0A0A"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#002FA7"/>
+      <stop offset="100%" stop-color="#002FA7"/>
+    </linearGradient>
+    <style>
+      .page { font-family: "Inter", "Helvetica Neue", "Helvetica", "Noto Sans SC", "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.78); stroke: #D4D4D2; stroke-width: 1.15; }
+      .card2 { fill: rgba(255,255,255,0.88); stroke: #0A0A0A; stroke-width: 1.15; }
+      .chartcard { fill: #FFFFFF; stroke: #0A0A0A; stroke-width: 1.15; }
+      .kicker { fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px; }
+      .title { fill: #0A0A0A; font-size: 39px; font-weight: 560; letter-spacing: 0; }
+      .h1 { fill: #0A0A0A; font-size: 52px; font-weight: 360; letter-spacing: 0; }
+      .h2 { fill: #0A0A0A; font-size: 24px; font-weight: 560; letter-spacing: 0; }
+      .h3 { fill: #0A0A0A; font-size: 19.5px; font-weight: 620; letter-spacing: 0; }
+      .body { fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0; }
+      .body2 { fill: #0A0A0A; font-size: 19.2px; font-weight: 560; letter-spacing: 0; }
+      .small { fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #002FA7; font-size: 44px; font-weight: 520; letter-spacing: 0; }
+      .axis { stroke: #D4D4D2; stroke-width: 1; }
+      .node { fill: rgba(255,255,255,0.82); stroke: #D4D4D2; stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="#FAFAF8"/ style="font-family: "Inter", "Helvetica Neue", "Helvetica", "Noto Sans SC", "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", Arial, sans-serif;">
+  <g class="swiss-grid">
+  <line x1="80" y1="0" x2="80" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="150" y1="0" x2="150" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="220" y1="0" x2="220" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="290" y1="0" x2="290" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="360" y1="0" x2="360" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="430" y1="0" x2="430" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="500" y1="0" x2="500" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="570" y1="0" x2="570" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="640" y1="0" x2="640" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="710" y1="0" x2="710" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="780" y1="0" x2="780" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="850" y1="0" x2="850" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="920" y1="0" x2="920" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="990" y1="0" x2="990" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1060" y1="0" x2="1060" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1130" y1="0" x2="1130" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1200" y1="0" x2="1200" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="1270" y1="0" x2="1270" y2="720" stroke="#D4D4D2" stroke-width="0.65" opacity="0.35"/>
+  <line x1="0" y1="80" x2="1280" y2="80" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="150" x2="1280" y2="150" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="220" x2="1280" y2="220" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="290" x2="1280" y2="290" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="360" x2="1280" y2="360" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="430" x2="1280" y2="430" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="500" x2="1280" y2="500" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="570" x2="1280" y2="570" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="640" x2="1280" y2="640" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+  <line x1="0" y1="710" x2="1280" y2="710" stroke="#D4D4D2" stroke-width="0.65" opacity="0.22"/>
+
+  </g>
+  <g class="page" style="font-family: "Inter", "Helvetica Neue", "Helvetica", "Noto Sans SC", "Microsoft YaHei", "Microsoft YaHei UI", "DengXian", "SimSun", "NSimSun", Arial, sans-serif;">
+    <text x="50" y="52" class="kicker" text-anchor="start" style="fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px;">ENGINEERING RULES</text>
+    <text x="50" y="96" class="title" text-anchor="start" style="fill: #0A0A0A; font-size: 39px; font-weight: 560; letter-spacing: 0;">工程选型：先判断瓶颈，再选择模型</text>
+    <text x="50" y="128" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">选型必须同时看瓶颈类型、依赖库是否非阻塞、下游容量和取消/超时治理。</text>
+
+    <rect x="48" y="158" width="560" height="426" rx="0" class="card2"/ style="fill: rgba(255,255,255,0.88); stroke: #0A0A0A; stroke-width: 1.15;"><rect x="48" y="158" width="6" height="426" rx="3" fill="#002FA7" opacity="0.95"/>
+    <text x="82" y="208" class="kicker" style="fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px;">DECISION TREE</text>
+    <g transform="translate(96 252)">
+      <rect x="0" y="0" width="460" height="56" rx="16" class="node"/ style="fill: rgba(255,255,255,0.82); stroke: #D4D4D2; stroke-width: 1.1;"><text x="230" y="36" text-anchor="middle" class="body2" style="fill: #0A0A0A; font-size: 19.2px; font-weight: 560; letter-spacing: 0;">瓶颈是否主要来自 I/O 等待？</text>
+      <path d="M230 58 L230 92" class="line" stroke="#737373"/ style="fill: none; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter;">
+      <rect x="-4" y="96" width="220" height="64" rx="16" fill="rgba(0,47,167,0.12)" stroke="#002FA7"/><text x="106" y="136" text-anchor="middle" class="body" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">是：协程 / 异步I/O</text>
+      <rect x="244" y="96" width="220" height="64" rx="16" fill="rgba(0,47,167,0.08)" stroke="#002FA7"/><text x="354" y="136" text-anchor="middle" class="body" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">否：并行计算方案</text>
+      <path d="M106 162 L106 196" class="line" stroke="#737373"/ style="fill: none; stroke-width: 3; stroke-linecap: square; stroke-linejoin: miter;"><rect x="-4" y="200" width="220" height="64" rx="16" fill="rgba(0,47,167,0.08)" stroke="#002FA7"/><text x="106" y="240" text-anchor="middle" class="body" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">加超时、限流、取消</text>
+      <text x="0" y="314" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">补充判断：依赖库是否 awaitable？连接池/线程池是否限制下游并发？取消是否能向下游传播？</text>
+    </g>
+    <rect x="632" y="158" width="284" height="426" rx="0" class="card"/ style="fill: rgba(255,255,255,0.78); stroke: #D4D4D2; stroke-width: 1.15;"><rect x="632" y="158" width="6" height="426" rx="3" fill="#002FA7" opacity="0.95"/>
+    <text x="662" y="208" class="kicker" style="fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px;">USE WHEN</text><circle cx="662" cy="245" r="4.5" fill="#002FA7"/>
+<text x="680" y="250" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">高并发Web服务</text>
+<circle cx="662" cy="279" r="4.5" fill="#002FA7"/>
+<text x="680" y="284" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">RPC/API聚合</text>
+<circle cx="662" cy="313" r="4.5" fill="#002FA7"/>
+<text x="680" y="318" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">爬虫与批量请求</text>
+<circle cx="662" cy="347" r="4.5" fill="#002FA7"/>
+<text x="680" y="352" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">数据库与缓存访问</text>
+<circle cx="662" cy="381" r="4.5" fill="#002FA7"/>
+<text x="680" y="386" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">长连接与定时器</text>
+    <text x="662" y="446" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">落地要求：统一超时、背压、取消传播，</text>
+    <text x="662" y="472" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">并保留可观测性指标。</text>
+    <rect x="948" y="158" width="284" height="426" rx="0" class="card"/ style="fill: rgba(255,255,255,0.78); stroke: #D4D4D2; stroke-width: 1.15;"><rect x="948" y="158" width="6" height="426" rx="3" fill="#002FA7" opacity="0.95"/>
+    <text x="978" y="208" class="kicker" style="fill: #002FA7; font-size: 14.5px; font-weight: 700; letter-spacing: 1.9px;">AVOID WHEN</text><circle cx="978" cy="245" r="4.5" fill="#002FA7"/>
+<text x="996" y="250" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">纯CPU计算</text>
+<circle cx="978" cy="279" r="4.5" fill="#002FA7"/>
+<text x="996" y="284" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">大量阻塞库</text>
+<circle cx="978" cy="313" r="4.5" fill="#002FA7"/>
+<text x="996" y="318" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">强实时调度</text>
+<circle cx="978" cy="347" r="4.5" fill="#002FA7"/>
+<text x="996" y="352" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">无界任务创建</text>
+<circle cx="978" cy="381" r="4.5" fill="#002FA7"/>
+<text x="996" y="386" class="body" text-anchor="start" style="fill: #242424; font-size: 16.8px; font-weight: 470; letter-spacing: 0;">缺少下游限流</text>
+    <text x="978" y="446" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">替代方案：进程池、原生扩展、向量化，</text>
+    <text x="978" y="472" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">或虚拟线程迁移。</text>
+
+  </g>
+  <text x="1232" y="692" text-anchor="end" class="small" style="fill: #737373; font-size: 13.5px; font-weight: 520; letter-spacing: 0;">18/20</text>
+</svg>

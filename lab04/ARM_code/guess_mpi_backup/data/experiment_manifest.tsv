@@ -1,0 +1,11 @@
+task_id	job_id	version	mode	run
+1	44699.master_ubss1	backup	simd	1
+2	44700.master_ubss1	backup	simd	2
+3	44701.master_ubss1	backup	simd	3
+4	44702.master_ubss1	backup	simd	4
+5	44703.master_ubss1	backup	simd	5
+6	44704.master_ubss1	backup	serial	1
+7	44705.master_ubss1	backup	serial	2
+8	44706.master_ubss1	backup	serial	3
+9	44707.master_ubss1	backup	serial	4
+10	44708.master_ubss1	backup	serial	5

@@ -1,0 +1,27 @@
+\begin{thebibliography}{1}
+
+\bibitem{godbolt2026}
+Matt Godbolt.
+\newblock Compiler explorer, 2026.
+\newblock 在线编译与汇编分析工具.
+
+\bibitem{vtune2026}
+Intel.
+\newblock {\em Intel VTune Profiler User Guide}, 2026.
+
+\bibitem{lab1slides2026}
+{并行程序设计课程组}.
+\newblock Cpu架构相关编程, 2026.
+\newblock 课程教学课件.
+
+\bibitem{lab0guide2026}
+{并行程序设计课程组}.
+\newblock 并行程序设计lab0 实验环境搭建, 2026.
+\newblock 课程实验指导书.
+
+\bibitem{lab1guide2026}
+{并行程序设计课程组}.
+\newblock 并行程序设计lab1 体系结构相关编程, 2026.
+\newblock 课程实验指导书.
+
+\end{thebibliography}

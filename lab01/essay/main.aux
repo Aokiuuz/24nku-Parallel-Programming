@@ -1,0 +1,97 @@
+\relax 
+\providecommand \babel@aux [2]{\global \let \babel@toc \@gobbletwo }
+\@nameuse{bbl@beforestart}
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand*\HyPL@Entry[1]{}
+\providecommand*\new@tpo@label[2]{}
+\HyPL@Entry{0<</S/D>>}
+\babel@aux{UKenglish}{}
+\HyPL@Entry{1<</S/D>>}
+\@writefile{toc}{\contentsline {section}{\numberline {1}实验概述}{2}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}实验目的}{2}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}研究问题与待验证假设}{2}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}实验完成情况}{2}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}实验环境}{2}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}软硬件平台}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 实验平台信息}}{2}{table.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{tab:env}{{1}{2}{实验平台信息}{table.caption.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}测试方法}{2}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}实验流程与数据处理}{2}{subsection.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}可复现性说明}{3}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}实验设计与实现}{3}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}矩阵与向量内积}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.1}算法设计}{3}{subsubsection.3.1.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}矩阵列内积的 cache 优化思路}{3}{algorithm.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.2}关键实现}{3}{subsubsection.3.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.3}规模设置说明}{3}{subsubsection.3.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.1.4}工作集估算}{3}{subsubsection.3.1.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces 矩阵题工作集规模估算}}{3}{table.caption.3}\protected@file@percent }
+\newlabel{tab:matrix-footprint}{{2}{3}{矩阵题工作集规模估算}{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}$n$ 个数求和}{4}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}算法设计}{4}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}四路展开求和}{4}{algorithm.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}规模设置说明}{4}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.3}工作集估算}{4}{subsubsection.3.2.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces 求和题工作集规模估算}}{4}{table.caption.4}\protected@file@percent }
+\newlabel{tab:sum-footprint}{{3}{4}{求和题工作集规模估算}{table.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}编译与运行}{4}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}实验结果与分析}{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}矩阵与向量内积结果}{5}{subsection.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces 矩阵列内积实验结果}}{5}{table.caption.5}\protected@file@percent }
+\newlabel{tab:matrix}{{4}{5}{矩阵列内积实验结果}{table.caption.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.1}{\ignorespaces \texttt  {-O3} 下矩阵题相对 \texttt  {col\_naive} 的加速比}}{5}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:matrix-speedup}{{4{}.1}{5}{\texttt {-O3} 下矩阵题相对 \texttt {col\_naive} 的加速比}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.2}{\ignorespaces 矩阵题中 \texttt  {col\_naive} 在不同优化等级下的运行时间}}{5}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:matrix-opt}{{4{}.2}{5}{矩阵题中 \texttt {col\_naive} 在不同优化等级下的运行时间}{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.3}{\ignorespaces 不同优化等级下矩阵题的最佳加速比}}{6}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:matrix-best-opt}{{4{}.3}{6}{不同优化等级下矩阵题的最佳加速比}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}结果分析}{6}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}$n$ 个数求和结果}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces $n$ 个数求和实验结果}}{6}{table.caption.9}\protected@file@percent }
+\newlabel{tab:sum}{{5}{6}{$n$ 个数求和实验结果}{table.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.4}{\ignorespaces \texttt  {-O3} 下求和题相对 \texttt  {sum\_naive} 的加速比}}{6}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:sum-speedup}{{4{}.4}{6}{\texttt {-O3} 下求和题相对 \texttt {sum\_naive} 的加速比}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.5}{\ignorespaces 求和题中 \texttt  {sum\_naive} 在不同优化等级下的运行时间}}{7}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:sum-opt}{{4{}.5}{7}{求和题中 \texttt {sum\_naive} 在不同优化等级下的运行时间}{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4{}.6}{\ignorespaces 不同优化等级下求和题的最佳加速比}}{7}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:sum-best-opt}{{4{}.6}{7}{不同优化等级下求和题的最佳加速比}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}结果分析}{7}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}综合结论}{7}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}VTune 剖析}{7}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}矩阵题：Hotspots 与 Memory Access}{7}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Hotspots 结果}{7}{subsubsection.5.1.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces VTune Hotspots 下矩阵题核心函数对比}}{7}{table.caption.13}\protected@file@percent }
+\newlabel{tab:vtune-matrix-hotspots}{{6}{7}{VTune Hotspots 下矩阵题核心函数对比}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Memory Access 结果}{8}{subsubsection.5.1.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces VTune Memory Access 下矩阵题核心函数对比}}{8}{table.caption.14}\protected@file@percent }
+\newlabel{tab:vtune-matrix-memory}{{7}{8}{VTune Memory Access 下矩阵题核心函数对比}{table.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5{}.7}{\ignorespaces 矩阵题的 VTune Memory Access Summary}}{8}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:vtune-matrix-memory-summary}{{5{}.7}{8}{矩阵题的 VTune Memory Access Summary}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}矩阵题 VTune 结论}{8}{subsubsection.5.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}求和题：Hotspots 与 Microarchitecture Exploration}{8}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Hotspots 结果}{8}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces VTune Hotspots 下求和题核心函数对比}}{8}{table.caption.16}\protected@file@percent }
+\newlabel{tab:vtune-sum-hotspots}{{8}{8}{VTune Hotspots 下求和题核心函数对比}{table.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5{}.8}{\ignorespaces 求和题的 VTune Hotspots Bottom-up 视图}}{9}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:vtune-sum-hotspots-bottomup}{{5{}.8}{9}{求和题的 VTune Hotspots Bottom-up 视图}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Microarchitecture Exploration 结果}{9}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces VTune Microarchitecture Exploration 下求和题核心函数对比}}{9}{table.caption.18}\protected@file@percent }
+\newlabel{tab:vtune-sum-micro}{{9}{9}{VTune Microarchitecture Exploration 下求和题核心函数对比}{table.caption.18}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.3}求和题 VTune 结论}{9}{subsubsection.5.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Godbolt 汇编分析}{9}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}分析方法}{9}{subsection.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6{}.9}{\ignorespaces godbolt使用截图示例}}{10}{figure.caption.19}\protected@file@percent }
+\newlabel{fig:godbolt-screenshot}{{6{}.9}{10}{godbolt使用截图示例}{figure.caption.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}矩阵题汇编分析}{10}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.1}\texttt  {col\_naive} 与 \texttt  {row\_cache}}{10}{subsubsection.6.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.2.2}\texttt  {row\_cache} 与 \texttt  {row\_cache\_u4}}{10}{subsubsection.6.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}求和题汇编分析}{10}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.1}\texttt  {sum\_naive} 与 \texttt  {sum\_dual} / \texttt  {sum\_unroll4}}{10}{subsubsection.6.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {6.3.2}\texttt  {sum\_unroll4} 与 \texttt  {sum\_pairwise}}{10}{subsubsection.6.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Godbolt 分析结论}{10}{subsection.6.4}\protected@file@percent }
+\newlabel{LastPage}{{6.4}{10}{Godbolt 分析结论}{page.10}{}}
+\gdef\lastpage@lastpage{10}
+\gdef\lastpage@lastpageHy{10}
+\xdef \mintedoldcachechecksum{\detokenize{\minted@cachechecksum }}
+\gdef \@abspage@last{11}

@@ -1,0 +1,40 @@
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage{geometry}
+\usepackage{hyperref}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.6cm,bottom=2.6cm}
+
+\title{AI 使用情况报告}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+本次 Lab3 实验中，我使用 AI 工具辅助阅读实验要求、定位可并行部分、检查实验数据和修改报告表述。AI 的回答主要用于提供思路和排查方向，最终代码、实验结果和报告结论都以本地文件和服务器运行数据为准。下面是使用过程的整理版对话，保留了实际交流中的主要问题和结论。
+
+\begin{description}
+  \item[我：这次 Lab3 基础部分到底该并行哪里？]
+  AI：建议先看 \texttt{PriorityQueue::Generate()}。这个函数在确定前面 segment 后，会枚举最后一个 segment 的所有 value。每个 value 生成一个候选口令，互相之间没有依赖，比较适合拆成多个线程做。
+
+  \item[我：那多个线程一起往 \texttt{guesses} 里 \texttt{push\_back} 可以吗？]
+  AI：不建议。多个线程同时 \texttt{push\_back} 会改 \texttt{vector} 的 size 和 capacity，容易产生数据竞争。更稳的写法是先 \texttt{resize}，然后给每个线程分配一段下标，线程只写自己的区间。
+
+  \item[我：Pthread 和 OpenMP 都这样做，报告里怎么写区别？]
+  AI：可以强调二者并行位置相同，但实现方式不同。Pthread 需要手动划分区间、创建线程和 \texttt{join}；OpenMP 用 \texttt{parallel for}，代码更短，调度由运行时处理。性能分析时只在同一优化等级下比较加速比。
+
+  \item[我：进阶部分怎么证明自己不是随便优化？]
+  AI：先加 profile，再根据数据决定优化点。当前 profile 显示 \texttt{Generate} 仍是最大项，但队列插入和队首删除合计已经接近一半，所以继续看队列维护是合理的。
+
+  \item[我：队首删除优化后 \texttt{queue\_pop} 只有 0.000018s，这个数字会不会太夸张？]
+  AI：需要回到原始输出检查。五次运行的 \texttt{queue\_pop} 都在 $10^{-5}$s 量级，平均约为 0.000017866s，写成 0.000018s 是四舍五入结果。报告里最好写“约”，并说明这是把 \texttt{erase(begin)} 的整体搬移改成逻辑下标递增后的结果。
+
+  \item[我：训练阶段并行化只合并频数为什么不行？]
+  AI：PCFG 后续生成不只看频数，还会受相同概率项的相对顺序影响。频数相同但插入顺序变了，前 1000 万个 guess 可能会变。所以并行训练合并时要记录 \texttt{first\_order}，按首次出现顺序重建模型。
+
+  \item[我：报告图表有些地方文字压住图，怎么处理？]
+  AI：图内只放必要数据，长解释放到图下文字里。对于队列优化图，由于数据跨 $10^{-5}$s 到 $10^{-1}$s，横轴使用对数刻度时需要补读图说明，提醒读者不要按线性柱长理解。
+\end{description}
+
+\end{document}

@@ -1,0 +1,13 @@
+task_id	job_id	version	suite	nodes	ppn	np	generate	gen_threads	batch_guesses	batch_units	run
+1	44796.master_ubss1	advanced	scale	1	8	2	10000000	3	100000	64	1
+2	44797.master_ubss1	advanced	scale	1	8	2	10000000	3	100000	64	2
+3	44798.master_ubss1	advanced	scale	1	8	2	10000000	3	100000	64	3
+4	44799.master_ubss1	advanced	scale	1	8	4	10000000	3	100000	64	1
+5	44800.master_ubss1	advanced	scale	1	8	4	10000000	3	100000	64	2
+6	44801.master_ubss1	advanced	scale	1	8	4	10000000	3	100000	64	3
+7	44802.master_ubss1	advanced	scale	2	8	8	10000000	3	100000	64	1
+8	44803.master_ubss1	advanced	scale	2	8	8	10000000	3	100000	64	2
+9	44804.master_ubss1	advanced	scale	2	8	8	10000000	3	100000	64	3
+10	44805.master_ubss1	advanced	scale	4	8	16	10000000	3	100000	64	1
+11	44806.master_ubss1	advanced	scale	4	8	16	10000000	3	100000	64	2
+12	44807.master_ubss1	advanced	scale	4	8	16	10000000	3	100000	64	3

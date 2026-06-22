@@ -1,0 +1,18 @@
+utc_time=2026-06-19T13:40:48Z
+host=jupyter-github-aokiuuz---bb836a6d
+working_directory=/home/jovyan/my_work/pcfg_real
+train_path=data/Rockyou-1m.txt
+dataset_lines=1000000
+dataset_bytes=9889460
+dataset_sha256=947feb316b853fe71bd9699ea9810b5207e6128c1a2f8b26ee8b8ee236b3c7bf
+uname=Linux jupyter-github-aokiuuz---bb836a6d 6.14.0-1018-oem #18-Ubuntu SMP PREEMPT_DYNAMIC Wed Dec 10 09:33:29 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux
+HIP version: 7.13.99004-3309c6114a
+AMD clang version 23.0.0git (https://github.com/ROCm/llvm-project.git 43215c73116c407735c85a180d174f718798c328+PATCHED:2506c552d8428e2cc1778bef048b20f818e06bb3)
+Target: x86_64-unknown-linux-gnu
+Thread model: posix
+InstalledDir: /opt/rocm/core-7.13/lib/llvm/bin
+  Marketing Name:          AMD RYZEN AI MAX+ PRO 395 w/ Radeon 8060S
+  Compute Unit:            32                                 
+  Marketing Name:          Radeon 8060S Graphics              
+  Compute Unit:            40                                 
+  Wavefront Size:          32(0x20)                           

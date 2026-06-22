@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="实验设计">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="56%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .lightcard { fill: rgba(248,250,252,0.95); stroke: rgba(15,23,42,0.08); stroke-width: 1.0; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 800; letter-spacing: 1.8px; }
+      .title { fill: #F8FAFC; font-size: 36px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 520; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 600; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .dark { fill: #111827; font-size: 16px; font-weight: 620; letter-spacing: 0; }
+      .darksmall { fill: #475569; font-size: 12.5px; font-weight: 560; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .metric2 { fill: #111827; font-size: 40px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.20); stroke-width: 1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+      .dot { fill: #60A5FA; }
+      .node { fill: rgba(15,23,42,0.74); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .chip { fill: rgba(255,255,255,0.10); stroke: rgba(255,255,255,0.16); stroke-width: 1; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1128" cy="-86" r="280" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-70" cy="652" r="300" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+<text x="50" y="52" class="kicker" text-anchor="start">EXPERIMENT DESIGN</text>
+<text x="50" y="96" class="title" text-anchor="start">实验必须同时测 I/O 等待和 CPU 计算</text>
+<text x="50" y="128" class="body" text-anchor="start">只测 I/O 会夸大协程适用范围；加入 CPU 场景才能讲清边界。</text>
+    <rect x="48" y="166" width="710" height="392" rx="22" class="card2"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#2563EB" opacity="0.9"/>
+    <text x="82" y="208" class="kicker">MATRIX</text>
+    <rect x="82" y="238" width="636" height="250" rx="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="112" y="282" class="h3">场景</text><text x="260" y="282" class="h3">asyncio</text><text x="430" y="282" class="h3">threads</text><text x="585" y="282" class="h3">指标</text>
+    <line x1="104" y1="304" x2="696" y2="304" class="axis"/>
+    <text x="112" y="344" class="body">I/O 等待</text><text x="260" y="344" class="small">asyncio.sleep()</text><text x="430" y="344" class="small">time.sleep()</text><text x="585" y="344" class="small">耗时 / 线程</text>
+    <line x1="104" y1="372" x2="696" y2="372" class="axis"/>
+    <text x="112" y="414" class="body">CPU 计算</text><text x="260" y="414" class="small">coroutine 内循环</text><text x="430" y="414" class="small">线程池循环</text><text x="585" y="414" class="small">耗时 / 吞吐</text>
+    <text x="82" y="528" class="small">输出：CSV / JSON / PNG；图表保存在 assets 文件夹。</text>
+    <rect x="788" y="166" width="444" height="176" rx="22" class="card"/><rect x="788" y="166" width="6" height="176" rx="3" fill="#059669" opacity="0.9"/>
+    <text x="818" y="208" class="kicker">PARAMETERS</text>
+    <circle cx="818" cy="241" r="4.5" class="dot"/>
+<text x="836" y="246" class="body" text-anchor="start">I/O任务数：100 到 10000</text>
+<circle cx="818" cy="270" r="4.5" class="dot"/>
+<text x="836" y="275" class="body" text-anchor="start">CPU任务数：50、100、200</text>
+<circle cx="818" cy="299" r="4.5" class="dot"/>
+<text x="836" y="304" class="body" text-anchor="start">重复次数：5</text>
+<circle cx="818" cy="328" r="4.5" class="dot"/>
+<text x="836" y="333" class="body" text-anchor="start">worker：50、100、200</text>
+    <rect x="788" y="362" width="444" height="196" rx="22" class="card"/><rect x="788" y="362" width="6" height="196" rx="3" fill="#DC2626" opacity="0.9"/>
+    <text x="818" y="404" class="kicker">AUDIT FIXES</text>
+    <circle cx="818" cy="437" r="4.5" class="dot"/>
+<text x="836" y="442" class="body" text-anchor="start">补 CPU-bound 反例</text>
+<circle cx="818" cy="466" r="4.5" class="dot"/>
+<text x="836" y="471" class="body" text-anchor="start">补线程峰值采样</text>
+<circle cx="818" cy="495" r="4.5" class="dot"/>
+<text x="836" y="500" class="body" text-anchor="start">补吞吐字段</text>
+<circle cx="818" cy="524" r="4.5" class="dot"/>
+<text x="836" y="529" class="body" text-anchor="start">自动输出可用图表</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · SVG Final Slides</text>
+  <text x="1232" y="692" text-anchor="end" class="small">10/14</text>
+</svg>

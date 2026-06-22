@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="协程底层是状态保存、排队与恢复">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B1020"/>
+      <stop offset="55%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#172033"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#020617" flood-opacity="0.34"/>
+    </filter>
+    <style>
+      .page { font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif; }
+      .card { fill: rgba(255,255,255,0.078); stroke: rgba(255,255,255,0.15); stroke-width: 1.1; }
+      .card2 { fill: rgba(255,255,255,0.112); stroke: rgba(255,255,255,0.20); stroke-width: 1.1; }
+      .chartcard { fill: rgba(248,250,252,0.97); stroke: rgba(255,255,255,0.12); stroke-width: 1.1; }
+      .kicker { fill: #93C5FD; font-size: 12.5px; font-weight: 850; letter-spacing: 1.7px; }
+      .title { fill: #F8FAFC; font-size: 35px; font-weight: 850; letter-spacing: 0; }
+      .h1 { fill: #F8FAFC; font-size: 52px; font-weight: 850; letter-spacing: 0; }
+      .h2 { fill: #F8FAFC; font-size: 22px; font-weight: 820; letter-spacing: 0; }
+      .h3 { fill: #E5E7EB; font-size: 18px; font-weight: 780; letter-spacing: 0; }
+      .body { fill: #CBD5E1; font-size: 16px; font-weight: 540; letter-spacing: 0; }
+      .body2 { fill: #E2E8F0; font-size: 18px; font-weight: 620; letter-spacing: 0; }
+      .small { fill: #94A3B8; font-size: 12.5px; font-weight: 520; letter-spacing: 0; }
+      .metric { fill: #F8FAFC; font-size: 44px; font-weight: 850; letter-spacing: 0; }
+      .axis { stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+      .node { fill: rgba(15,23,42,0.75); stroke: rgba(255,255,255,0.18); stroke-width: 1.1; }
+      .line { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect class="page" width="1280" height="720" fill="url(#bg)"/>
+  <circle cx="1126" cy="-88" r="282" fill="#2563EB" opacity="0.12"/>
+  <circle cx="-86" cy="650" r="310" fill="#059669" opacity="0.10"/>
+  <g class="page" filter="url(#shadow)">
+    <text x="50" y="52" class="kicker" text-anchor="start">STATE MACHINE</text>
+    <text x="50" y="96" class="title" text-anchor="start">协程底层是状态保存、排队与恢复</text>
+    <text x="50" y="128" class="body" text-anchor="start">await 不是简单等待，而是一次由编译器和运行时共同完成的控制权转移。</text>
+
+    <rect x="48" y="166" width="1184" height="392" rx="22" class="card2"/><rect x="48" y="166" width="6" height="392" rx="3" fill="#2563EB" opacity="0.95"/>
+    <text x="82" y="208" class="kicker">COROUTINE LOWERING</text>
+    <rect x="82" y="238" width="294" height="190" rx="18" fill="rgba(15,23,42,0.82)" stroke="rgba(255,255,255,0.18)"/>
+    <text x="108" y="282" class="small">async def fetch():</text>
+    <text x="108" y="318" class="small">    data = await read()</text>
+    <text x="108" y="354" class="small">    return parse(data)</text>
+    <text x="108" y="398" class="body">源码中的 await 标出挂起点</text>
+
+    <path d="M398 332 L474 332" class="line" stroke="#64748B"/>
+    <polygon points="474,332 456,321 456,343" fill="#64748B"/>
+
+    <rect x="496" y="214" width="304" height="282" rx="22" fill="rgba(37,99,235,0.20)" stroke="rgba(96,165,250,0.40)" stroke-width="1.4"/>
+    <text x="526" y="258" class="kicker">COROUTINE FRAME</text>
+    <rect x="526" y="286" width="244" height="40" rx="12" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="648" y="312" text-anchor="middle" class="body">locals: data, temp...</text>
+    <rect x="526" y="338" width="244" height="40" rx="12" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="648" y="364" text-anchor="middle" class="body">state: next instruction</text>
+    <rect x="526" y="390" width="244" height="40" rx="12" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="648" y="416" text-anchor="middle" class="body">exception / return slot</text>
+    <rect x="526" y="442" width="244" height="40" rx="12" fill="rgba(15,23,42,0.72)" stroke="rgba(255,255,255,0.16)"/>
+    <text x="648" y="468" text-anchor="middle" class="body">continuation handle</text>
+
+    <path d="M822 332 L898 332" class="line" stroke="#64748B"/>
+    <polygon points="898,332 880,321 880,343" fill="#64748B"/>
+
+    <g transform="translate(920 222)">
+      <rect x="0" y="0" width="250" height="52" rx="15" class="node"/><text x="125" y="33" text-anchor="middle" class="body">awaiter: I/O not ready</text>
+      <path d="M125 54 L125 82" class="line" stroke="#64748B"/>
+      <rect x="0" y="84" width="250" height="52" rx="15" class="node"/><text x="125" y="117" text-anchor="middle" class="body">ready queue: suspend task</text>
+      <path d="M125 138 L125 166" class="line" stroke="#64748B"/>
+      <rect x="0" y="168" width="250" height="52" rx="15" class="node"/><text x="125" y="201" text-anchor="middle" class="body">event loop: wait for event</text>
+      <path d="M125 222 L125 250" class="line" stroke="#64748B"/>
+      <rect x="0" y="252" width="250" height="52" rx="15" fill="rgba(5,150,105,0.25)" stroke="rgba(52,211,153,0.40)"/>
+      <text x="125" y="285" text-anchor="middle" class="body">resume: continue from state</text>
+    </g>
+
+    <rect x="82" y="458" width="1090" height="58" rx="18" fill="rgba(5,150,105,0.22)" stroke="rgba(52,211,153,0.36)"/>
+    <text x="628" y="494" text-anchor="middle" class="body2">await = 保存现场 + 让出线程 + 事件完成后恢复执行</text>
+
+  </g>
+  <text x="48" y="692" class="small">Coroutine Technology Research · 15-min presentation</text>
+  <text x="1232" y="692" text-anchor="end" class="small">07/18</text>
+</svg>

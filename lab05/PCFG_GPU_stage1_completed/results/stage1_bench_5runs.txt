@@ -1,0 +1,35 @@
+===== RUN 1 =====
+[cpu] batch=1024 cpu_ms=0.0264 hash=13303120344919677433
+[bench] batch=1024 cpu_ms=0.0096 h2d_ms=4.2088 kernel_ms=0.3870 d2h_ms=0.0666 gpu_total_ms=4.6624 speedup=0.0021 correctness=PASS
+[cpu] batch=10000 cpu_ms=0.3290 hash=8699911135194072267
+[bench] batch=10000 cpu_ms=0.1616 h2d_ms=4.5749 kernel_ms=0.4382 d2h_ms=0.1235 gpu_total_ms=5.1367 speedup=0.0315 correctness=PASS
+[cpu] batch=100000 cpu_ms=2.7040 hash=9122827303299997203
+[bench] batch=100000 cpu_ms=2.1189 h2d_ms=3.8079 kernel_ms=0.5142 d2h_ms=0.4641 gpu_total_ms=4.7863 speedup=0.4427 correctness=PASS
+===== RUN 2 =====
+[cpu] batch=1024 cpu_ms=0.0267 hash=13303120344919677433
+[bench] batch=1024 cpu_ms=0.0096 h2d_ms=3.8009 kernel_ms=0.3837 d2h_ms=0.0665 gpu_total_ms=4.2511 speedup=0.0023 correctness=PASS
+[cpu] batch=10000 cpu_ms=0.2585 hash=8699911135194072267
+[bench] batch=10000 cpu_ms=0.1684 h2d_ms=3.6779 kernel_ms=0.4139 d2h_ms=0.1301 gpu_total_ms=4.2219 speedup=0.0399 correctness=PASS
+[cpu] batch=100000 cpu_ms=2.4658 hash=9122827303299997203
+[bench] batch=100000 cpu_ms=1.5804 h2d_ms=4.0445 kernel_ms=0.6246 d2h_ms=0.3693 gpu_total_ms=5.0384 speedup=0.3137 correctness=PASS
+===== RUN 3 =====
+[cpu] batch=1024 cpu_ms=0.0269 hash=13303120344919677433
+[bench] batch=1024 cpu_ms=0.0097 h2d_ms=3.8414 kernel_ms=0.3662 d2h_ms=0.0657 gpu_total_ms=4.2733 speedup=0.0023 correctness=PASS
+[cpu] batch=10000 cpu_ms=0.2624 hash=8699911135194072267
+[bench] batch=10000 cpu_ms=0.1166 h2d_ms=3.7207 kernel_ms=0.3847 d2h_ms=0.1844 gpu_total_ms=4.2898 speedup=0.0272 correctness=PASS
+[cpu] batch=100000 cpu_ms=2.3985 hash=9122827303299997203
+[bench] batch=100000 cpu_ms=1.5711 h2d_ms=3.8203 kernel_ms=0.6290 d2h_ms=0.4239 gpu_total_ms=4.8732 speedup=0.3224 correctness=PASS
+===== RUN 4 =====
+[cpu] batch=1024 cpu_ms=0.0449 hash=13303120344919677433
+[bench] batch=1024 cpu_ms=0.0100 h2d_ms=3.6000 kernel_ms=0.4495 d2h_ms=0.0293 gpu_total_ms=4.0788 speedup=0.0024 correctness=PASS
+[cpu] batch=10000 cpu_ms=0.2484 hash=8699911135194072267
+[bench] batch=10000 cpu_ms=0.1184 h2d_ms=3.4443 kernel_ms=0.3840 d2h_ms=0.1840 gpu_total_ms=4.0123 speedup=0.0295 correctness=PASS
+[cpu] batch=100000 cpu_ms=2.6740 hash=9122827303299997203
+[bench] batch=100000 cpu_ms=1.2308 h2d_ms=3.8522 kernel_ms=0.6416 d2h_ms=0.4637 gpu_total_ms=4.9575 speedup=0.2483 correctness=PASS
+===== RUN 5 =====
+[cpu] batch=1024 cpu_ms=0.0343 hash=13303120344919677433
+[bench] batch=1024 cpu_ms=0.0144 h2d_ms=3.4630 kernel_ms=0.4000 d2h_ms=0.0640 gpu_total_ms=3.9270 speedup=0.0037 correctness=PASS
+[cpu] batch=10000 cpu_ms=0.3328 hash=8699911135194072267
+[bench] batch=10000 cpu_ms=0.1173 h2d_ms=3.8199 kernel_ms=0.4425 d2h_ms=0.1235 gpu_total_ms=4.3858 speedup=0.0267 correctness=PASS
+[cpu] batch=100000 cpu_ms=2.3291 hash=9122827303299997203
+[bench] batch=100000 cpu_ms=1.0900 h2d_ms=4.0719 kernel_ms=0.6446 d2h_ms=0.3539 gpu_total_ms=5.0705 speedup=0.2150 correctness=PASS

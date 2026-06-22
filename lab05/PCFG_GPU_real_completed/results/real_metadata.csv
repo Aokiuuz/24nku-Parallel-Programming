@@ -1,0 +1,2 @@
+train_path,train_ms,trained_passwords,collect_ms,model_pts,collected_units,collected_guesses,repeats,pts_per_batch
+data/Rockyou-1m.txt,1490.2235,1003870,10.3692,9888,199,1000000,5,4
